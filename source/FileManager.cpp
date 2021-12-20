@@ -1,6 +1,7 @@
 #include "FileManager.h"
 #include "Logger.h"
 #include <string>
+#include <algorithm>
 #include <sys/types.h>
 #include <dirent.h>
 #include <filesystem>
@@ -60,6 +61,14 @@ std::vector<std::string> FileManager::getFiles(const std::string &p_path)
     return files;
 }
 
+void FileManager::removeCharacters(std::string &str, char c)
+{
+
+    str.erase(std::remove(
+                  str.begin(), str.end(), c),
+              str.end());
+}
+
 std::string FileManager::getSettingsFromJson(std::string path, std::string tree, std::string child)
 {
     char START = '{', END = '}', NEXT = ',', VALUE = ':';
@@ -86,13 +95,14 @@ std::string FileManager::getSettingsFromJson(std::string path, std::string tree,
     bool continueLoops = true;
     for (int i = 0; i < fileContents.size() && continueLoops; ++i)
     {
-        //Loop through each value in fileContents to find tree string
+        // Loop through each value in fileContents to find tree string
         std::string line = fileContents[i];
         if (line.find(tree) != std::string::npos)
         {
-            int skip = i;            
+            int skip = i;
             // Get skip from index i to the first opening brace ( { )
-            for (; fileContents[skip].find(START) == std::string::npos && skip < fileContents.size(); ++skip);
+            for (; fileContents[skip].find(START) == std::string::npos && skip < fileContents.size(); ++skip)
+                ;
 
             // Get closest closing brace after skip ( } )
             for (int j = skip; fileContents[j].find(END) == std::string::npos && j < fileContents.size(); ++j)
@@ -102,13 +112,14 @@ std::string FileManager::getSettingsFromJson(std::string path, std::string tree,
                     std::string line = fileContents[j];
                     size_t pos = line.find(child);
                     size_t Ipos = 1;
-                    
-                    for(; Ipos + pos < line.size() && line[Ipos + pos] != '"'; ++Ipos);
+
+                    for (; Ipos + pos < line.size() && line[Ipos + pos] != '"'; ++Ipos)
+                        ;
 
                     line = line.substr(Ipos + pos + 2);
                     // remove " and ,
-                    line.erase(std::remove(line.begin(), line.end(), '"'), line.end());
-                    line.erase(std::remove(line.begin(), line.end(), ','), line.end());
+                    removeCharacters(line, '"');
+                    removeCharacters(line, ',');
                     continueLoops = false;
                     ret = line;
                     break;

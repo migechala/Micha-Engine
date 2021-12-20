@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
-include_directories("/opt/homebrew/Cellar/sdl2/2.0.14_1/include" "/opt/homebrew/Cellar/sdl2_image/2.0.5/include" "/opt/homebrew/Cellar/sdl2/2.0.14_1/include/SDL2" "${CMAKE_SOURCE_DIR}/include/")
+include_directories("/opt/homebrew/Cellar/sdl2/2.0.14_1/include" "/opt/homebrew/Cellar/sdl2_image/2.0.5/include" "/opt/homebrew/Cellar/sdl2/2.0.14_1/include/SDL2" "${CMAKE_SOURCE_DIR}/include/" "/usr/include/SDL2/")
 
 add_executable(${PROJECT_NAME} source/main.cpp)
 

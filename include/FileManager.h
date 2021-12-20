@@ -2,8 +2,11 @@
 
 #include <vector>
 #include <string>
-class FileManager {
+class FileManager
+{
     static FileManager *m_instance;
+    void removeCharacters(std::string &str, char c);
+
 public:
     static FileManager *getInstance();
 

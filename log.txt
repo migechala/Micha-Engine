@@ -1,0 +1,2 @@
+
+ERR:                >>/home/migecha/Projects/Tiles/source/main.cpp:30
