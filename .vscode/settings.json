@@ -79,7 +79,8 @@
         "semaphore": "cpp",
         "thread": "cpp",
         "regex": "cpp",
-        "__bits": "cpp"
+        "__bits": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.default.includePath": [],
     "C_Cpp.errorSquiggles": "Enabled"

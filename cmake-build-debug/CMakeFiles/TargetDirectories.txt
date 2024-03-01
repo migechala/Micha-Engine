@@ -1,0 +1,6 @@
+/Users/migecha/Projects/game_engine/cmake-build-debug/CMakeFiles/project.dir
+/Users/migecha/Projects/game_engine/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/migecha/Projects/game_engine/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/migecha/Projects/game_engine/cmake-build-debug/source/CMakeFiles/source.dir
+/Users/migecha/Projects/game_engine/cmake-build-debug/source/CMakeFiles/edit_cache.dir
+/Users/migecha/Projects/game_engine/cmake-build-debug/source/CMakeFiles/rebuild_cache.dir

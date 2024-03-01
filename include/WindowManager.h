@@ -1,14 +1,13 @@
 //
-// Created by mikhail on 5/20/21.
+// Created by Mikhail Chalakov on 2/18/24.
 //
 
-#ifndef WINDOWMANAGER_H
-#define WINDOWMANAGER_H
+#pragma once
 #include <SDL2/SDL.h>
-#include <string>
 #include <memory>
-#include "Objects.h"
 #include "Types.h"
+#include "Object.h"
+
 struct SDLDeleter
 {
     void operator()(SDL_Window *w) const
@@ -25,31 +24,20 @@ struct SDLDeleter
     }
 };
 
-class WindowManager
-{
+class WindowManager{
     std::unique_ptr<SDL_Window, SDLDeleter> m_window;
     std::unique_ptr<SDL_Renderer, SDLDeleter> m_renderer;
-    SDL_Texture *m_bkg{};
-
-    SDL_Event m_event{};
-    type::Vector2i m_size;
-
+    SDL_Texture* background;
+    SDL_Event m_event;
     bool hasQuit();
-
     static type::Vector2i getMonitorSize();
-
 public:
-    
     int frameCount;
-    
     SDL_Renderer *getRenderer();
-
-    type::Vector2i getSize();
-
-    void setBackground(SDL_Texture *background);
-
+    void setBackground(SDL_Texture *bkg);
     int draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst);
-    int draw(ObjectBase* obj);
+    int draw(Object *object);
+    type::Vector2i getAbsolutePosition(type::Vector2i pos);
 
     bool update();
 
@@ -57,5 +45,3 @@ public:
 
     ~WindowManager();
 };
-
-#endif //BOXING2D_2_WINDOWMANAGER_H

@@ -2,9 +2,7 @@
 #include "Logger.h"
 #include <string>
 #include <algorithm>
-#include <sys/types.h>
 #include <dirent.h>
-#include <filesystem>
 #include <iostream>
 #include <fstream>
 

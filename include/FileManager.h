@@ -5,12 +5,12 @@
 class FileManager
 {
     static FileManager *m_instance;
-    void removeCharacters(std::string &str, char c);
+    static void removeCharacters(std::string &str, char c);
 
 public:
     static FileManager *getInstance();
 
-    int getFileCountInDirectory(const std::string &p_path);
+    static int getFileCountInDirectory(const std::string &p_path);
     std::string getSettingsFromJson(std::string path, std::string tree, std::string child);
-    std::vector<std::string> getFiles(const std::string &p_path);
+    static std::vector<std::string> getFiles(const std::string &p_path);
 };
