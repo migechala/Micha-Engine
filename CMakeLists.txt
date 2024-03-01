@@ -13,7 +13,7 @@ find_package(SDL2_image REQUIRED)
 
 include_directories("/opt/homebrew/Cellar/sdl2/2.28.3/include" "/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2/" "/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include" "${CMAKE_SOURCE_DIR}/include/" "/usr/include/SDL2/" ${SDL2TTF_INCLUDE_DIR})
 
-add_executable(${PROJECT_NAME} source/main.cpp
+add_executable(${PROJECT_NAME} main.cpp
         include/WindowManager.h
         source/Object.cpp
         include/Object.h
