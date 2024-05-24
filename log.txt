@@ -1,4 +1,0 @@
-INFO: Beginning Program...               >>| /Users/migecha/Projects/game_engine/main.cpp:4
-INFO: Program Finished.               >>| /Users/migecha/Projects/game_engine/main.cpp:8
-INFO: Beginning Program...               >>| /Users/migecha/Projects/game_engine/main.cpp:4
-INFO: Program Finished.               >>| /Users/migecha/Projects/game_engine/main.cpp:8

@@ -5,3 +5,4 @@ build/
 cmake-buld-debug/
 .DS_Store
 .cache/
+log.txt
