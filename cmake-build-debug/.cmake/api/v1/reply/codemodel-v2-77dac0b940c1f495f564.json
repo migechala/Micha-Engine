@@ -23,15 +23,15 @@
 					]
 				},
 				{
-					"build" : "source",
-					"jsonFile" : "directory-source-Debug-5b5a50b02d94cdb5eb2c.json",
+					"build" : "MichaEngine/source",
+					"jsonFile" : "directory-MichaEngine.source-Debug-a92ab93cd60a7ab3ceb7.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.12"
 					},
 					"parentIndex" : 0,
 					"projectIndex" : 0,
-					"source" : "source",
+					"source" : "MichaEngine/source",
 					"targetIndexes" : 
 					[
 						1
@@ -60,14 +60,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "project::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-project-Debug-a5837a17a504781e2819.json",
+					"jsonFile" : "target-project-Debug-10a00a16d8eae24516d4.json",
 					"name" : "project",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 1,
-					"id" : "source::@411ffd8adc737496fe19",
-					"jsonFile" : "target-source-Debug-458044cba5378339ed2c.json",
+					"id" : "source::@ae6d6a1a2ab2a1f4b3c2",
+					"jsonFile" : "target-source-Debug-ed1fe6f30fb5ddf8114e.json",
 					"name" : "source",
 					"projectIndex" : 0
 				}

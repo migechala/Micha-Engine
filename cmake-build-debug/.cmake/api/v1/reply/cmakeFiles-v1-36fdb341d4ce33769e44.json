@@ -147,7 +147,7 @@
 			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake"
 		},
 		{
-			"path" : "cmake/FindSDL2.cmake"
+			"path" : "MichaEngine/cmake/FindSDL2.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -160,7 +160,7 @@
 			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake"
 		},
 		{
-			"path" : "cmake/FindSDL2TTF.cmake"
+			"path" : "MichaEngine/cmake/FindSDL2TTF.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -173,7 +173,7 @@
 			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake"
 		},
 		{
-			"path" : "cmake/FindSDL2_image.cmake"
+			"path" : "MichaEngine/cmake/FindSDL2_image.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -186,7 +186,7 @@
 			"path" : "/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake"
 		},
 		{
-			"path" : "source/CMakeLists.txt"
+			"path" : "MichaEngine/source/CMakeLists.txt"
 		}
 	],
 	"kind" : "cmakeFiles",

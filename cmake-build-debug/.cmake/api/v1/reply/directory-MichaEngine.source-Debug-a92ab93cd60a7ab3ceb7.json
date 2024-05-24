@@ -8,7 +8,7 @@
 	"installers" : [],
 	"paths" : 
 	{
-		"build" : "source",
-		"source" : "source"
+		"build" : "MichaEngine/source",
+		"source" : "MichaEngine/source"
 	}
 }

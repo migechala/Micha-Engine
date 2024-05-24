@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "source/libsource.a"
+			"path" : "MichaEngine/source/libsource.a"
 		}
 	],
 	"backtrace" : 1,
@@ -16,7 +16,7 @@
 		],
 		"files" : 
 		[
-			"source/CMakeLists.txt",
+			"MichaEngine/source/CMakeLists.txt",
 			"CMakeLists.txt"
 		],
 		"nodes" : 
@@ -94,18 +94,17 @@
 				3,
 				4,
 				5,
-				6,
-				7
+				6
 			]
 		}
 	],
-	"id" : "source::@411ffd8adc737496fe19",
+	"id" : "source::@ae6d6a1a2ab2a1f4b3c2",
 	"name" : "source",
 	"nameOnDisk" : "libsource.a",
 	"paths" : 
 	{
-		"build" : "source",
-		"source" : "source"
+		"build" : "MichaEngine/source",
+		"source" : "MichaEngine/source"
 	},
 	"sourceGroups" : 
 	[
@@ -119,8 +118,7 @@
 				3,
 				4,
 				5,
-				6,
-				7
+				6
 			]
 		}
 	],
@@ -129,49 +127,43 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/FileManager.cpp",
+			"path" : "MichaEngine/source/FileManager.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/KeyboardManager.cpp",
+			"path" : "MichaEngine/source/KeyboardManager.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/Logger.cpp",
+			"path" : "MichaEngine/source/Logger.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/Object.cpp",
+			"path" : "MichaEngine/source/Object.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/ResourceLoader.cpp",
+			"path" : "MichaEngine/source/ResourceLoader.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/Types.cpp",
+			"path" : "MichaEngine/source/Types.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "source/WindowManager.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "source/main.cpp",
+			"path" : "MichaEngine/source/WindowManager.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],

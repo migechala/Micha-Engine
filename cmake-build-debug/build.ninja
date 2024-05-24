@@ -49,19 +49,12 @@ cmake_ninja_workdir = /Users/migecha/Projects/game_engine/cmake-build-debug/
 
 build cmake_object_order_depends_target_project: phony || cmake_object_order_depends_target_source
 
-build CMakeFiles/project.dir/source/main.cpp.o: CXX_COMPILER__project_unscanned_Debug /Users/migecha/Projects/game_engine/source/main.cpp || cmake_object_order_depends_target_project
-  DEP_FILE = CMakeFiles/project.dir/source/main.cpp.o.d
+build CMakeFiles/project.dir/main.cpp.o: CXX_COMPILER__project_unscanned_Debug /Users/migecha/Projects/game_engine/main.cpp || cmake_object_order_depends_target_project
+  DEP_FILE = CMakeFiles/project.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2 -I/Users/migecha/Projects/game_engine/source/../include
+  INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2 -I/Users/migecha/Projects/game_engine/MichaEngine/source/../include
   OBJECT_DIR = CMakeFiles/project.dir
-  OBJECT_FILE_DIR = CMakeFiles/project.dir/source
-
-build CMakeFiles/project.dir/source/Object.cpp.o: CXX_COMPILER__project_unscanned_Debug /Users/migecha/Projects/game_engine/source/Object.cpp || cmake_object_order_depends_target_project
-  DEP_FILE = CMakeFiles/project.dir/source/Object.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2 -I/Users/migecha/Projects/game_engine/source/../include
-  OBJECT_DIR = CMakeFiles/project.dir
-  OBJECT_FILE_DIR = CMakeFiles/project.dir/source
+  OBJECT_FILE_DIR = CMakeFiles/project.dir
 
 
 # =============================================================================
@@ -71,10 +64,10 @@ build CMakeFiles/project.dir/source/Object.cpp.o: CXX_COMPILER__project_unscanne
 #############################################
 # Link the executable project
 
-build project: CXX_EXECUTABLE_LINKER__project_Debug CMakeFiles/project.dir/source/main.cpp.o CMakeFiles/project.dir/source/Object.cpp.o | /opt/homebrew/lib/libSDL2main.a /opt/homebrew/lib/libSDL2.dylib /opt/homebrew/lib/libSDL2_image.dylib /opt/homebrew/lib/libSDL2_ttf.dylib /opt/homebrew/lib/libSDL2_ttf.dylib source/libsource.a /opt/homebrew/lib/libSDL2_image.dylib || source/libsource.a
+build project: CXX_EXECUTABLE_LINKER__project_Debug CMakeFiles/project.dir/main.cpp.o | /opt/homebrew/lib/libSDL2main.a /opt/homebrew/lib/libSDL2.dylib /opt/homebrew/lib/libSDL2_image.dylib /opt/homebrew/lib/libSDL2_ttf.dylib /opt/homebrew/lib/libSDL2_ttf.dylib MichaEngine/source/libsource.a /opt/homebrew/lib/libSDL2_image.dylib || MichaEngine/source/libsource.a
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1
-  LINK_LIBRARIES = -Wl,-rpath,/Users/migecha/Projects/game_engine/include  /opt/homebrew/lib/libSDL2main.a  /opt/homebrew/lib/libSDL2.dylib  -framework Cocoa  /opt/homebrew/lib/libSDL2_image.dylib  /opt/homebrew/lib/libSDL2_ttf.dylib  /opt/homebrew/lib/libSDL2_ttf.dylib  -framework Cocoa  source/libsource.a  /opt/homebrew/lib/libSDL2_image.dylib
-  LINK_PATH = -L/Users/migecha/Projects/game_engine/include
+  LINK_LIBRARIES = -Wl,-rpath,/Users/migecha/Projects/game_engine/MichaEngine/include  /opt/homebrew/lib/libSDL2main.a  /opt/homebrew/lib/libSDL2.dylib  -framework Cocoa  /opt/homebrew/lib/libSDL2_image.dylib  /opt/homebrew/lib/libSDL2_ttf.dylib  /opt/homebrew/lib/libSDL2_ttf.dylib  -framework Cocoa  MichaEngine/source/libsource.a  /opt/homebrew/lib/libSDL2_image.dylib
+  LINK_PATH = -L/Users/migecha/Projects/game_engine/MichaEngine/include
   OBJECT_DIR = CMakeFiles/project.dir
   POST_BUILD = :
   PRE_LINK = :
@@ -116,63 +109,56 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Order-only phony target for source
 
-build cmake_object_order_depends_target_source: phony || source/CMakeFiles/source.dir
+build cmake_object_order_depends_target_source: phony || MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/FileManager.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/FileManager.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/FileManager.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/FileManager.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/FileManager.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/FileManager.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/KeyboardManager.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/KeyboardManager.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/KeyboardManager.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/KeyboardManager.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/KeyboardManager.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/KeyboardManager.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/Logger.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/Logger.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/Logger.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/Logger.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/Logger.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/Logger.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/Object.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/Object.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/Object.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/Object.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/Object.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/Object.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/ResourceLoader.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/ResourceLoader.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/ResourceLoader.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/ResourceLoader.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/ResourceLoader.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/ResourceLoader.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/Types.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/Types.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/Types.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/Types.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/Types.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/Types.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
-build source/CMakeFiles/source.dir/WindowManager.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/WindowManager.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/WindowManager.cpp.o.d
+build MichaEngine/source/CMakeFiles/source.dir/WindowManager.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/MichaEngine/source/WindowManager.cpp || cmake_object_order_depends_target_source
+  DEP_FILE = MichaEngine/source/CMakeFiles/source.dir/WindowManager.cpp.o.d
   FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
   INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
-
-build source/CMakeFiles/source.dir/main.cpp.o: CXX_COMPILER__source_unscanned_Debug /Users/migecha/Projects/game_engine/source/main.cpp || cmake_object_order_depends_target_source
-  DEP_FILE = source/CMakeFiles/source.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1 -fcolor-diagnostics
-  INCLUDES = -I/opt/homebrew/Cellar/sdl2/2.28.3/include -I/opt/homebrew/Cellar/sdl2/2.28.3/include/SDL2 -I/opt/homebrew/Cellar/sdl2_image/2.6.3_2/include -I/Users/migecha/Projects/game_engine/include -I/usr/include/SDL2 -I/opt/homebrew/include/SDL2
-  OBJECT_DIR = source/CMakeFiles/source.dir
-  OBJECT_FILE_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
+  OBJECT_FILE_DIR = MichaEngine/source/CMakeFiles/source.dir
 
 
 # =============================================================================
@@ -180,46 +166,46 @@ build source/CMakeFiles/source.dir/main.cpp.o: CXX_COMPILER__source_unscanned_De
 
 
 #############################################
-# Link the static library source/libsource.a
+# Link the static library MichaEngine/source/libsource.a
 
-build source/libsource.a: CXX_STATIC_LIBRARY_LINKER__source_Debug source/CMakeFiles/source.dir/FileManager.cpp.o source/CMakeFiles/source.dir/KeyboardManager.cpp.o source/CMakeFiles/source.dir/Logger.cpp.o source/CMakeFiles/source.dir/Object.cpp.o source/CMakeFiles/source.dir/ResourceLoader.cpp.o source/CMakeFiles/source.dir/Types.cpp.o source/CMakeFiles/source.dir/WindowManager.cpp.o source/CMakeFiles/source.dir/main.cpp.o
+build MichaEngine/source/libsource.a: CXX_STATIC_LIBRARY_LINKER__source_Debug MichaEngine/source/CMakeFiles/source.dir/FileManager.cpp.o MichaEngine/source/CMakeFiles/source.dir/KeyboardManager.cpp.o MichaEngine/source/CMakeFiles/source.dir/Logger.cpp.o MichaEngine/source/CMakeFiles/source.dir/Object.cpp.o MichaEngine/source/CMakeFiles/source.dir/ResourceLoader.cpp.o MichaEngine/source/CMakeFiles/source.dir/Types.cpp.o MichaEngine/source/CMakeFiles/source.dir/WindowManager.cpp.o
   ARCH_FLAGS = -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk -mmacosx-version-min=14.1
   LANGUAGE_COMPILE_FLAGS = -g
-  OBJECT_DIR = source/CMakeFiles/source.dir
+  OBJECT_DIR = MichaEngine/source/CMakeFiles/source.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_FILE = source/libsource.a
+  TARGET_FILE = MichaEngine/source/libsource.a
   TARGET_PDB = source.a.dbg
 
 
 #############################################
 # Utility command for edit_cache
 
-build source/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/migecha/Projects/game_engine/cmake-build-debug/source && /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+build MichaEngine/source/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/migecha/Projects/game_engine/cmake-build-debug/MichaEngine/source && /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
   DESC = No interactive CMake dialog available...
   restat = 1
 
-build source/edit_cache: phony source/CMakeFiles/edit_cache.util
+build MichaEngine/source/edit_cache: phony MichaEngine/source/CMakeFiles/edit_cache.util
 
 
 #############################################
 # Utility command for rebuild_cache
 
-build source/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cd /Users/migecha/Projects/game_engine/cmake-build-debug/source && /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake --regenerate-during-build -S/Users/migecha/Projects/game_engine -B/Users/migecha/Projects/game_engine/cmake-build-debug
+build MichaEngine/source/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = cd /Users/migecha/Projects/game_engine/cmake-build-debug/MichaEngine/source && /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake --regenerate-during-build -S/Users/migecha/Projects/game_engine -B/Users/migecha/Projects/game_engine/cmake-build-debug
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
 
-build source/rebuild_cache: phony source/CMakeFiles/rebuild_cache.util
+build MichaEngine/source/rebuild_cache: phony MichaEngine/source/CMakeFiles/rebuild_cache.util
 
 # =============================================================================
 # Target aliases.
 
-build libsource.a: phony source/libsource.a
+build libsource.a: phony MichaEngine/source/libsource.a
 
-build source: phony source/libsource.a
+build source: phony MichaEngine/source/libsource.a
 
 # =============================================================================
 # Folder targets.
@@ -229,14 +215,14 @@ build source: phony source/libsource.a
 #############################################
 # Folder: /Users/migecha/Projects/game_engine/cmake-build-debug
 
-build all: phony project source/all
+build all: phony project MichaEngine/source/all
 
 # =============================================================================
 
 #############################################
-# Folder: /Users/migecha/Projects/game_engine/cmake-build-debug/source
+# Folder: /Users/migecha/Projects/game_engine/cmake-build-debug/MichaEngine/source
 
-build source/all: phony source/libsource.a
+build MichaEngine/source/all: phony MichaEngine/source/libsource.a
 
 # =============================================================================
 # Built-in targets
@@ -245,14 +231,14 @@ build source/all: phony source/libsource.a
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /Users/migecha/Projects/game_engine/CMakeLists.txt /Users/migecha/Projects/game_engine/cmake/FindSDL2.cmake /Users/migecha/Projects/game_engine/cmake/FindSDL2TTF.cmake /Users/migecha/Projects/game_engine/cmake/FindSDL2_image.cmake /Users/migecha/Projects/game_engine/source/CMakeLists.txt CMakeCache.txt CMakeFiles/3.27.8/CMakeCCompiler.cmake CMakeFiles/3.27.8/CMakeCXXCompiler.cmake CMakeFiles/3.27.8/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /Users/migecha/Projects/game_engine/CMakeLists.txt /Users/migecha/Projects/game_engine/MichaEngine/cmake/FindSDL2.cmake /Users/migecha/Projects/game_engine/MichaEngine/cmake/FindSDL2TTF.cmake /Users/migecha/Projects/game_engine/MichaEngine/cmake/FindSDL2_image.cmake /Users/migecha/Projects/game_engine/MichaEngine/source/CMakeLists.txt CMakeCache.txt CMakeFiles/3.27.8/CMakeCCompiler.cmake CMakeFiles/3.27.8/CMakeCXXCompiler.cmake CMakeFiles/3.27.8/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /Users/migecha/Projects/game_engine/CMakeLists.txt /Users/migecha/Projects/game_engine/cmake/FindSDL2.cmake /Users/migecha/Projects/game_engine/cmake/FindSDL2TTF.cmake /Users/migecha/Projects/game_engine/cmake/FindSDL2_image.cmake /Users/migecha/Projects/game_engine/source/CMakeLists.txt CMakeCache.txt CMakeFiles/3.27.8/CMakeCCompiler.cmake CMakeFiles/3.27.8/CMakeCXXCompiler.cmake CMakeFiles/3.27.8/CMakeSystem.cmake: phony
+build /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Compiler/GNU.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageHandleStandardArgs.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/FindPackageMessage.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-AppleClang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-C.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang-CXX.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Apple-Clang.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin-Initialize.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/Darwin.cmake /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.27/Modules/Platform/UnixPaths.cmake /Users/migecha/Projects/game_engine/CMakeLists.txt /Users/migecha/Projects/game_engine/MichaEngine/cmake/FindSDL2.cmake /Users/migecha/Projects/game_engine/MichaEngine/cmake/FindSDL2TTF.cmake /Users/migecha/Projects/game_engine/MichaEngine/cmake/FindSDL2_image.cmake /Users/migecha/Projects/game_engine/MichaEngine/source/CMakeLists.txt CMakeCache.txt CMakeFiles/3.27.8/CMakeCCompiler.cmake CMakeFiles/3.27.8/CMakeCXXCompiler.cmake CMakeFiles/3.27.8/CMakeSystem.cmake: phony
 
 
 #############################################
