@@ -1,5 +1,7 @@
-build
-.vscode
-.cache
-.idea
-cmake-buld-debug
+build/
+.vscode/
+.cache/
+.idea/
+cmake-buld-debug/
+.DS_Store
+.cache/
