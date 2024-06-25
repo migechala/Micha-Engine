@@ -21,4 +21,5 @@ class KeyboardManager {
   void update();
   void onListners();
   void offListners();
+  ~KeyboardManager();
 };

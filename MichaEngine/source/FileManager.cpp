@@ -109,3 +109,5 @@ std::string FileManager::getSettingsFromJson(std::string path, std::string tree,
   }
   return ret;
 }
+
+FileManager::~FileManager() { delete m_instance; }

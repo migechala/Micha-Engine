@@ -2,96 +2,229 @@
 // Created by Mikhail Chalakov on 2/18/24.
 //
 #include "WindowManager.h"
+
+#include <imgui.h>
+
 #include <string>
 
-bool WindowManager::hasQuit() {
-    while (SDL_PollEvent(&m_event))
-    {
-        if (m_event.type == SDL_QUIT)
-        {
+#include "Logger.h"
+#include "ObjectManager.h"
+#include "imgui.h"
+#if __APPLE__
+#include <OpenGL/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+#include "imgui_impl_opengl3.h"
+#include "imgui_impl_sdl.h"
+#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+#include <GL/gl3w.h>  // Initialize with gl3wInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+#include <GL/glew.h>  // Initialize with glewInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD2)
+#include <glad/gl.h>  // Initialize with gladLoadGL(...) or gladLoaderLoadGL()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING2)
+#define GLFW_INCLUDE_NONE  // GLFW including OpenGL headers causes ambiguity or
+                           // multiple definition errors.
+#include <glbinding/Binding.h>  // Initialize with glbinding::Binding::initialize()
+#include <glbinding/gl/gl.h>
+using namespace gl;
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLBINDING3)
+#define GLFW_INCLUDE_NONE  // GLFW including OpenGL headers causes ambiguity or
+                           // multiple definition errors.
+#include <glbinding/gl/gl.h>
+#include <glbinding/glbinding.h>  // Initialize with glbinding::initialize()
+using namespace gl;
+#endif
 
-            return true;
-        }
-        if (m_event.type == SDL_KEYDOWN)
-        {
-            if (m_event.key.keysym.sym == SDLK_ESCAPE)
-            {
-                return true;
-            }
-        }
+bool WindowManager::hasQuit() {
+  while (SDL_PollEvent(&m_event)) {
+    if (m_event.type == SDL_QUIT) {
+      return true;
     }
-    return false;
+    if (m_event.type == SDL_KEYDOWN) {
+      if (m_event.key.keysym.sym == SDLK_ESCAPE) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 type::Vector2i WindowManager::getMonitorSize() {
-    SDL_DisplayMode t_dm;
-    SDL_GetCurrentDisplayMode(0, &t_dm);
-    int *ret;
-    return {t_dm.w, t_dm.h};
+  SDL_DisplayMode t_dm;
+  if (SDL_GetCurrentDisplayMode(0, &t_dm) != 0) {
+    LOG_ERR(SDL_GetError())
+  }
+  LOG_INFO(std::to_string(t_dm.w), LOG_LEVEL::LOW)
+  return {t_dm.w, t_dm.h};
 }
 
-int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst) {
-    return SDL_RenderCopy(getRenderer(), txt, src, dst);
+int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
+                        const SDL_Rect *dst) {
+  return SDL_RenderCopy(m_renderer.get(), txt, src, dst);
 }
 
-type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position)
-{
-    int *h;
-    SDL_GetWindowSize(m_window.get(), h, nullptr);
-    return {position.x,*h-position.y};
+type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
+  int h;
+  SDL_GetWindowSize(m_window.get(), &h, nullptr);
+  return {position.x, h - position.y};
 }
-int WindowManager::draw(Object *object)
-{
+type::Vector2i WindowManager::getCenter() { return windowSize / 2; }
+int WindowManager::draw(type::Object *object) {
+  SDL_Color oldColor;
+
+  type::Vector2i pos = getAbsolutePosition(object->position);
+  object->dst.x = pos.x;
+  object->dst.y = pos.y;
+
+  SDL_GetRenderDrawColor(m_renderer.get(), &oldColor.r, &oldColor.g,
+                         &oldColor.b, &oldColor.a);
+  SDL_SetRenderDrawColor(m_renderer.get(), object->color.r, object->color.g,
+                         object->color.b, object->color.a);
+  int ret = SDL_RenderFillRect(m_renderer.get(), &object->dst);
+  SDL_SetRenderDrawColor(m_renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+                         oldColor.a);
+  return ret;
+}
+
+int WindowManager::draw(type::Sprite *sprite) {
+  type::Vector2i pos = getAbsolutePosition(sprite->getPosition());
+  SDL_Rect realPosition = SDL_Rect({pos.x, pos.y});
+  if (sprite->getTexture()) {
+    return SDL_RenderCopy(m_renderer.get(), sprite->getTexture(), nullptr,
+                          &realPosition);
+  }
+  SDL_Color oldColor;
+  SDL_GetRenderDrawColor(m_renderer.get(), &oldColor.r, &oldColor.g,
+                         &oldColor.b, &oldColor.a);
+  SDL_SetRenderDrawColor(m_renderer.get(), 128, 128, 128, 255);
+  int ret = SDL_RenderFillRect(m_renderer.get(), &realPosition);
+  SDL_SetRenderDrawColor(m_renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+                         oldColor.a);
+  return ret;
+}
+
+void WindowManager::update() {
+  if (background != nullptr) {
+    if (draw(background, nullptr, nullptr) != 0) {
+      SDL_Log("%s", SDL_GetError());
+    }
+  } else {
     SDL_Color oldColor;
-    type::Vector2i pos = getAbsolutePosition(object->position);
-    object->dst.x = pos.x;
-    object->dst.y = pos.y;
-    int ret = 0;
-    if (object->texture == nullptr)
-    {
-        SDL_GetRenderDrawColor(getRenderer(), &oldColor.r, &oldColor.g, &oldColor.b, &oldColor.a);
-        SDL_SetRenderDrawColor(getRenderer(), object->color.r, object->color.g, object->color.b, object->color.a);
-        ret = SDL_RenderFillRect(getRenderer(), &object->dst);
-        SDL_SetRenderDrawColor(getRenderer(), oldColor.r, oldColor.g, oldColor.b, oldColor.a);
+    SDL_GetRenderDrawColor(m_renderer.get(), &oldColor.r, &oldColor.g,
+                           &oldColor.b, &oldColor.a);
+    SDL_SetRenderDrawColor(m_renderer.get(), 128, 128, 128, 255);
+    int ret = SDL_RenderFillRect(m_renderer.get(), NULL);
+    SDL_SetRenderDrawColor(m_renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+                           oldColor.a);
+  }
+  for (int i = 0; i < ObjectManager::getInstance()->getNumObjects(); ++i) {
+    auto curObject = ObjectManager::getInstance()->getObject(i);
+    if (!curObject) continue;
+    LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::MEDIUM)
+    if (draw(curObject) != 0) {
+      LOG_ERR(SDL_GetError());
     }
-    else
-    {
-        SDL_RenderCopy(getRenderer(), object->texture, &object->src, &object->dst);
-    }
-    return ret;
+  }
+  ++frameCount;
+  //
+  SDL_RenderPresent(m_renderer.get());
+}
+void WindowManager::setBackground(SDL_Texture *bkg) { background = bkg; }
+
+WindowManager::WindowManager(const std::string &windowName,
+                             type::Vector2i p_pos, Uint32 p_flag)
+    : frameCount(0), windowSize(getMonitorSize()), imgui_open(true) {
+  LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
+
+  // Decide GL+GLSL versions
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+  // GL ES 2.0 + GLSL 100
+  const char *glsl_version = "#version 100";
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#elif defined(__APPLE__)
+  // GL 3.2 Core + GLSL 150
+  const char *glsl_version = "#version 150";
+  SDL_GL_SetAttribute(
+      SDL_GL_CONTEXT_FLAGS,
+      SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);  // Always required on Mac
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#else
+  // GL 3.0 + GLSL 130
+  const char *glsl_version = "#version 130";
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#endif
+
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+
+  m_window.reset(SDL_CreateWindow(windowName.c_str(), p_pos.x, p_pos.y,
+                                  windowSize.x, windowSize.y, p_flag));
+
+  if (!m_window) {
+    LOG_ERR("Error! Window is null");
+  }
+  gl_context = SDL_GL_CreateContext(m_window.get());
+  SDL_GL_MakeCurrent(m_window.get(), gl_context);
+  SDL_GL_SetSwapInterval(1);  // Enable vsync
+
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  io = ImGui::GetIO();
+  (void)&io;
+
+  ImGui::StyleColorsDark();
+  ImGui_ImplSDL2_InitForOpenGL(m_window.get(), gl_context);
+  ImGui_ImplOpenGL3_Init(glsl_version);
+
+  m_renderer.reset(
+      SDL_CreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED));
+
+  if (!m_renderer) {
+    LOG_ERR(SDL_GetError());
+    exit(-1);
+  }
+
+  SDL_Surface *color = SDL_CreateRGBSurfaceWithFormat(
+      0, 100, 100, 8, SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR24);
+  if (!color) {
+    LOG_ERR(SDL_GetError());
+    exit(-1);
+  }
 }
 
-bool WindowManager::update()
-{
-    SDL_RenderPresent(getRenderer());
-    if (draw(background, nullptr, nullptr) != 0)
-    {
-        SDL_Log("%s", SDL_GetError());
-    }
-    ++frameCount;
-    return hasQuit();
-}
-void WindowManager::setBackground(SDL_Texture *bkg)
-{
-    background = bkg;
-}
-
-SDL_Renderer *WindowManager::getRenderer() {
-    return m_renderer.get();
-}
-
-WindowManager::WindowManager(const std::string &windowName, type::Vector2i p_pos, Uint32 p_flag): frameCount(0)
-{
-    SDL_Log("Created Window");
-    m_window.reset(SDL_CreateWindow(windowName.c_str(), p_pos.x, p_pos.y, getMonitorSize().x, getMonitorSize().y, p_flag));
-    m_renderer.reset(SDL_CreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED));
-
-    if (m_window == nullptr)
-    {
-        SDL_Log("Error! Window is null");
-    }
+void WindowManager::debugFrame() {
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplSDL2_NewFrame(m_window.get());
+  ImGui::NewFrame();
+  LOG_INFO("Rendering demo window", LOG_LEVEL::LOW);
+  ImGui::ShowDemoWindow(&imgui_open);
+  ImGui::Render();
+  glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+  ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+  glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+  glClear(GL_COLOR_BUFFER_BIT);
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  SDL_GL_SwapWindow(m_window.get());
 }
 
 WindowManager::~WindowManager() {
-    SDL_DestroyTexture(background);
+  SDL_DestroyTexture(background);
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
+  ImGui::DestroyContext();
+  SDL_GL_DeleteContext(gl_context);
+  SDL_Quit();
 }

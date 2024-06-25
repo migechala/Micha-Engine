@@ -35,11 +35,23 @@ struct Vector2d {
   Vector2d operator/(const Vector2d &p_change) const;
   Vector2d operator*(const Vector2d &p_change) const;
 };
+struct Object {
+  Object(type::Vector2i position, type::Vector2i size, SDL_Color color);
+  Object(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
+         SDL_Color color);
 
-class Sprite {
-  Vector2i m_position, m_size;
+  type::Vector2i position;
+  type::Vector2i velocity;
+  type::Vector2i size;
+  SDL_Rect dst;
+  SDL_Rect src;
+  SDL_Color color;
+  bool rising;
+  bool animated;
+};
+class Sprite : public Object {
   int m_counter{};
-  std::vector<std::vector<SDL_Texture *>> textures;
+  std::vector<SDL_Texture *> textures;
 
  public:
   // Setter
@@ -50,13 +62,19 @@ class Sprite {
   void changePosition(Vector2i p_change);
 
   // Getter
-  SDL_Rect getPosition() const;
+  type::Vector2i getPosition() const;
+  SDL_Texture *getTexture();
 
   // Functions
   int updateTexture();
 
   // Constructor
-  Sprite(const std::string &p_baseSpriteAssetDir, type::Vector2i p_position,
-         type::Vector2i p_size);
+  Sprite(type::Vector2i p_position, type::Vector2i p_size);
+  Sprite(type::Vector2i p_position, type::Vector2i p_size,
+         type::Vector2i p_velocity);
+  Sprite(type::Vector2i p_position, type::Vector2i p_size,
+         std::vector<SDL_Texture *> p_textures);
+  Sprite(type::Vector2i p_position, type::Vector2i p_size,
+         type::Vector2i p_velocity, std::vector<SDL_Texture *> p_textures);
 };
 }  // namespace type
