@@ -19,7 +19,7 @@ struct SDLDeleter {
 class WindowManager {
   std::unique_ptr<SDL_Window, SDLDeleter> window;
   std::unique_ptr<SDL_Renderer, SDLDeleter> renderer;
-  SDL_Texture *background;
+  std::unique_ptr<SDL_Texture, SDLDeleter> background;
   SDL_Event event;
   type::Vector2i windowSize;
   static type::Vector2i getMonitorSize();

@@ -8,7 +8,6 @@
 #include "ObjectManager.h"
 #include "Types.h"
 #include "WindowManager.h"
-
 void start(ExecutableClass *execute) {
   LOG_INFO("Beginning Program...", LOG_LEVEL::PRIORITY);
   LOG_INFO("Max FPS Set to " + std::to_string(execute->maxFPS),
@@ -34,6 +33,7 @@ void start(ExecutableClass *execute) {
 
   LOG_INFO("Program Finished.", LOG_LEVEL::PRIORITY);
 }
+void start(std::unique_ptr<ExecutableClass> execute) { start(execute.get()); }
 
 int create_sprite(type::Vector2i position, type::Vector2i size) {
   return ObjectManager::getInstance()->addObject(

@@ -54,7 +54,9 @@ bool WindowManager::hasQuit() {
 type::Vector2i WindowManager::getMonitorSize() {
   SDL_DisplayMode t_dm;
   if (SDL_GetCurrentDisplayMode(0, &t_dm) != 0) {
-    LOG_ERR(SDL_GetError())
+    std::string err = "DP error: ";
+    LOG_ERR(err + SDL_GetError())
+    exit(-1);
   }
   LOG_INFO(std::to_string(t_dm.w), LOG_LEVEL::LOW)
   return {t_dm.w, t_dm.h};
@@ -106,9 +108,11 @@ int WindowManager::draw(type::Sprite *sprite) {
 }
 
 void WindowManager::update() {
-  if (background != nullptr) {
-    if (draw(background, nullptr, nullptr) != 0) {
-      SDL_Log("%s", SDL_GetError());
+  if (background) {
+    if (draw(background.get(), nullptr, nullptr) != 0) {
+      std::string err = "Draw BG error: ";
+      LOG_ERR(err + SDL_GetError());
+      exit(-1);
     }
   } else {
     SDL_Color oldColor;
@@ -125,13 +129,14 @@ void WindowManager::update() {
     LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::MEDIUM)
     if (draw(curObject) != 0) {
       LOG_ERR(SDL_GetError());
+      exit(-1);
     }
   }
   ++frameCount;
   //
   SDL_RenderPresent(renderer.get());
 }
-void WindowManager::setBackground(SDL_Texture *bkg) { background = bkg; }
+void WindowManager::setBackground(SDL_Texture *bkg) { background.reset(bkg); }
 
 WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
                              Uint32 flag)
@@ -193,14 +198,16 @@ WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
       SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED));
 
   if (!renderer) {
-    LOG_ERR(SDL_GetError());
+    std::string err = "Renderer error: ";
+    LOG_ERR(err + SDL_GetError());
     exit(-1);
   }
 
   SDL_Surface *color = SDL_CreateRGBSurfaceWithFormat(
       0, 100, 100, 8, SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR24);
   if (!color) {
-    LOG_ERR(SDL_GetError());
+    std::string err = "Color error: ";
+    LOG_ERR(err + SDL_GetError());
     exit(-1);
   }
 }
@@ -221,7 +228,6 @@ void WindowManager::debugFrame() {
 }
 
 WindowManager::~WindowManager() {
-  SDL_DestroyTexture(background);
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
   ImGui::DestroyContext();
