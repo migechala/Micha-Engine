@@ -6,12 +6,12 @@
 
 #include "Logger.h"
 
-ResourceLoader *ResourceLoader::m_instance = nullptr;
+ResourceLoader *ResourceLoader::instance = nullptr;
 ResourceLoader *ResourceLoader::getInstance() {
-  if (m_instance == nullptr) {
-    m_instance = new ResourceLoader();
+  if (instance == nullptr) {
+    instance = new ResourceLoader();
   }
-  return m_instance;
+  return instance;
 }
 
 SDL_Texture *ResourceLoader::loadTexture(const std::string &location,

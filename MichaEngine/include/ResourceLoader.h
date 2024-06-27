@@ -6,7 +6,7 @@
 #include <string>
 
 class ResourceLoader {
-  static ResourceLoader *m_instance;
+  static ResourceLoader *instance;
 
  public:
   static ResourceLoader *getInstance();

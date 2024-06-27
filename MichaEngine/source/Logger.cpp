@@ -4,22 +4,22 @@
 #include <iostream>
 #include <string>
 
-void Logger::m_deleteLastLog() {
-  m_file.open("../log.txt");
-  m_file << "\n";
-  m_file.close();
+void Logger::deleteLastLog() {
+  file.open("../log.txt");
+  file << "\n";
+  file.close();
 }
 
 void Logger::setLogLevel(LOG_LEVEL level) { ll = level; }
 
-void Logger::m_writeToFile(const std::string &write) {
-  m_file.open("../log.txt",
-              std::fstream::in | std::fstream::out | std::fstream::app);
-  m_file << write + "\n";
-  m_file.close();
+void Logger::writeToFile(const std::string &write) {
+  file.open("../log.txt",
+            std::fstream::in | std::fstream::out | std::fstream::app);
+  file << write + "\n";
+  file.close();
 }
-void Logger::resetLogger() { m_deleteLastLog(); }
-void Logger::Log(const std::string &msg, LOG_VALUES severity, LOG_LEVEL level,
+void Logger::resetLogger() { deleteLastLog(); }
+void Logger::log(const std::string &msg, LOG_VALUES severity, LOG_LEVEL level,
                  const char *filename, int line) {
   if (ll < level) return;
   std::string _msg;
@@ -39,6 +39,6 @@ void Logger::Log(const std::string &msg, LOG_VALUES severity, LOG_LEVEL level,
   _msg.append(filename);
   _msg.append(":");
   _msg.append(std::to_string(line));
-  m_writeToFile(_msg);
+  writeToFile(_msg);
   std::cout << _msg << std::endl;
 }

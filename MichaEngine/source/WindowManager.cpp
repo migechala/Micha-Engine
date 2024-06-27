@@ -38,12 +38,12 @@ using namespace gl;
 #endif
 
 bool WindowManager::hasQuit() {
-  while (SDL_PollEvent(&m_event)) {
-    if (m_event.type == SDL_QUIT) {
+  while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_QUIT) {
       return true;
     }
-    if (m_event.type == SDL_KEYDOWN) {
-      if (m_event.key.keysym.sym == SDLK_ESCAPE) {
+    if (event.type == SDL_KEYDOWN) {
+      if (event.key.keysym.sym == SDLK_ESCAPE) {
         return true;
       }
     }
@@ -62,12 +62,12 @@ type::Vector2i WindowManager::getMonitorSize() {
 
 int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
                         const SDL_Rect *dst) {
-  return SDL_RenderCopy(m_renderer.get(), txt, src, dst);
+  return SDL_RenderCopy(renderer.get(), txt, src, dst);
 }
 
 type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
   int h;
-  SDL_GetWindowSize(m_window.get(), &h, nullptr);
+  SDL_GetWindowSize(window.get(), &h, nullptr);
   return {position.x, h - position.y};
 }
 type::Vector2i WindowManager::getCenter() { return windowSize / 2; }
@@ -78,12 +78,12 @@ int WindowManager::draw(type::Object *object) {
   object->dst.x = pos.x;
   object->dst.y = pos.y;
 
-  SDL_GetRenderDrawColor(m_renderer.get(), &oldColor.r, &oldColor.g,
-                         &oldColor.b, &oldColor.a);
-  SDL_SetRenderDrawColor(m_renderer.get(), object->color.r, object->color.g,
+  SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
+                         &oldColor.a);
+  SDL_SetRenderDrawColor(renderer.get(), object->color.r, object->color.g,
                          object->color.b, object->color.a);
-  int ret = SDL_RenderFillRect(m_renderer.get(), &object->dst);
-  SDL_SetRenderDrawColor(m_renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+  int ret = SDL_RenderFillRect(renderer.get(), &object->dst);
+  SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
                          oldColor.a);
   return ret;
 }
@@ -92,15 +92,15 @@ int WindowManager::draw(type::Sprite *sprite) {
   type::Vector2i pos = getAbsolutePosition(sprite->getPosition());
   SDL_Rect realPosition = SDL_Rect({pos.x, pos.y});
   if (sprite->getTexture()) {
-    return SDL_RenderCopy(m_renderer.get(), sprite->getTexture(), nullptr,
+    return SDL_RenderCopy(renderer.get(), sprite->getTexture(), nullptr,
                           &realPosition);
   }
   SDL_Color oldColor;
-  SDL_GetRenderDrawColor(m_renderer.get(), &oldColor.r, &oldColor.g,
-                         &oldColor.b, &oldColor.a);
-  SDL_SetRenderDrawColor(m_renderer.get(), 128, 128, 128, 255);
-  int ret = SDL_RenderFillRect(m_renderer.get(), &realPosition);
-  SDL_SetRenderDrawColor(m_renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+  SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
+                         &oldColor.a);
+  SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255);
+  int ret = SDL_RenderFillRect(renderer.get(), &realPosition);
+  SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
                          oldColor.a);
   return ret;
 }
@@ -112,11 +112,11 @@ void WindowManager::update() {
     }
   } else {
     SDL_Color oldColor;
-    SDL_GetRenderDrawColor(m_renderer.get(), &oldColor.r, &oldColor.g,
+    SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g,
                            &oldColor.b, &oldColor.a);
-    SDL_SetRenderDrawColor(m_renderer.get(), 128, 128, 128, 255);
-    int ret = SDL_RenderFillRect(m_renderer.get(), NULL);
-    SDL_SetRenderDrawColor(m_renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+    SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255);
+    int ret = SDL_RenderFillRect(renderer.get(), NULL);
+    SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
                            oldColor.a);
   }
   for (int i = 0; i < ObjectManager::getInstance()->getNumObjects(); ++i) {
@@ -129,12 +129,12 @@ void WindowManager::update() {
   }
   ++frameCount;
   //
-  SDL_RenderPresent(m_renderer.get());
+  SDL_RenderPresent(renderer.get());
 }
 void WindowManager::setBackground(SDL_Texture *bkg) { background = bkg; }
 
-WindowManager::WindowManager(const std::string &windowName,
-                             type::Vector2i p_pos, Uint32 p_flag)
+WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
+                             Uint32 flag)
     : frameCount(0), windowSize(getMonitorSize()), imgui_open(true) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
 
@@ -170,14 +170,14 @@ WindowManager::WindowManager(const std::string &windowName,
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 
-  m_window.reset(SDL_CreateWindow(windowName.c_str(), p_pos.x, p_pos.y,
-                                  windowSize.x, windowSize.y, p_flag));
+  window.reset(SDL_CreateWindow(windowName.c_str(), pos.x, pos.y, windowSize.x,
+                                windowSize.y, flag));
 
-  if (!m_window) {
+  if (!window) {
     LOG_ERR("Error! Window is null");
   }
-  gl_context = SDL_GL_CreateContext(m_window.get());
-  SDL_GL_MakeCurrent(m_window.get(), gl_context);
+  gl_context = SDL_GL_CreateContext(window.get());
+  SDL_GL_MakeCurrent(window.get(), gl_context);
   SDL_GL_SetSwapInterval(1);  // Enable vsync
 
   IMGUI_CHECKVERSION();
@@ -186,13 +186,13 @@ WindowManager::WindowManager(const std::string &windowName,
   (void)&io;
 
   ImGui::StyleColorsDark();
-  ImGui_ImplSDL2_InitForOpenGL(m_window.get(), gl_context);
+  ImGui_ImplSDL2_InitForOpenGL(window.get(), gl_context);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  m_renderer.reset(
-      SDL_CreateRenderer(m_window.get(), -1, SDL_RENDERER_ACCELERATED));
+  renderer.reset(
+      SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED));
 
-  if (!m_renderer) {
+  if (!renderer) {
     LOG_ERR(SDL_GetError());
     exit(-1);
   }
@@ -207,7 +207,7 @@ WindowManager::WindowManager(const std::string &windowName,
 
 void WindowManager::debugFrame() {
   ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL2_NewFrame(m_window.get());
+  ImGui_ImplSDL2_NewFrame(window.get());
   ImGui::NewFrame();
   LOG_INFO("Rendering demo window", LOG_LEVEL::LOW);
   ImGui::ShowDemoWindow(&imgui_open);
@@ -217,7 +217,7 @@ void WindowManager::debugFrame() {
   glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
   glClear(GL_COLOR_BUFFER_BIT);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  SDL_GL_SwapWindow(m_window.get());
+  SDL_GL_SwapWindow(window.get());
 }
 
 WindowManager::~WindowManager() {

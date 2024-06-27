@@ -17,10 +17,10 @@ struct SDLDeleter {
 };
 
 class WindowManager {
-  std::unique_ptr<SDL_Window, SDLDeleter> m_window;
-  std::unique_ptr<SDL_Renderer, SDLDeleter> m_renderer;
+  std::unique_ptr<SDL_Window, SDLDeleter> window;
+  std::unique_ptr<SDL_Renderer, SDLDeleter> renderer;
   SDL_Texture *background;
-  SDL_Event m_event;
+  SDL_Event event;
   type::Vector2i windowSize;
   static type::Vector2i getMonitorSize();
   ImGuiIO io;
@@ -41,8 +41,7 @@ class WindowManager {
 
   void update();
 
-  WindowManager(const std::string &windowName, type::Vector2i p_pos,
-                Uint32 p_flag);
+  WindowManager(const std::string &windowName, type::Vector2i pos, Uint32 flag);
 
   void debugFrame();
   ~WindowManager();

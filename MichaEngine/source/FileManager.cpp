@@ -9,20 +9,20 @@
 
 #include "Logger.h"
 
-FileManager *FileManager::m_instance = nullptr;
+FileManager *FileManager::instance = nullptr;
 
 FileManager *FileManager::getInstance() {
-  if (m_instance == nullptr) {
-    m_instance = new FileManager();
+  if (instance == nullptr) {
+    instance = new FileManager();
   }
-  return m_instance;
+  return instance;
 }
 
-int FileManager::getFileCountInDirectory(const std::string &p_path) {
+int FileManager::getFileCountInDirectory(const std::string &path) {
   DIR *dp;
   int i = 0;
   struct dirent *ep;
-  dp = opendir(p_path.c_str());
+  dp = opendir(path.c_str());
 
   if (dp != nullptr) {
     while ((ep = readdir(dp))) i++;
@@ -36,10 +36,10 @@ int FileManager::getFileCountInDirectory(const std::string &p_path) {
   return i;
 }
 
-std::vector<std::string> FileManager::getFiles(const std::string &p_path) {
+std::vector<std::string> FileManager::getFiles(const std::string &path) {
   std::vector<std::string> files;
   struct dirent *entry;
-  DIR *dir = opendir(p_path.c_str());
+  DIR *dir = opendir(path.c_str());
 
   if (dir == nullptr) {
     return files;
@@ -110,4 +110,4 @@ std::string FileManager::getSettingsFromJson(std::string path, std::string tree,
   return ret;
 }
 
-FileManager::~FileManager() { delete m_instance; }
+FileManager::~FileManager() { delete instance; }
