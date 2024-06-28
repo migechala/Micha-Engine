@@ -79,6 +79,8 @@ int WindowManager::draw(type::Object *object) {
   type::Vector2i pos = getAbsolutePosition(object->position);
   object->dst.x = pos.x;
   object->dst.y = pos.y;
+  LOG_INFO(std::to_string(object->dst.x), LOG_LEVEL::PRIORITY);
+  LOG_INFO(std::to_string(object->dst.y), LOG_LEVEL::PRIORITY);
 
   SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
                          &oldColor.a);
@@ -126,7 +128,7 @@ void WindowManager::update() {
   for (int i = 0; i < ObjectManager::getInstance()->getNumObjects(); ++i) {
     auto curObject = ObjectManager::getInstance()->getObject(i);
     if (!curObject) continue;
-    LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::MEDIUM)
+    LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::LOW)
     if (draw(curObject) != 0) {
       LOG_ERR(SDL_GetError());
       exit(-1);
