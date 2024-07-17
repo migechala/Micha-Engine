@@ -63,15 +63,18 @@ type::Object::Object(type::Vector2i position, type::Vector2i size,
       color(color),
       dst({position.x, position.y, size.x, size.y}),
       velocity(0, 0),
+      acceleration(0, 0),
       rising(false) {}
 
 type::Object::Object(type::Vector2i position, type::Vector2i size,
-                     type::Vector2i velocity, SDL_Color color)
+                     type::Vector2i velocity, type::Vector2i acceleration,
+                     SDL_Color color)
     : position(position),
       size(size),
       color(color),
       dst({position.x, position.y, size.x, size.y}),
       velocity(velocity),
+      acceleration(acceleration),
       rising(false) {}
 
 void type::Sprite::setPosition(type::Vector2i newPos) { position = newPos; }
@@ -96,15 +99,20 @@ type::Sprite::Sprite(type::Vector2i position, type::Vector2i size)
 
 type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
                      type::Vector2i velocity)
-    : counter(0), Object(position, size, velocity, {255, 0, 0, 255}) {}
+    : counter(0), Object(position, size, velocity, {0, 0}, {255, 0, 0, 255}) {}
+
+type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
+                     type::Vector2i velocity, type::Vector2i acceleration)
+    : counter(0),
+      Object(position, size, velocity, acceleration, {255, 0, 0, 255}) {}
 
 type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
                      std::vector<SDL_Texture *> textures)
     : counter(0), Object(position, size, {0, 0, 0, 0}), textures(textures) {}
 
 type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
-                     type::Vector2i velocity,
+                     type::Vector2i velocity, type::Vector2i acceleration,
                      std::vector<SDL_Texture *> textures)
     : counter(0),
-      Object(position, size, velocity, {0, 0, 0, 0}),
+      Object(position, size, velocity, acceleration, {0, 0, 0, 0}),
       textures(textures) {}

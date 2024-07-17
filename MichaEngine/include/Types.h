@@ -38,10 +38,11 @@ struct Vector2d {
 struct Object {
   Object(type::Vector2i position, type::Vector2i size, SDL_Color color);
   Object(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
-         SDL_Color color);
+         type::Vector2i acceleration, SDL_Color color);
 
   type::Vector2i position;
   type::Vector2i velocity;
+  type::Vector2i acceleration;
   type::Vector2i size;
   SDL_Rect dst;
   SDL_Rect src;
@@ -71,9 +72,11 @@ class Sprite : public Object {
   // Constructor
   Sprite(type::Vector2i position, type::Vector2i size);
   Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity);
+  Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
+         type::Vector2i acceleration);
   Sprite(type::Vector2i position, type::Vector2i size,
          std::vector<SDL_Texture *> textures);
   Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
-         std::vector<SDL_Texture *> textures);
+         type::Vector2i acceleration, std::vector<SDL_Texture *> textures);
 };
 }  // namespace type

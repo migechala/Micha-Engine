@@ -1,6 +1,6 @@
 set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/imgui)
 
-file(GLOB IMGUI_SOURCES ${IMGUI_DIR}/imgui*.cpp ${IMGUI_DIR}/backends/imgui_impl_sdl.cpp ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp)
+file(GLOB IMGUI_SOURCES ${IMGUI_DIR}/imgui*.cpp ${IMGUI_DIR}/backends/imgui_impl_sdl2.cpp ${IMGUI_DIR}/backends/imgui_impl_sdlrenderer2.cpp)
 
 message(IMGUI_SOURCES ${IMGUI_DIR})
 

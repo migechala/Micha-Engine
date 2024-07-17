@@ -3,6 +3,6 @@ build/
 .cache/
 .idea/
 cmake-buld-debug/
-*/.DS_Store
+.DS_Store
 .cache/
 log.txt

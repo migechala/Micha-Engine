@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "Types.h"
+#include "WindowManager.h"
 class ObjectManager {
   std::vector<type::Object*> objects;
   static ObjectManager* instance;
@@ -12,8 +13,8 @@ class ObjectManager {
   int addObject(type::Object* newObject);
   void removeObject(type::Object* rmObject);
   void removeObject(int objId);
-  int updateObject(int objId);
-  int updateAllObjects();
+  int updateObject(int objId, WindowManager* window);
+  int updateAllObjects(WindowManager* window);
   type::Object* getObject(int objId);
   int getNumObjects();
 

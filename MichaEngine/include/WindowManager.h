@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "InternalWindow.h"
 #include "Types.h"
 #include "imgui.h"
 
@@ -17,14 +18,14 @@ struct SDLDeleter {
 };
 
 class WindowManager {
-  std::unique_ptr<SDL_Window, SDLDeleter> window;
-  std::unique_ptr<SDL_Renderer, SDLDeleter> renderer;
+  std::shared_ptr<SDL_Window> window;
+  std::shared_ptr<SDL_Renderer> renderer;
   std::unique_ptr<SDL_Texture, SDLDeleter> background;
   SDL_Event event;
   type::Vector2i windowSize;
   static type::Vector2i getMonitorSize();
-  ImGuiIO io;
-  SDL_GLContext gl_context;
+  InternalWindow *iw;
+
   bool imgui_open;
 
  public:
@@ -36,6 +37,7 @@ class WindowManager {
 
   type::Vector2i getAbsolutePosition(type::Vector2i pos);
   type::Vector2i getCenter();
+  type::Vector2i getSize();
 
   bool hasQuit();
 
@@ -43,6 +45,5 @@ class WindowManager {
 
   WindowManager(const std::string &windowName, type::Vector2i pos, Uint32 flag);
 
-  void debugFrame();
   ~WindowManager();
 };

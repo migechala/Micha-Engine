@@ -15,9 +15,21 @@ KeyboardManager *KeyboardManager::getInstance() {
   }
   return instance;
 }
-void KeyboardManager::addListener(SDL_Scancode key,
-                                  std::function<void()> func) {
-  listeners.insert({key, std::make_pair(func, false)});
+void KeyboardManager::addListener(SDL_Scancode key, std::function<void()> func,
+                                  bool repeatable) {
+  listeners.insert({key, std::make_tuple(func, false, repeatable)});
+  LOG_INFO(
+      std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)),
+      LOG_LEVEL::LOW);
+  if (repeatable) {
+    LOG_INFO(std::string("Successfully added listener for key: ")
+                 .append(SDL_GetScancodeName(key)),
+             LOG_LEVEL::MEDIUM);
+    return;
+  }
+  LOG_INFO(std::string("Successfully added listener for key: ")
+               .append(SDL_GetScancodeName(key)),
+           LOG_LEVEL::MEDIUM);
 }
 
 bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }
@@ -29,7 +41,7 @@ void KeyboardManager::printListner() {
   for (auto &i : listeners) {
     LOG_INFO("| " +
                  std::string(SDL_GetKeyName(SDL_GetKeyFromScancode(i.first))) +
-                 " | func | " + std::to_string(i.second.second) + " |",
+                 " | func | " + std::to_string(std::get<1>(i.second)) + " |",
              LOG_LEVEL::PRIORITY);
   }
   LOG_INFO("----------------------------", LOG_LEVEL::PRIORITY);
@@ -52,11 +64,11 @@ void KeyboardManager::update() {
      * the lock state i->second->first is the function that will be ran
      * i->second->second is the lock state of the key
      */
-    if (state[i.first] && !i.second.second) {
-      i.second.first();
-      i.second.second = true;  // lock
-    } else if (!state[i.first] && i.second.second) {
-      i.second.second = false;  // unlock
+    if (state[i.first] && (!std::get<1>(i.second) || std::get<2>(i.second))) {
+      std::get<0>(i.second)();
+      std::get<1>(i.second) = true;  // lock
+    } else if (!state[i.first] && std::get<1>(i.second)) {
+      std::get<1>(i.second) = false;  // unlock
     }
   }
 }
