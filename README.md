@@ -70,44 +70,4 @@ To use the Micha Engine, follow these steps:
 
 ### Example `main.cpp`
 
-Here's an example of a complete `main.cpp` file using the Micha Engine:
-
-```cpp
-#include <Engine.h>
-
-#include <iostream>
-
-class Game : public ExecutableClass {
- public:
-  Game() {
-    SDL_Init(SDL_INIT_EVERYTHING);
-    Logger::setLogLevel(LOG_LEVEL::PRIORITY); // set a log level to show
-    maxFPS = 120;
-
-    windowManager.reset(new WindowManager(
-        "Hello World!", {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED},
-        SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI));
-
-    int mainCharacterID = create_sprite(windowManager->getCenter();, {100, 100}, {0, 0}, {0, -1});
-
-    KeyboardManager::getInstance()->addListener(
-        SDL_SCANCODE_SPACE,
-        [mainCharacterID]() {
-          ObjectManager::getInstance()
-              ->getObject(mainCharacterID)
-              ->acceleration.y = 1;
-        },
-        true);
-  }
-
- public:
-  void mainloop() override { LOG_INFO("Running mainloop", LOG_LEVEL::LOW) }
-};
-
-int main() {
-  std::unique_ptr<Game> game;
-  game.reset(new Game());
-  start(game.get());
-  return 0;
-}
-```
+A complete example of a `main.cpp` file using the Micha Engine can be found in the file `main.cpp`

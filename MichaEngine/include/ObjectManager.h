@@ -16,6 +16,7 @@ class ObjectManager {
   int updateObject(int objId, WindowManager* window);
   int updateAllObjects(WindowManager* window);
   type::Object* getObject(int objId);
+  type::Sprite* getSprite(int objId);
   int getNumObjects();
 
   ~ObjectManager();

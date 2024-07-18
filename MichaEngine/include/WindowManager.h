@@ -33,11 +33,12 @@ class WindowManager {
   void setBackground(SDL_Texture *bkg);
   int draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst);
   int draw(type::Object *object);
-  int draw(type::Sprite *sprite);
 
   type::Vector2i getAbsolutePosition(type::Vector2i pos);
   type::Vector2i getCenter();
   type::Vector2i getSize();
+
+  SDL_Renderer *getRenderer();
 
   bool hasQuit();
 

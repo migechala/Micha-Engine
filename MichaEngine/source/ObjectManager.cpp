@@ -25,13 +25,19 @@ void ObjectManager::removeObject(type::Object* rmObject) {}
 void ObjectManager::removeObject(int objId) { objects[objId] = nullptr; }
 
 int ObjectManager::updateObject(int objId, WindowManager* window) {
-  auto obj = objects[objId];
-  if (obj->rising && obj->position.y >= window->getSize().y) {
-    obj->position.y = window->getSize().y;
+  type::Object* obj = objects[objId];
+  if (obj->rising && obj->position.y >= (window->getSize().y - obj->size.y -
+                                         obj->velocity.y)) {  // on upperbound
+    obj->position.y = window->getSize().y - obj->size.y;
     obj->velocity.y = 0;
-    LOG_INFO(std::to_string(window->getSize().y), LOG_LEVEL::PRIORITY);
-  } else if (obj->position.y <= 0) {
+  } else if (obj->position.y <= 0 - obj->velocity.y) {  // on the ground
+    obj->grounded = true;
     obj->position.y = 0;
+    if (obj->acceleration.y > 0) {
+      obj->velocity.y = 0;
+      obj->position.y = 1;
+      obj->grounded = false;
+    }
   } else {
     obj->position += obj->velocity;
     obj->velocity += obj->acceleration;
@@ -43,7 +49,9 @@ int ObjectManager::updateObject(int objId, WindowManager* window) {
   } else if (!obj->rising && obj->velocity.y > 0) {
     obj->rising = true;
   }
-
+  if (obj->isSprite()) {
+    reinterpret_cast<type::Sprite*>(obj)->updateTexture();
+  }
   return objId;
 }
 
@@ -55,6 +63,15 @@ int ObjectManager::updateAllObjects(WindowManager* window) {
 }
 
 type::Object* ObjectManager::getObject(int objId) { return objects[objId]; }
+
+type::Sprite* ObjectManager::getSprite(int objId) {
+  auto obj = objects[objId];
+  if (obj->isSprite()) {
+    return reinterpret_cast<type::Sprite*>(obj);
+  }
+  LOG_ERR("ATTEMPTED TO CALL getSprite WITH NON-SPRITE OBJECT")
+  return nullptr;
+}
 
 int ObjectManager::getNumObjects() { return objects.size(); }
 

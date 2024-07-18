@@ -23,23 +23,7 @@ struct Vector2i {
   Vector2i operator*(const Vector2i &change) const;
 };
 
-struct Vector2d {
-  double x, y;
-
-  Vector2d(double x, double y);
-
-  Vector2d operator+(const Vector2d &change) const;
-
-  void operator+=(const Vector2d &change);
-
-  Vector2d operator/(const Vector2d &change) const;
-  Vector2d operator*(const Vector2d &change) const;
-};
 struct Object {
-  Object(type::Vector2i position, type::Vector2i size, SDL_Color color);
-  Object(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
-         type::Vector2i acceleration, SDL_Color color);
-
   type::Vector2i position;
   type::Vector2i velocity;
   type::Vector2i acceleration;
@@ -48,11 +32,19 @@ struct Object {
   SDL_Rect src;
   SDL_Color color;
   bool rising;
+  bool grounded;
   bool animated;
+
+  Object(type::Vector2i position, type::Vector2i size, SDL_Color color);
+  Object(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
+         type::Vector2i acceleration, SDL_Color color);
+  virtual ~Object() = default;
+  virtual bool isSprite();
 };
 class Sprite : public Object {
-  int counter{};
-  std::vector<SDL_Texture *> textures;
+  std::vector<SDL_Texture *> spritesheets;
+  int spritesheetIndex;
+  type::Vector2i spriteSize;
 
  public:
   // Setter
@@ -63,20 +55,18 @@ class Sprite : public Object {
   void changePosition(Vector2i change);
 
   // Getter
-  type::Vector2i getPosition() const;
   SDL_Texture *getTexture();
-
   // Functions
-  int updateTexture();
+  void updateTexture();
+  void changeSpritesheet(int index);
+
+  bool isSprite() override;
 
   // Constructor
-  Sprite(type::Vector2i position, type::Vector2i size);
-  Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity);
-  Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
-         type::Vector2i acceleration);
   Sprite(type::Vector2i position, type::Vector2i size,
-         std::vector<SDL_Texture *> textures);
+         std::vector<SDL_Texture *> textures, type::Vector2i spriteSize);
   Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
-         type::Vector2i acceleration, std::vector<SDL_Texture *> textures);
+         type::Vector2i acceleration, std::vector<SDL_Texture *> textures,
+         type::Vector2i spriteSize);
 };
 }  // namespace type

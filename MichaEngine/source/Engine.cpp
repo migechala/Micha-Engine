@@ -30,7 +30,19 @@ void start(ExecutableClass* execute) {
 void start(std::unique_ptr<ExecutableClass> execute) { start(execute.get()); }
 
 int create_sprite(type::Vector2i position, type::Vector2i size,
-                  type::Vector2i velocity, type::Vector2i acceleration) {
+                  type::Vector2i velocity, type::Vector2i acceleration,
+                  SDL_Color color) {
   return ObjectManager::getInstance()->addObject(
-      new type::Sprite(position, size, velocity, acceleration));
+      new type::Object(position, size, velocity, acceleration, color));
+}
+
+int create_sprite(std::vector<SDL_Texture*> textures, type::Vector2i position,
+                  type::Vector2i spriteSize, type::Vector2i size,
+                  type::Vector2i velocity, type::Vector2i acceleration) {
+  if (textures.empty()) {
+    LOG_ERR("NO TEXTURES FOUND")
+    create_sprite(position, size, velocity, acceleration);
+  }
+  return ObjectManager::getInstance()->addObject(new type::Sprite(
+      position, size, velocity, acceleration, textures, spriteSize));
 }

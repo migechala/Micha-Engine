@@ -3,6 +3,7 @@
 //
 #include "WindowManager.h"
 
+#include <iostream>
 #include <string>
 
 #include "InternalWindow.h"
@@ -41,45 +42,34 @@ int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
                         const SDL_Rect *dst) {
   return SDL_RenderCopy(renderer.get(), txt, src, dst);
 }
+type::Vector2i WindowManager::getCenter() { return getSize() / 2; }
+type::Vector2i WindowManager::getSize() { return windowSize; }
+
+SDL_Renderer *WindowManager::getRenderer() { return renderer.get(); }
 
 type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
-  int h;
-  SDL_GetWindowSize(window.get(), &h, nullptr);
-  return {position.x, h - position.y};
+  return {position.x, (windowSize.y - position.y)};
 }
-type::Vector2i WindowManager::getCenter() { return windowSize / 2; }
-type::Vector2i WindowManager::getSize() { return windowSize; }
 int WindowManager::draw(type::Object *object) {
   SDL_Color oldColor;
 
   type::Vector2i pos = getAbsolutePosition(object->position);
-  object->dst.x = pos.x;
-  object->dst.y = pos.y;
+  object->dst.x = pos.x - object->size.x / 2;
+  object->dst.y = pos.y - object->size.y;
   LOG_INFO(std::to_string(object->dst.x), LOG_LEVEL::LOW);
   LOG_INFO(std::to_string(object->dst.y), LOG_LEVEL::LOW);
+  if (object->isSprite()) {
+    auto sprite = reinterpret_cast<type::Sprite *>(object);
+    LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
+    return SDL_RenderCopy(renderer.get(), sprite->getTexture(), &object->src,
+                          &object->dst);
+  }
 
   SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
                          &oldColor.a);
   SDL_SetRenderDrawColor(renderer.get(), object->color.r, object->color.g,
                          object->color.b, object->color.a);
   int ret = SDL_RenderFillRect(renderer.get(), &object->dst);
-  SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
-                         oldColor.a);
-  return ret;
-}
-
-int WindowManager::draw(type::Sprite *sprite) {
-  type::Vector2i pos = getAbsolutePosition(sprite->getPosition());
-  SDL_Rect realPosition = SDL_Rect({pos.x, pos.y});
-  if (sprite->getTexture()) {
-    return SDL_RenderCopy(renderer.get(), sprite->getTexture(), nullptr,
-                          &realPosition);
-  }
-  SDL_Color oldColor;
-  SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
-                         &oldColor.a);
-  SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255);
-  int ret = SDL_RenderFillRect(renderer.get(), &realPosition);
   SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
                          oldColor.a);
   return ret;
@@ -132,7 +122,7 @@ WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
                              Uint32 flag)
     : frameCount(0), windowSize(getMonitorSize()), imgui_open(true) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
-
+  windowSize.y -= 100;
   window.reset(SDL_CreateWindow(windowName.c_str(), pos.x, pos.y, windowSize.x,
                                 windowSize.y, flag),
                SDLDeleter());
@@ -150,6 +140,20 @@ WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
     LOG_ERR(err + SDL_GetError());
     exit(-1);
   }
+
+  int rw = 0, rh = 0;
+  SDL_GetRendererOutputSize(renderer.get(), &rw, &rh);
+  if (rw != windowSize.x) {
+    float widthScale = (float)rw / (float)windowSize.x;
+    float heightScale = (float)rh / (float)windowSize.y;
+
+    if (widthScale != heightScale) {
+      LOG_WARN("WARNING: width scale != height scale", LOG_LEVEL::PRIORITY);
+    }
+
+    SDL_RenderSetScale(renderer.get(), widthScale, heightScale);
+  }
+
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
