@@ -36,9 +36,10 @@ int create_sprite(type::Vector2i position, type::Vector2i size,
       new type::Object(position, size, velocity, acceleration, color));
 }
 
-int create_sprite(std::vector<SDL_Texture*> textures, type::Vector2i position,
-                  type::Vector2i spriteSize, type::Vector2i size,
-                  type::Vector2i velocity, type::Vector2i acceleration) {
+int create_sprite(std::vector<std::shared_ptr<SDL_Texture>> textures,
+                  type::Vector2i position, type::Vector2i spriteSize,
+                  type::Vector2i size, type::Vector2i velocity,
+                  type::Vector2i acceleration) {
   if (textures.empty()) {
     LOG_ERR("NO TEXTURES FOUND")
     create_sprite(position, size, velocity, acceleration);

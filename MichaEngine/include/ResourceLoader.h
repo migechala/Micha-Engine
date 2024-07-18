@@ -2,8 +2,11 @@
 
 #include <SDL2/SDL_system.h>
 
-#include <cstdio>
+#include <memory>
 #include <string>
+#include <vector>
+
+#include "SDLDeleter.h"
 
 class ResourceLoader {
   static ResourceLoader *instance;
@@ -11,6 +14,14 @@ class ResourceLoader {
  public:
   static ResourceLoader *getInstance();
 
-  static SDL_Texture *loadTexture(const std::string &location,
-                                  SDL_Renderer *renderer);
+  std::shared_ptr<SDL_Texture> loadTexture(SDL_Renderer *renderer,
+                                           const std::string &location);
+
+  template <class... Args>
+  std::vector<std::shared_ptr<SDL_Texture> > loadTextures(
+      SDL_Renderer *renderer, Args... fileNames) {
+    std::vector<std::shared_ptr<SDL_Texture> > textures;
+    (textures.push_back(loadTexture(renderer, fileNames)), ...);
+    return textures;
+  }
 };

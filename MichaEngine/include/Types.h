@@ -42,9 +42,10 @@ struct Object {
   virtual bool isSprite();
 };
 class Sprite : public Object {
-  std::vector<SDL_Texture *> spritesheets;
+  std::vector<std::shared_ptr<SDL_Texture>> spritesheets;
+  std::vector<type::Vector2i> cutOuts;
   int spritesheetIndex;
-  type::Vector2i spriteSize;
+  int currentCutIndex;
 
  public:
   // Setter
@@ -55,7 +56,8 @@ class Sprite : public Object {
   void changePosition(Vector2i change);
 
   // Getter
-  SDL_Texture *getTexture();
+  std::shared_ptr<SDL_Texture> getTexture();
+  std::vector<Vector2i> *getCutOuts();
   // Functions
   void updateTexture();
   void changeSpritesheet(int index);
@@ -64,9 +66,11 @@ class Sprite : public Object {
 
   // Constructor
   Sprite(type::Vector2i position, type::Vector2i size,
-         std::vector<SDL_Texture *> textures, type::Vector2i spriteSize);
+         std::vector<std::shared_ptr<SDL_Texture>> textures,
+         type::Vector2i spriteSize);
   Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
-         type::Vector2i acceleration, std::vector<SDL_Texture *> textures,
+         type::Vector2i acceleration,
+         std::vector<std::shared_ptr<SDL_Texture>> textures,
          type::Vector2i spriteSize);
 };
 }  // namespace type

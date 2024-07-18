@@ -9,6 +9,7 @@
 #include "InternalWindow.h"
 #include "Logger.h"
 #include "ObjectManager.h"
+#include "SDLDeleter.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
@@ -38,6 +39,12 @@ type::Vector2i WindowManager::getMonitorSize() {
   return {t_dm.w, t_dm.h};
 }
 
+void WindowManager::renderParallex() {
+  for (auto layer : background) {
+    SDL_RenderCopy(renderer.get(), layer.get(), NULL, NULL);
+  }
+}
+
 int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
                         const SDL_Rect *dst) {
   return SDL_RenderCopy(renderer.get(), txt, src, dst);
@@ -56,13 +63,12 @@ int WindowManager::draw(type::Object *object) {
   type::Vector2i pos = getAbsolutePosition(object->position);
   object->dst.x = pos.x - object->size.x / 2;
   object->dst.y = pos.y - object->size.y;
-  LOG_INFO(std::to_string(object->dst.x), LOG_LEVEL::LOW);
-  LOG_INFO(std::to_string(object->dst.y), LOG_LEVEL::LOW);
+
   if (object->isSprite()) {
     auto sprite = reinterpret_cast<type::Sprite *>(object);
     LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
-    return SDL_RenderCopy(renderer.get(), sprite->getTexture(), &object->src,
-                          &object->dst);
+    return SDL_RenderCopy(renderer.get(), sprite->getTexture().get(),
+                          &object->src, &object->dst);
   }
 
   SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
@@ -76,20 +82,19 @@ int WindowManager::draw(type::Object *object) {
 }
 
 void WindowManager::update() {
-  if (background) {
-    if (draw(background.get(), nullptr, nullptr) != 0) {
-      std::string err = "Draw BG error: ";
-      LOG_ERR(err + SDL_GetError());
-      exit(-1);
+  SDL_Color oldColor;
+  SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
+                         &oldColor.a);
+  SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255);
+  int ret = SDL_RenderFillRect(renderer.get(), NULL);
+  SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+                         oldColor.a);
+  if (!background.empty()) {
+    if (background.size() == 1) {
+      SDL_RenderCopy(renderer.get(), background[0].get(), NULL, NULL);
+    } else {
+      renderParallex();
     }
-  } else {
-    SDL_Color oldColor;
-    SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g,
-                           &oldColor.b, &oldColor.a);
-    SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255);
-    int ret = SDL_RenderFillRect(renderer.get(), NULL);
-    SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
-                           oldColor.a);
   }
   for (int i = 0; i < ObjectManager::getInstance()->getNumObjects(); ++i) {
     auto curObject = ObjectManager::getInstance()->getObject(i);
@@ -107,7 +112,16 @@ void WindowManager::update() {
 
   SDL_RenderPresent(renderer.get());
 }
-void WindowManager::setBackground(SDL_Texture *bkg) { background.reset(bkg); }
+void WindowManager::setBackground(std::shared_ptr<SDL_Texture> bkg) {
+  background.clear();
+  background.push_back(bkg);
+}
+
+void WindowManager::setParallex(
+    std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds,
+    std::vector<float> speeds) {
+  background = newBackgrounds;
+}
 
 WindowManager::~WindowManager() {
   SDL_DestroyRenderer(renderer.get());
