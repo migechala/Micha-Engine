@@ -34,6 +34,8 @@ struct Object {
   bool rising;
   bool grounded;
   bool animated;
+  double angle;
+  SDL_RendererFlip flip;
 
   Object(type::Vector2i position, type::Vector2i size, SDL_Color color);
   Object(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
@@ -44,6 +46,7 @@ struct Object {
 class Sprite : public Object {
   std::vector<std::shared_ptr<SDL_Texture>> spritesheets;
   std::vector<type::Vector2i> cutOuts;
+  std::vector<int> numSpritesPerSheet;
   int spritesheetIndex;
   int currentCutIndex;
 
@@ -67,10 +70,10 @@ class Sprite : public Object {
   // Constructor
   Sprite(type::Vector2i position, type::Vector2i size,
          std::vector<std::shared_ptr<SDL_Texture>> textures,
-         type::Vector2i spriteSize);
+         std::vector<int> numSpritesPerSheet, type::Vector2i spriteSize);
   Sprite(type::Vector2i position, type::Vector2i size, type::Vector2i velocity,
          type::Vector2i acceleration,
          std::vector<std::shared_ptr<SDL_Texture>> textures,
-         type::Vector2i spriteSize);
+         std::vector<int> numSpritesPerSheet, type::Vector2i spriteSize);
 };
 }  // namespace type

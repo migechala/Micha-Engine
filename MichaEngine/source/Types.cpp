@@ -94,10 +94,12 @@ bool type::Sprite::isSprite() { return true; }
 
 type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
                      std::vector<std::shared_ptr<SDL_Texture>> spritesheets,
+                     std::vector<int> numSpritesPerSheet,
                      type::Vector2i spriteSize)
     : spritesheetIndex(0),
       Object(position, size, {0, 0, 0, 0}),
       spritesheets(spritesheets),
+      numSpritesPerSheet(numSpritesPerSheet),
       currentCutIndex(0) {
   src = {0, 0, spriteSize.x, spriteSize.y};
 }
@@ -105,31 +107,20 @@ type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
 type::Sprite::Sprite(type::Vector2i position, type::Vector2i size,
                      type::Vector2i velocity, type::Vector2i acceleration,
                      std::vector<std::shared_ptr<SDL_Texture>> spritesheets,
+                     std::vector<int> numSpritesPerSheet,
                      type::Vector2i spriteSize)
     : spritesheetIndex(0),
       Object(position, size, velocity, acceleration, {0, 0, 0, 0}),
       spritesheets(spritesheets),
+      numSpritesPerSheet(numSpritesPerSheet),
       currentCutIndex(0) {
   src = {0, 0, spriteSize.x, spriteSize.y};
   int w, h;
   SDL_QueryTexture(getTexture().get(), NULL, NULL, &w, &h);
-  int x = 0, y = 0;
-  while (x <= w - spriteSize.x && y <= h - spriteSize.y) {
-    std::cout << x << ", " << y << std::endl;
-    cutOuts.push_back({x, y});
-    if (x + spriteSize.x == w) {
-      x = 0;
-      y += spriteSize.y;
-    } else {
-      x += spriteSize.x;
-    }
-  }
-  for (auto i : cutOuts) {
-    std::cout << i.x << ", " << i.y << " | ";
-  }
-  std::cout << std::endl;
-  cutOuts.pop_back();
-  for (auto i : cutOuts) {
-    std::cout << i.x << ", " << i.y << " | ";
+
+  int numColumns = w / spriteSize.x;
+  for (int i = 0; i < numSpritesPerSheet[spritesheetIndex]; ++i) {
+    cutOuts.push_back(
+        {(i % numColumns) * spriteSize.x, (i / numColumns) * spriteSize.y});
   }
 }

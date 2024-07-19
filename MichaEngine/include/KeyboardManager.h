@@ -18,10 +18,16 @@ class KeyboardManager {
                    bool repeatable = false);
   void removeListener(SDL_Scancode key);
   void printListner();
-
+  template <class... Args>
+  bool isNotPressed(Args... keys);
   bool isPressed(SDL_Scancode key);
   void update();
   void onListners();
   void offListners();
   ~KeyboardManager();
 };
+
+template <class... Args>
+inline bool KeyboardManager::isNotPressed(Args... keys) {
+  return ((... && !isPressed(keys)));
+}

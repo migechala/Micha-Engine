@@ -24,19 +24,17 @@ std::shared_ptr<SDL_Texture> ResourceLoader::loadTexture(
     LOG_ERR("Surface is null " + location + " >>> " + SDL_GetError());
     return nullptr;
   }
+  std::shared_ptr<SDL_Texture> texturePtr(
+      SDL_CreateTextureFromSurface(renderer, srf), SDLDeleter());
 
-  SDL_Texture *txtr = SDL_CreateTextureFromSurface(renderer, srf);
   SDL_FreeSurface(srf);
 
-  if (!txtr) {
+  if (!texturePtr) {
     LOG_ERR("Texture is null " + location + " >>> " + SDL_GetError());
     return nullptr;
   }
 
-  std::shared_ptr<SDL_Texture> texturePtr;
-
-  texturePtr.reset(txtr, SDLDeleter());
-  std::cout << "Loaded texture " << location << " to address: " << txtr
+  std::cout << "Loaded texture " << location << " to address: " << texturePtr
             << std::endl;
   return texturePtr;
 }

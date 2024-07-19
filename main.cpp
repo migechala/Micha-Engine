@@ -7,14 +7,11 @@ class Game : public ExecutableClass {
   Game() {
     SDL_Init(SDL_INIT_EVERYTHING);
     Logger::setLogLevel(LOG_LEVEL::PRIORITY);
-    maxFPS = 20;
+    maxFPS = 120;
 
     windowManager.reset(new WindowManager(
         "Test Engine", {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED},
         SDL_WINDOW_SHOWN));
-
-    // windowManager->setBackground(ResourceLoader::getInstance()->loadTexture(
-    // windowManager->getRenderer(), "../assets/background/9.png"));
 
     windowManager->setParallex(
         ResourceLoader::getInstance()->loadTextures(
@@ -28,40 +25,62 @@ class Game : public ExecutableClass {
     type::Vector2i offset = {100, windowManager->getCenter().y};
     mainCharacterID = create_sprite(
         ResourceLoader::getInstance()->loadTextures(
-            windowManager->getRenderer(), "../assets/character/man.png"),
-        offset, {32, 32}, {200, 200}, {0, 0}, {0, -1});
-
-    ObjectManager::getInstance()
-        ->getSprite(mainCharacterID)
-        ->getCutOuts()
-        ->pop_back();
-
+            windowManager->getRenderer(), "../assets/character/jetpack.png",
+            "../assets/character/running.png",
+            "../assets/character/standing.png"),
+        {15, 15}, offset, {692, 599}, {200, 200}, {0, 0}, {0, -1});
     KeyboardManager::getInstance()->addListener(
         SDL_SCANCODE_SPACE,
         [&]() {
-          if (ObjectManager::getInstance()
-                  ->getSprite(mainCharacterID)
-                  ->grounded) {
-            ObjectManager::getInstance()
-                ->getSprite(mainCharacterID)
-                ->velocity.y = 20;
-          }
+          ObjectManager::getInstance()
+              ->getSprite(mainCharacterID)
+              ->acceleration.y = 1;
         },
-        false);
+        true);
+    KeyboardManager::getInstance()->addListener(
+        SDL_SCANCODE_D,
+        [&]() {
+          ObjectManager::getInstance()
+              ->getSprite(mainCharacterID)
+              ->position.x += 5;
+          ObjectManager::getInstance()->getSprite(mainCharacterID)->flip =
+              SDL_FLIP_NONE;
+        },
+        true);
+    KeyboardManager::getInstance()->addListener(
+        SDL_SCANCODE_A,
+        [&]() {
+          ObjectManager::getInstance()
+              ->getSprite(mainCharacterID)
+              ->position.x -= 5;
+          ObjectManager::getInstance()->getSprite(mainCharacterID)->flip =
+              SDL_FLIP_HORIZONTAL;
+        },
+        true);
   }
 
  public:
   void mainloop() override {
     LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
-    // if (ObjectManager::getInstance()->getSprite(mainCharacterID)->grounded) {
-    //   ObjectManager::getInstance()
-    //       ->getSprite(mainCharacterID)
-    //       ->changeSpritesheet(1);
-    // } else {
-    //   ObjectManager::getInstance()
-    //       ->getSprite(mainCharacterID)
-    //       ->changeSpritesheet(0);
-    // }
+    if (ObjectManager::getInstance()->getSprite(mainCharacterID)->grounded) {
+      ObjectManager::getInstance()
+          ->getSprite(mainCharacterID)
+          ->changeSpritesheet(1);
+    } else {
+      ObjectManager::getInstance()
+          ->getSprite(mainCharacterID)
+          ->changeSpritesheet(0);
+    }
+    if (ObjectManager::getInstance()->getSprite(mainCharacterID)->grounded &&
+        (KeyboardManager::getInstance()->isNotPressed(
+             SDL_SCANCODE_A, SDL_SCANCODE_D, SDL_SCANCODE_SPACE) ||
+         (KeyboardManager::getInstance()->isNotPressed(SDL_SCANCODE_SPACE) &&
+          KeyboardManager::getInstance()->isPressed(SDL_SCANCODE_A) &&
+          KeyboardManager::getInstance()->isPressed(SDL_SCANCODE_D)))) {
+      ObjectManager::getInstance()
+          ->getSprite(mainCharacterID)
+          ->changeSpritesheet(2);
+    }
   }
 };
 

@@ -49,6 +49,12 @@ int ObjectManager::updateObject(int objId, WindowManager* window) {
   } else if (!obj->rising && obj->velocity.y > 0) {
     obj->rising = true;
   }
+  if (obj->position.x - obj->size.x / 2 <= 0) {  // left bound
+    obj->position.x = obj->size.x / 2;
+  } else if (obj->position.x + obj->size.x / 2 >=
+             window->getSize().x) {  // right bound
+    obj->position.x = window->getSize().x - obj->size.x / 2;
+  }
   if (obj->isSprite()) {
     reinterpret_cast<type::Sprite*>(obj)->updateTexture();
   }

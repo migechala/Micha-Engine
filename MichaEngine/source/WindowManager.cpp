@@ -67,6 +67,9 @@ int WindowManager::draw(type::Object *object) {
   if (object->isSprite()) {
     auto sprite = reinterpret_cast<type::Sprite *>(object);
     LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
+    return SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
+                            &object->src, &object->dst, object->angle, NULL,
+                            object->flip);
     return SDL_RenderCopy(renderer.get(), sprite->getTexture().get(),
                           &object->src, &object->dst);
   }
