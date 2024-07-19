@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#include "imgui_impl_sdl2.h"
+
 void start(ExecutableClass* execute) {
   LOG_INFO("Beginning Program...", LOG_LEVEL::PRIORITY);
   LOG_INFO("Max FPS Set to " + std::to_string(execute->maxFPS),
@@ -11,6 +13,7 @@ void start(ExecutableClass* execute) {
     execute->mainloop();
     // Constant Game Loop
     KeyboardManager::getInstance()->update();
+
     ObjectManager::getInstance()->updateAllObjects(
         execute->windowManager.get());
     execute->windowManager->update();

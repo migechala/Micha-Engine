@@ -6,16 +6,23 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 
-InternalWindow::InternalWindow(
-    std::shared_ptr<SDL_Renderer> rendererToAttatch) {
-  renderer.swap(rendererToAttatch);
+InternalWindow::InternalWindow(std::shared_ptr<SDL_Renderer> rendererToAttatch,
+                               std::shared_ptr<SDL_Window> windowToAttatch)
+    : renderer(rendererToAttatch) {
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  io = ImGui::GetIO();
+  (void)io;
+  io.ConfigFlags |=
+      ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+  SDL_RenderSetScale(renderer.get(), io.DisplayFramebufferScale.x,
+                     io.DisplayFramebufferScale.y);
+  ImGui::StyleColorsDark();
+  ImGui_ImplSDL2_InitForSDLRenderer(windowToAttatch.get(), renderer.get());
+  ImGui_ImplSDLRenderer2_Init(renderer.get());
 }
 
 int InternalWindow::update() {
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    ImGui_ImplSDL2_ProcessEvent(&event);
-  }
   ImGui_ImplSDLRenderer2_NewFrame();
   ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();

@@ -14,19 +14,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 
-bool WindowManager::hasQuit() {
-  while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT) {
-      return true;
-    }
-    if (event.type == SDL_KEYDOWN) {
-      if (event.key.keysym.sym == SDLK_ESCAPE) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
+bool WindowManager::hasQuit() { return quit; }
 
 type::Vector2i WindowManager::getMonitorSize() {
   SDL_DisplayMode t_dm;
@@ -40,8 +28,21 @@ type::Vector2i WindowManager::getMonitorSize() {
 }
 
 void WindowManager::renderParallex() {
-  for (auto layer : background) {
-    SDL_RenderCopy(renderer.get(), layer.get(), NULL, NULL);
+  for (size_t i = 0; i < background.size(); ++i) {
+    float offset = frameCount * backgroundSpeeds[i];
+
+    SDL_Rect destRect;
+    destRect.x = static_cast<int>(offset) % windowSize.x;
+    destRect.y = 0;
+    destRect.w = windowSize.x;
+    destRect.h = windowSize.y;
+
+    SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect);
+
+    if (destRect.x > 0) {
+      destRect.x -= windowSize.x;
+      SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect);
+    }
   }
 }
 
@@ -52,7 +53,9 @@ int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
 type::Vector2i WindowManager::getCenter() { return getSize() / 2; }
 type::Vector2i WindowManager::getSize() { return windowSize; }
 
-SDL_Renderer *WindowManager::getRenderer() { return renderer.get(); }
+std::shared_ptr<SDL_Renderer> WindowManager::getRenderer() { return renderer; }
+
+std::shared_ptr<SDL_Window> WindowManager::getWindow() { return window; }
 
 type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
   return {position.x, (windowSize.y - position.y)};
@@ -111,7 +114,19 @@ void WindowManager::update() {
   ++frameCount;
   //
   SDL_Event e;
-  // iw->update();
+  while (SDL_PollEvent(&event)) {
+    ImGui_ImplSDL2_ProcessEvent(&event);
+
+    if (event.type == SDL_QUIT) {
+      quit = true;
+    }
+    if (event.type == SDL_KEYDOWN) {
+      if (event.key.keysym.sym == SDLK_ESCAPE) {
+        quit = true;
+      }
+    }
+  }
+  internalWindow->update();
 
   SDL_RenderPresent(renderer.get());
 }
@@ -123,21 +138,23 @@ void WindowManager::setBackground(std::shared_ptr<SDL_Texture> bkg) {
 void WindowManager::setParallex(
     std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds,
     std::vector<float> speeds) {
+  if (newBackgrounds.size() != speeds.size()) {
+    LOG_ERR("Mismatch between number of parallax layers and speeds");
+    return;
+  }
   background = newBackgrounds;
+  backgroundSpeeds = speeds;
 }
 
 WindowManager::~WindowManager() {
   SDL_DestroyRenderer(renderer.get());
   SDL_DestroyWindow(window.get());
-  ImGui_ImplSDLRenderer2_Shutdown();
-  ImGui_ImplSDL2_Shutdown();
-  ImGui::DestroyContext();
   SDL_Quit();
 }
 
 WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
                              Uint32 flag)
-    : frameCount(0), windowSize(getMonitorSize()), imgui_open(true) {
+    : frameCount(0), windowSize(getMonitorSize()), quit(false) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
   windowSize.y -= 100;
   window.reset(SDL_CreateWindow(windowName.c_str(), pos.x, pos.y, windowSize.x,
@@ -158,31 +175,9 @@ WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
     exit(-1);
   }
 
-  int rw = 0, rh = 0;
-  SDL_GetRendererOutputSize(renderer.get(), &rw, &rh);
-  if (rw != windowSize.x) {
-    float widthScale = (float)rw / (float)windowSize.x;
-    float heightScale = (float)rh / (float)windowSize.y;
+  internalWindow =
+      std::make_unique<InternalWindow>(InternalWindow(renderer, window));
 
-    if (widthScale != heightScale) {
-      LOG_WARN("WARNING: width scale != height scale", LOG_LEVEL::PRIORITY);
-    }
-
-    SDL_RenderSetScale(renderer.get(), widthScale, heightScale);
-  }
-
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiIO &io = ImGui::GetIO();
-  (void)&io;
-  io.ConfigFlags |=
-      ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-  SDL_RenderSetScale(renderer.get(), io.DisplayFramebufferScale.x,
-                     io.DisplayFramebufferScale.y);
-  ImGui::StyleColorsDark();
-  ImGui_ImplSDL2_InitForSDLRenderer(window.get(), renderer.get());
-  ImGui_ImplSDLRenderer2_Init(renderer.get());
-  iw = new InternalWindow(renderer);
   SDL_Surface *color = SDL_CreateRGBSurfaceWithFormat(
       0, 100, 100, 8, SDL_PixelFormatEnum::SDL_PIXELFORMAT_BGR24);
   if (!color) {

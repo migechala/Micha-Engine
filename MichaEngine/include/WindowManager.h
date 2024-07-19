@@ -6,7 +6,6 @@
 #include <SDL2/SDL.h>
 
 #include "InternalWindow.h"
-#include "ResourceLoader.h"
 #include "Types.h"
 #include "imgui.h"
 
@@ -14,12 +13,13 @@ class WindowManager {
   float cameraX = 0;
   std::shared_ptr<SDL_Window> window;
   std::shared_ptr<SDL_Renderer> renderer;
+  std::unique_ptr<InternalWindow> internalWindow;
   std::vector<std::shared_ptr<SDL_Texture>> background;
+  std::vector<float> backgroundSpeeds;
   SDL_Event event;
   type::Vector2i windowSize;
   static type::Vector2i getMonitorSize();
-  InternalWindow *iw;
-  bool imgui_open;
+  bool quit;
 
   void renderParallex();
 
@@ -35,7 +35,8 @@ class WindowManager {
   type::Vector2i getCenter();
   type::Vector2i getSize();
 
-  SDL_Renderer *getRenderer();
+  std::shared_ptr<SDL_Renderer> getRenderer();
+  std::shared_ptr<SDL_Window> getWindow();
 
   bool hasQuit();
 
