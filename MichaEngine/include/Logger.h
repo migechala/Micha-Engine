@@ -7,18 +7,37 @@
 #include <fstream>
 #include <string>
 
+#include "imgui.h"
+
+struct LogApp {
+  ImGuiTextBuffer buf;
+  ImGuiTextFilter filter;
+  ImVector<int> lineOffsets;
+  bool autoScroll;
+
+  LogApp();
+
+  void clear();
+
+  void addLog(std::string fmt, ...);
+
+  void draw(const char* title, bool* p_open = NULL);
+};
 enum LOG_VALUES { INFO, WARNING, ERROR };
 enum LOG_LEVEL { PRIORITY, MEDIUM, LOW };
 
 namespace Logger {
 static std::ofstream file;
+static LogApp logApp;
 static int ll = LOG_LEVEL::LOW;
 void resetLogger();
-void writeToFile(const std::string &write);
+void writeToFile(const std::string& write);
+void writeToWindow(const std::string& write);
 void deleteLastLog();
 void setLogLevel(LOG_LEVEL level);
-void log(const std::string &msg, LOG_VALUES severity, LOG_LEVEL level,
-         const char *filename, int line);
+void showLogApp(bool* open_app);
+void log(const std::string& msg, LOG_VALUES severity, LOG_LEVEL level,
+         const char* filename, int line);
 };  // namespace Logger
 
 #define LOG_INFO(msg, level) \

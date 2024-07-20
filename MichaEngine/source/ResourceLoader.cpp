@@ -33,7 +33,9 @@ std::shared_ptr<SDL_Texture> ResourceLoader::loadTexture(
     LOG_ERR("Texture is null " + location + " >>> " + SDL_GetError());
     return nullptr;
   }
-
+  LOG_INFO("Loaded texture " + location + " to address: " +
+               std::to_string(reinterpret_cast<uintptr_t>(texturePtr.get())),
+           LOG_LEVEL::PRIORITY);
   std::cout << "Loaded texture " << location << " to address: " << texturePtr
             << std::endl;
   return texturePtr;

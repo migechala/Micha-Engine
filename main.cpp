@@ -20,7 +20,7 @@ class Game : public ExecutableClass {
             "../assets/background/4.png", "../assets/background/5.png",
             "../assets/background/6.png", "../assets/background/7.png",
             "../assets/background/8.png", "../assets/background/9.png"),
-        {0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f});
+        {0.9f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f});
 
     type::Vector2i offset = {100, windowManager->getCenter().y};
     mainCharacterID = create_sprite(ResourceLoader::getInstance()->loadTextures(
@@ -38,6 +38,7 @@ class Game : public ExecutableClass {
               ->acceleration.y = 1;
         },
         true);
+    windowManager->getInternalWindow()->showFPS();
   }
 
  public:

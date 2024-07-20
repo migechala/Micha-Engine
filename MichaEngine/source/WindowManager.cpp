@@ -57,6 +57,10 @@ std::shared_ptr<SDL_Renderer> WindowManager::getRenderer() { return renderer; }
 
 std::shared_ptr<SDL_Window> WindowManager::getWindow() { return window; }
 
+std::shared_ptr<InternalWindow> WindowManager::getInternalWindow() {
+  return internalWindow;
+}
+
 type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
   return {position.x, (windowSize.y - position.y)};
 }

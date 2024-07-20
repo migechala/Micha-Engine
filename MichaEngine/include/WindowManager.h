@@ -13,7 +13,7 @@ class WindowManager {
   float cameraX = 0;
   std::shared_ptr<SDL_Window> window;
   std::shared_ptr<SDL_Renderer> renderer;
-  std::unique_ptr<InternalWindow> internalWindow;
+  std::shared_ptr<InternalWindow> internalWindow;
   std::vector<std::shared_ptr<SDL_Texture>> background;
   std::vector<float> backgroundSpeeds;
   SDL_Event event;
@@ -37,6 +37,8 @@ class WindowManager {
 
   std::shared_ptr<SDL_Renderer> getRenderer();
   std::shared_ptr<SDL_Window> getWindow();
+
+  std::shared_ptr<InternalWindow> getInternalWindow();
 
   bool hasQuit();
 
