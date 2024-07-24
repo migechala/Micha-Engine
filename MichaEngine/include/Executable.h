@@ -3,6 +3,6 @@
 struct ExecutableClass {
   virtual void mainloop() = 0;
 
-  std::unique_ptr<WindowManager> windowManager;
+  std::shared_ptr<WindowManager> windowManager;
   int maxFPS = 60;
 };

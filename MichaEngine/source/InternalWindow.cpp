@@ -29,6 +29,7 @@ int InternalWindow::update() {
   if (show_debug) Logger::showLogApp(&show_debug);
 
   if (show_fps) {
+    ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
     ImGui::Begin("FPS", &show_fps,
                  ImGuiWindowFlags_NoTitleBar |
                      ImGuiWindowFlags_AlwaysAutoResize |

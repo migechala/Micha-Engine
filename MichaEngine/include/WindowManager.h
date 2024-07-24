@@ -29,7 +29,7 @@ class WindowManager {
   void setParallex(std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds,
                    std::vector<float> speeds);
   int draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst);
-  int draw(type::Object *object);
+  int draw(std::shared_ptr<type::Object> object);
 
   type::Vector2i getAbsolutePosition(type::Vector2i pos);
   type::Vector2i getCenter();

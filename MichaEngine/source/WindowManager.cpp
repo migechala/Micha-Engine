@@ -64,28 +64,32 @@ std::shared_ptr<InternalWindow> WindowManager::getInternalWindow() {
 type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
   return {position.x, (windowSize.y - position.y)};
 }
-int WindowManager::draw(type::Object *object) {
+int WindowManager::draw(std::shared_ptr<type::Object> object) {
+  if (!object) return -1;
   SDL_Color oldColor;
-
-  type::Vector2i pos = getAbsolutePosition(object->position);
-  object->dst.x = pos.x - object->size.x / 2;
-  object->dst.y = pos.y - object->size.y;
+  SDL_Rect dst;
+  type::Vector2i pos = getAbsolutePosition(object->getPosition());
+  dst.x = pos.x - object->getSize().x / 2;
+  dst.y = pos.y - object->getSize().y;
+  dst.w = object->getSize().x;
+  dst.h = object->getSize().y;
 
   if (object->isSprite()) {
-    auto sprite = reinterpret_cast<type::Sprite *>(object);
+    auto sprite = std::reinterpret_pointer_cast<type::Sprite>(object);
     LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
     return SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
-                            &object->src, &object->dst, object->angle, NULL,
-                            object->flip);
+                            &sprite->getSrc(), &dst, sprite->getAngle(), NULL,
+                            sprite->getFlip());
     return SDL_RenderCopy(renderer.get(), sprite->getTexture().get(),
-                          &object->src, &object->dst);
+                          &sprite->getSrc(), &dst);
   }
 
   SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
                          &oldColor.a);
-  SDL_SetRenderDrawColor(renderer.get(), object->color.r, object->color.g,
-                         object->color.b, object->color.a);
-  int ret = SDL_RenderFillRect(renderer.get(), &object->dst);
+  SDL_SetRenderDrawColor(renderer.get(), object->getColor().r,
+                         object->getColor().g, object->getColor().b,
+                         object->getColor().a);
+  int ret = SDL_RenderFillRect(renderer.get(), &dst);
   SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
                          oldColor.a);
   return ret;
@@ -109,6 +113,7 @@ void WindowManager::update() {
   for (int i = 0; i < ObjectManager::getInstance()->getNumObjects(); ++i) {
     auto curObject = ObjectManager::getInstance()->getObject(i);
     if (!curObject) continue;
+
     LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::LOW)
     if (draw(curObject) != 0) {
       LOG_ERR(SDL_GetError());

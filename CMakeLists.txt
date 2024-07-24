@@ -10,7 +10,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/MichaEngine/cmak
 find_package(SDL2 REQUIRED)
 find_package(SDL2TTF REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(OpenGL REQUIRED)
 
 
 include(MichaEngine/cmake/imgui.cmake)

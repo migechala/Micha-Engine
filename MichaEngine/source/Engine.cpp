@@ -14,8 +14,7 @@ void start(ExecutableClass* execute) {
     // Constant Game Loop
     KeyboardManager::getInstance()->update();
 
-    ObjectManager::getInstance()->updateAllObjects(
-        execute->windowManager.get());
+    ObjectManager::getInstance()->updateAllObjects(execute->windowManager);
     execute->windowManager->update();
     if (execute->windowManager->hasQuit()) {
       done = true;
@@ -30,23 +29,18 @@ void start(ExecutableClass* execute) {
   LOG_INFO("Program Finished.", LOG_LEVEL::PRIORITY);
 }
 
-int create_sprite(type::Vector2i position, type::Vector2i size,
-                  type::Vector2i velocity, type::Vector2i acceleration,
-                  SDL_Color color) {
-  return ObjectManager::getInstance()->addObject(
-      new type::Object(position, size, velocity, acceleration, color));
+std::shared_ptr<type::Object> create_object() {
+  return ObjectManager::getInstance()->addObject(new type::Object());
 }
 
-int create_sprite(std::vector<std::shared_ptr<SDL_Texture>> textures,
-                  std::vector<int> numberOfSpritesPerTexture,
-                  type::Vector2i position, type::Vector2i spriteSize,
-                  type::Vector2i size, type::Vector2i velocity,
-                  type::Vector2i acceleration) {
+std::shared_ptr<type::Object> create_object(
+    std::vector<std::shared_ptr<SDL_Texture>> textures,
+    std::vector<int> numberOfSpritesPerTexture, type::Vector2i spriteSize) {
   if (textures.empty()) {
     LOG_ERR("NO TEXTURES FOUND")
-    create_sprite(position, size, velocity, acceleration);
+    return create_object();
   }
+
   return ObjectManager::getInstance()->addObject(
-      new type::Sprite(position, size, velocity, acceleration, textures,
-                       numberOfSpritesPerTexture, spriteSize));
+      new type::Sprite(textures, numberOfSpritesPerTexture, spriteSize));
 }

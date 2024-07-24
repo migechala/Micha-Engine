@@ -4,19 +4,18 @@
 #include "Types.h"
 #include "WindowManager.h"
 class ObjectManager {
-  std::vector<type::Object*> objects;
+  std::vector<std::shared_ptr<type::Object>> objects;
   static ObjectManager* instance;
 
  public:
   ObjectManager();
   static ObjectManager* getInstance();
-  int addObject(type::Object* newObject);
-  void removeObject(type::Object* rmObject);
+  std::shared_ptr<type::Object> addObject(type::Object* newObject);
   void removeObject(int objId);
-  int updateObject(int objId, WindowManager* window);
-  int updateAllObjects(WindowManager* window);
-  type::Object* getObject(int objId);
-  type::Sprite* getSprite(int objId);
+  int updateObject(int objId, std::shared_ptr<WindowManager> window);
+  int updateAllObjects(std::shared_ptr<WindowManager> window);
+  std::shared_ptr<type::Object> getObject(int objId);
+  std::shared_ptr<type::Sprite> getSprite(int objId);
   int getNumObjects();
 
   ~ObjectManager();
