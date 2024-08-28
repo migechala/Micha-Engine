@@ -14,150 +14,234 @@
 #include "ObjectManager.h"
 #include "ResourceLoader.h"
 
-type::Vector2i::Vector2i(int x, int y) : x(x), y(y) {}
+eng::Vector2i::Vector2i() : x(0), y(0) {}
 
-type::Vector2i type::Vector2i::operator+(const type::Vector2i &change) const {
+eng::Vector2i::Vector2i(int x, int y) : x(x), y(y) {}
+
+eng::Vector2i eng::Vector2i::operator+(const eng::Vector2i &change) const {
   return {this->x + change.x, this->y + change.y};
 }
-type::Vector2i type::Vector2i::operator-(const type::Vector2i &change) const {
+eng::Vector2i eng::Vector2i::operator-(const eng::Vector2i &change) const {
   return {this->x - change.x, this->y - change.y};
 }
-type::Vector2i type::Vector2i::operator*(const Vector2i &change) const {
+eng::Vector2i eng::Vector2i::operator*(const Vector2i &change) const {
   return {this->x * change.x, this->y * change.y};
 }
 
-type::Vector2i type::Vector2i::operator/(const type::Vector2i &change) const {
+eng::Vector2i eng::Vector2i::operator/(const eng::Vector2i &change) const {
   return {this->x / change.x, this->y / change.y};
 }
 
-void type::Vector2i::operator+=(const type::Vector2i &change) {
+void eng::Vector2i::operator+=(const eng::Vector2i &change) {
   this->x += change.x;
   this->y += change.y;
 }
 
-type::Vector2i type::Vector2i::operator/(const int &change) const {
+eng::Vector2i eng::Vector2i::operator/(const int &change) const {
   return {this->x / change, this->y / change};
 }
+eng::Object::Object(ObjectOptions &options)
+    : p_position(options.getPosition()),
+      p_size(options.getSize()),
+      p_velocity(options.getVelocity()),
+      p_acceleration(options.getAcceleration()),
+      p_flip(options.getFlip()),
+      p_color(options.getColor()),
+      p_gravity(options.isGravityEnabled()) {}
 
-type::Object::Object()
-    : p_position({0, 0}),
-      p_size({100, 00}),
-      p_color({0, 0, 0, 0}),
-      p_velocity({0, 0}),
-      p_acceleration({0, 0}),
-      p_gravity(false),
-      p_rising(false),
-      p_grounded(false) {}
+bool eng::Object::isSprite() { return false; }
 
-bool type::Object::isSprite() { return false; }
-
-type::Object *type::Object::gravityOn() {
-  p_gravity = true;
-  return this;
+void eng::Object::setPosition(eng::Vector2i newPosition) {
+  p_position = newPosition;
 }
 
-type::Object *type::Object::setPosition(type::Vector2i newPos) {
-  p_position = newPos;
-  return this;
-}
-
-type::Object *type::Object::setSize(type::Vector2i newSize) {
-  p_size = newSize;
-  return this;
-}
-
-type::Object *type::Object::setVelocity(Vector2i newVelocity) {
+void eng::Object::setVelocity(eng::Vector2i newVelocity) {
   p_velocity = newVelocity;
-  return this;
 }
 
-type::Object *type::Object::setColor(SDL_Color color) {
-  p_color = color;
-  return this;
-}
-
-type::Object *type::Object::setAcceleration(Vector2i newAcceleration) {
+void eng::Object::setAcceleration(eng::Vector2i newAcceleration) {
   p_acceleration = newAcceleration;
-  return this;
 }
 
-type::Object *type::Object::setId(int id) {
-  p_id = id;
-  return this;
-}
+int eng::Object::getId() { return p_id; }
 
-int type::Object::getId() { return p_id; }
+eng::Vector2i eng::Object::getPosition() { return p_position; }
 
-type::Object *type::Object::setFlip(SDL_RendererFlip flip) {
-  p_flip = flip;
-  return this;
-}
+eng::Vector2i eng::Object::getSize() { return p_size; }
 
-type::Vector2i type::Object::getPosition() { return p_position; }
+eng::Vector2i eng::Object::getVelocity() { return p_velocity; }
 
-type::Vector2i type::Object::getSize() { return p_size; }
+eng::Vector2i eng::Object::getAcceleration() { return p_acceleration; }
 
-type::Vector2i type::Object::getVelocity() { return p_velocity; }
+SDL_Rect &eng::Sprite::getSrc() { return p_src; }
 
-type::Vector2i type::Object::getAcceleration() { return p_acceleration; }
+float eng::Object::getAngle() { return p_angle; }
 
-SDL_Rect &type::Sprite::getSrc() { return p_src; }
+SDL_RendererFlip eng::Object::getFlip() { return p_flip; }
 
-float type::Object::getAngle() { return p_angle; }
+SDL_Color eng::Object::getColor() { return p_color; }
 
-SDL_RendererFlip type::Object::getFlip() { return p_flip; }
+bool eng::Object::isRising() { return p_rising; }
 
-SDL_Color type::Object::getColor() { return p_color; }
+bool eng::Object::isGrounded() { return p_grounded; }
 
-bool type::Object::isRising() { return p_rising; }
+bool eng::Object::hasGravity() { return p_gravity; }
 
-bool type::Object::isGrounded() { return p_grounded; }
+void eng::Object::setRising(bool arg) { p_rising = arg; }
 
-bool type::Object::hasGravity() { return p_gravity; }
+void eng::Object::setGrounded(bool arg) { p_grounded = arg; }
 
-void type::Object::setRising(bool arg) { p_rising = arg; }
-
-void type::Object::setGrounded(bool arg) { p_grounded = arg; }
-
-void type::Sprite::setCutOut(type::Vector2i pos) {
+void eng::Sprite::setCutOut(eng::Vector2i pos) {
   p_src.x = pos.x;
   p_src.y = pos.y;
 }
 
-std::shared_ptr<SDL_Texture> type::Sprite::getTexture() {
+std::shared_ptr<SDL_Texture> eng::Sprite::getTexture() {
   return spritesheets[spritesheetIndex];
 }
 
-std::vector<type::Vector2i> *type::Sprite::getCutOuts() { return &cutOuts; }
-
-void type::Sprite::updateTexture() {
-  if (currentCutIndex >= cutOuts.size()) {
-    currentCutIndex = 0;
-  } else {
-    ++currentCutIndex;
-  }
-  setCutOut(cutOuts[currentCutIndex]);
+std::vector<eng::Vector2i> eng::Sprite::getCutOuts() {
+  return cutOuts[spritesheetIndex];
 }
 
-void type::Sprite::changeSpritesheet(int index) { spritesheetIndex = index; }
+void eng::Sprite::updateTexture(int frame) {
+  if (frame % framesPerUpdate == 0) {
+    if (currentCutIndex >= cutOuts[spritesheetIndex].size()) {
+      if (p_update) {
+        currentCutIndex = 0;
+      } else {
+        return;
+      }
+    } else {
+      ++currentCutIndex;
+    }
+    setCutOut(cutOuts[spritesheetIndex][currentCutIndex]);
+  }
+}
 
-bool type::Sprite::isSprite() { return true; }
+void eng::Sprite::changeSpritesheet(int index) {
+  if (spritesheetIndex != index) {
+    spritesheetIndex = index;
+    currentCutIndex = 0;
+  }
+}
 
-type::Sprite::Sprite(std::vector<std::shared_ptr<SDL_Texture>> spritesheets,
-                     std::vector<int> numSpritesPerSheet,
-                     type::Vector2i spriteSize)
+bool eng::Sprite::isSprite() { return true; }
+
+void eng::Sprite::toggleUpdate() { p_update = !p_update; }
+
+void eng::Sprite::setFramesPerUpdate(int fpu) { framesPerUpdate = fpu; }
+
+eng::Sprite::Sprite(SpriteOptions &options)
     : spritesheetIndex(0),
-      spritesheets(spritesheets),
-      p_src({0, 0, spriteSize.x, spriteSize.y}),
-      numSpritesPerSheet(numSpritesPerSheet),
-      currentCutIndex(0) {
-  setSize(spriteSize);
+      spritesheets(options.getTextures()),
+      Object(options),
+      p_src(
+          {0, 0, options.getRealSpriteSize().x, options.getRealSpriteSize().y}),
+      numSpritesPerSheet(options.getNumberOfSpritesPerSheet()),
+      currentCutIndex(0),
+      framesPerUpdate(options.getFramesPerTextureUpdate()),
+      p_update(true) {
   int w, h;
   SDL_QueryTexture(getTexture().get(), NULL, NULL, &w, &h);
-
-  int numColumns = w / spriteSize.x;
-  for (int i = 0; i < numSpritesPerSheet[spritesheetIndex]; ++i) {
-    cutOuts.push_back(
-        {(i % numColumns) * spriteSize.x, (i / numColumns) * spriteSize.y});
+  int numColumns = w / options.getRealSpriteSize().x;
+  cutOuts.resize(numSpritesPerSheet.size());
+  for (int i = 0; i < numSpritesPerSheet.size(); i++) {
+    for (int j = 0; j < numSpritesPerSheet[i]; j++) {
+      cutOuts[i].push_back({(j % numColumns) * options.getRealSpriteSize().x,
+                            (j / numColumns) * options.getRealSpriteSize().y});
+    }
   }
 }
+
+eng::ObjectOptions::ObjectOptions() {}
+
+eng::ObjectOptions &eng::ObjectOptions::setPosition(eng::Vector2i position) {
+  p_position = position;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::setSize(eng::Vector2i size) {
+  p_size = size;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::setVelocity(eng::Vector2i velocity) {
+  p_velocity = velocity;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::setAcceleration(
+    eng::Vector2i acceleration) {
+  p_acceleration = acceleration;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::setFlip(SDL_RendererFlip flip) {
+  p_flip = flip;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::setColor(SDL_Color color) {
+  p_color = color;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::enableGravity() {
+  p_gravity = true;
+  return (*this);
+}
+
+eng::Vector2i eng::ObjectOptions::getPosition() const { return p_position; }
+
+eng::Vector2i eng::ObjectOptions::getSize() const { return p_size; }
+
+eng::Vector2i eng::ObjectOptions::getVelocity() const { return p_velocity; }
+
+eng::Vector2i eng::ObjectOptions::getAcceleration() const {
+  return p_acceleration;
+}
+
+SDL_RendererFlip eng::ObjectOptions::getFlip() const { return p_flip; }
+
+SDL_Color eng::ObjectOptions::getColor() const { return p_color; }
+
+bool eng::ObjectOptions::isGravityEnabled() const { return p_gravity; }
+
+eng::SpriteOptions::SpriteOptions() {}
+
+eng::SpriteOptions &eng::SpriteOptions::setTextures(
+    std::vector<std::shared_ptr<SDL_Texture>> textures) {
+  p_textures = textures;
+  return (*this);
+}
+
+eng::SpriteOptions &eng::SpriteOptions::setNumberOfSpritesPerSheet(
+    std::vector<int> num) {
+  p_numSpritesPerSheet = num;
+  return (*this);
+}
+
+eng::SpriteOptions &eng::SpriteOptions::setRealSpriteSize(
+    eng::Vector2i spriteSize) {
+  p_spriteSize = spriteSize;
+  return (*this);
+}
+
+eng::SpriteOptions &eng::SpriteOptions::setFramesPerTextureUpdate(
+    int numFrames) {
+  p_fptu = numFrames;
+  return (*this);
+}
+
+int eng::SpriteOptions::getFramesPerTextureUpdate() { return p_fptu; }
+
+std::vector<int> eng::SpriteOptions::getNumberOfSpritesPerSheet() {
+  return p_numSpritesPerSheet;
+}
+
+std::vector<std::shared_ptr<SDL_Texture>> eng::SpriteOptions::getTextures() {
+  return p_textures;
+}
+
+eng::Vector2i eng::SpriteOptions::getRealSpriteSize() { return p_spriteSize; }

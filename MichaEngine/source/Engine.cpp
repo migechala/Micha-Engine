@@ -7,6 +7,7 @@ void start(ExecutableClass* execute) {
   LOG_INFO("Max FPS Set to " + std::to_string(execute->maxFPS),
            LOG_LEVEL::MEDIUM);
   //
+  int frame = 0;
   bool done = false;
   while (!done) {
     Uint32 start = SDL_GetPerformanceCounter();
@@ -14,7 +15,8 @@ void start(ExecutableClass* execute) {
     // Constant Game Loop
     KeyboardManager::getInstance()->update();
 
-    ObjectManager::getInstance()->updateAllObjects(execute->windowManager);
+    ObjectManager::getInstance()->updateAllObjects(execute->windowManager,
+                                                   frame);
     execute->windowManager->update();
     if (execute->windowManager->hasQuit()) {
       done = true;
@@ -24,23 +26,23 @@ void start(ExecutableClass* execute) {
     float elapsedMS =
         (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
     SDL_Delay(floor(1000.00f / execute->maxFPS - elapsedMS));
+    frame++;
+    if (frame == execute->maxFPS) frame = 0;
   }
 
   LOG_INFO("Program Finished.", LOG_LEVEL::PRIORITY);
 }
 
-std::shared_ptr<type::Object> create_object() {
-  return ObjectManager::getInstance()->addObject(new type::Object());
+int create_object(eng::ObjectOptions& options) {
+  return ObjectManager::getInstance()->addObject(
+      std::make_shared<eng::Object>(options));
 }
 
-std::shared_ptr<type::Object> create_object(
-    std::vector<std::shared_ptr<SDL_Texture>> textures,
-    std::vector<int> numberOfSpritesPerTexture, type::Vector2i spriteSize) {
-  if (textures.empty()) {
+int create_sprite(eng::SpriteOptions& options) {
+  if (options.getTextures().empty()) {
     LOG_ERR("NO TEXTURES FOUND")
-    return create_object();
   }
+  auto obj = std::make_shared<eng::Sprite>(options);
 
-  return ObjectManager::getInstance()->addObject(
-      new type::Sprite(textures, numberOfSpritesPerTexture, spriteSize));
+  return ObjectManager::getInstance()->addObject(obj);
 }

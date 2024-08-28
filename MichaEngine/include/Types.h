@@ -7,10 +7,11 @@
 
 #include <vector>
 
-namespace type {
+namespace eng {
 struct Vector2i {
   int x, y;
 
+  Vector2i();
   Vector2i(int x, int y);
 
   Vector2i operator+(const Vector2i &change) const;
@@ -22,13 +23,64 @@ struct Vector2i {
   Vector2i operator/(const int &change) const;
   Vector2i operator*(const Vector2i &change) const;
 };
+class ObjectOptions {
+  eng::Vector2i p_position;
+  eng::Vector2i p_size;
+  eng::Vector2i p_velocity;
+  eng::Vector2i p_acceleration;
+  SDL_RendererFlip p_flip;
+  SDL_Color p_color;
+  bool p_gravity;
+
+ public:
+  ObjectOptions();
+  // Builder
+  ObjectOptions &setPosition(eng::Vector2i position);
+  ObjectOptions &setSize(eng::Vector2i size);
+  ObjectOptions &setVelocity(eng::Vector2i velocity);
+  ObjectOptions &setAcceleration(eng::Vector2i acceleration);
+  ObjectOptions &setFlip(SDL_RendererFlip flip);
+  ObjectOptions &setColor(SDL_Color color);
+  ObjectOptions &enableGravity();
+
+  // Getters
+  Vector2i getPosition() const;
+  Vector2i getSize() const;
+  Vector2i getVelocity() const;
+  Vector2i getAcceleration() const;
+  SDL_RendererFlip getFlip() const;
+  SDL_Color getColor() const;
+  bool isGravityEnabled() const;
+};
+class SpriteOptions : public ObjectOptions {
+  std::vector<std::shared_ptr<SDL_Texture>> p_textures;
+  std::vector<int> p_numSpritesPerSheet;
+  eng::Vector2i p_spriteSize;
+  int p_fptu;
+
+ public:
+  SpriteOptions();
+  // Setters
+  SpriteOptions &setTextures(
+      std::vector<std::shared_ptr<SDL_Texture>> textures);
+  SpriteOptions &setNumberOfSpritesPerSheet(std::vector<int> num);
+  SpriteOptions &setRealSpriteSize(eng::Vector2i spriteSize);
+  SpriteOptions &setFramesPerTextureUpdate(int numFrames);
+  // Getters
+
+  int getFramesPerTextureUpdate();
+
+  std::vector<int> getNumberOfSpritesPerSheet();
+  std::vector<std::shared_ptr<SDL_Texture>> getTextures();
+  eng::Vector2i getRealSpriteSize();
+};
 
 class Object {
   int p_id;
-  type::Vector2i p_position;
-  type::Vector2i p_velocity;
-  type::Vector2i p_acceleration;
-  type::Vector2i p_size;
+  eng::Vector2i p_position;
+  eng::Vector2i p_velocity;
+  eng::Vector2i p_acceleration;
+  eng::Vector2i p_size;
   SDL_Color p_color;
   bool p_gravity;
   bool p_rising;
@@ -38,27 +90,20 @@ class Object {
   SDL_RendererFlip p_flip;
 
  public:
-  // Object(type::Vector2i position, type::Vector2i size, SDL_Color color);
-  Object();
+  Object(ObjectOptions &options);
   virtual ~Object() = default;
   virtual bool isSprite();
 
-  // Builder
-  Object *gravityOn();
-  Object *setVelocity(type::Vector2i velocity);
-  Object *setAcceleration(type::Vector2i acceleration);
-  Object *setPosition(Vector2i newPos);
-  Object *setSize(Vector2i newSize);
-  Object *setColor(SDL_Color color);
-  Object *setId(int id);
-  Object *setFlip(SDL_RendererFlip flip);
-
+  // Setters
+  void setPosition(eng::Vector2i newPosition);
+  void setVelocity(eng::Vector2i newVelocity);
+  void setAcceleration(eng::Vector2i newAcceleration);
   // Getter
   int getId();
-  type::Vector2i getPosition();
-  type::Vector2i getSize();
-  type::Vector2i getVelocity();
-  type::Vector2i getAcceleration();
+  eng::Vector2i getPosition();
+  eng::Vector2i getSize();
+  eng::Vector2i getVelocity();
+  eng::Vector2i getAcceleration();
 
   float getAngle();
 
@@ -73,30 +118,32 @@ class Object {
   void setRising(bool arg);
   void setGrounded(bool arg);
 };
-//
 class Sprite : public Object {
   std::vector<std::shared_ptr<SDL_Texture>> spritesheets;
-  std::vector<type::Vector2i> cutOuts;
+  std::vector<std::vector<eng::Vector2i>> cutOuts;
   std::vector<int> numSpritesPerSheet;
   int spritesheetIndex;
   int currentCutIndex;
+  int framesPerUpdate;
   SDL_Rect p_src;
-  void setCutOut(type::Vector2i pos);
+  bool p_update;
+  void setCutOut(eng::Vector2i pos);
 
  public:
   // Getter
   std::shared_ptr<SDL_Texture> getTexture();
-  std::vector<Vector2i> *getCutOuts();
+  std::vector<Vector2i> getCutOuts();
   // Functions
-  void updateTexture();
+  void updateTexture(int frame);
   void changeSpritesheet(int index);
-
   bool isSprite() override;
+  void toggleUpdate();
+  void setFramesPerUpdate(int fpu);
 
   SDL_Rect &getSrc();
 
   // Constructor
-  Sprite(std::vector<std::shared_ptr<SDL_Texture>> textures,
-         std::vector<int> numSpritesPerSheet, type::Vector2i spriteSize);
+  Sprite(SpriteOptions &options);
 };
-}  // namespace type
+
+}  // namespace eng

@@ -4,18 +4,19 @@
 #include "Types.h"
 #include "WindowManager.h"
 class ObjectManager {
-  std::vector<std::shared_ptr<type::Object>> objects;
+  std::vector<std::shared_ptr<eng::Object>> objects;
   static ObjectManager* instance;
 
  public:
   ObjectManager();
   static ObjectManager* getInstance();
-  std::shared_ptr<type::Object> addObject(type::Object* newObject);
+  int addObject(std::shared_ptr<eng::Object> newObject);
   void removeObject(int objId);
-  int updateObject(int objId, std::shared_ptr<WindowManager> window);
-  int updateAllObjects(std::shared_ptr<WindowManager> window);
-  std::shared_ptr<type::Object> getObject(int objId);
-  std::shared_ptr<type::Sprite> getSprite(int objId);
+  int updateObject(int objId, int frame, std::shared_ptr<WindowManager> window);
+  int updateAllObjects(std::shared_ptr<WindowManager> window, int frame);
+  std::shared_ptr<eng::Object> getObject(int objId);
+  std::shared_ptr<eng::Sprite> getSprite(int objId);
+  bool collide(int idA, int idB);
   int getNumObjects();
 
   ~ObjectManager();

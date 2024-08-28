@@ -16,7 +16,7 @@
 
 bool WindowManager::hasQuit() { return quit; }
 
-type::Vector2i WindowManager::getMonitorSize() {
+eng::Vector2i WindowManager::getMonitorSize() {
   SDL_DisplayMode t_dm;
   if (SDL_GetCurrentDisplayMode(0, &t_dm) != 0) {
     std::string err = "DP error: ";
@@ -39,8 +39,8 @@ void WindowManager::renderParallex() {
 
     SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect);
 
-    if (destRect.x > 0) {
-      destRect.x -= windowSize.x;
+    if (destRect.x < 0) {
+      destRect.x += windowSize.x;
       SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect);
     }
   }
@@ -50,8 +50,8 @@ int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
                         const SDL_Rect *dst) {
   return SDL_RenderCopy(renderer.get(), txt, src, dst);
 }
-type::Vector2i WindowManager::getCenter() { return getSize() / 2; }
-type::Vector2i WindowManager::getSize() { return windowSize; }
+eng::Vector2i WindowManager::getCenter() { return getSize() / 2; }
+eng::Vector2i WindowManager::getSize() { return windowSize; }
 
 std::shared_ptr<SDL_Renderer> WindowManager::getRenderer() { return renderer; }
 
@@ -61,21 +61,21 @@ std::shared_ptr<InternalWindow> WindowManager::getInternalWindow() {
   return internalWindow;
 }
 
-type::Vector2i WindowManager::getAbsolutePosition(type::Vector2i position) {
+eng::Vector2i WindowManager::getAbsolutePosition(eng::Vector2i position) {
   return {position.x, (windowSize.y - position.y)};
 }
-int WindowManager::draw(std::shared_ptr<type::Object> object) {
+int WindowManager::draw(std::shared_ptr<eng::Object> object) {
   if (!object) return -1;
   SDL_Color oldColor;
   SDL_Rect dst;
-  type::Vector2i pos = getAbsolutePosition(object->getPosition());
+  eng::Vector2i pos = getAbsolutePosition(object->getPosition());
   dst.x = pos.x - object->getSize().x / 2;
   dst.y = pos.y - object->getSize().y;
   dst.w = object->getSize().x;
   dst.h = object->getSize().y;
 
   if (object->isSprite()) {
-    auto sprite = std::reinterpret_pointer_cast<type::Sprite>(object);
+    auto sprite = std::reinterpret_pointer_cast<eng::Sprite>(object);
     LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
     return SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
                             &sprite->getSrc(), &dst, sprite->getAngle(), NULL,
@@ -161,7 +161,7 @@ WindowManager::~WindowManager() {
   SDL_Quit();
 }
 
-WindowManager::WindowManager(const std::string &windowName, type::Vector2i pos,
+WindowManager::WindowManager(const std::string &windowName, eng::Vector2i pos,
                              Uint32 flag)
     : frameCount(0), windowSize(getMonitorSize()), quit(false) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);

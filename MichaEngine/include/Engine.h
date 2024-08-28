@@ -11,8 +11,6 @@
 #include "WindowManager.h"
 void start(ExecutableClass* execute);
 
-std::shared_ptr<type::Object> create_object();
 //
-std::shared_ptr<type::Object> create_object(
-    std::vector<std::shared_ptr<SDL_Texture>> textures,
-    std::vector<int> numberOfSpritesPerTexture, type::Vector2i spriteSize);
+int create_object(eng::ObjectOptions& options);
+int create_sprite(eng::SpriteOptions& options);

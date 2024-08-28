@@ -50,7 +50,7 @@ void Logger::log(const std::string& msg, LOG_VALUES severity, LOG_LEVEL level,
   _msg.append(filename);
   _msg.append(":");
   _msg.append(std::to_string(line));
-  // std::cout << _msg << std::endl;
+  std::cout << _msg << std::endl;
   writeToWindow(_msg + "\n");
 }
 

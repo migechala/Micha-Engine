@@ -13,23 +13,19 @@ ObjectManager* ObjectManager::getInstance() {
   return instance;
 }
 
-std::shared_ptr<type::Object> ObjectManager::addObject(
-    type::Object* newObject) {
+int ObjectManager::addObject(std::shared_ptr<eng::Object> newObject) {
   int newId = objects.size();
-
   LOG_INFO("Adding new object with id: " + std::to_string(newId),
-           LOG_LEVEL::PRIORITY);
-  std::shared_ptr<type::Object> obj(newObject);
-  obj->setId(newId);
-  objects.emplace_back(obj);
-  return obj;
+           LOG_LEVEL::MEDIUM);
+  objects.emplace_back(newObject);
+  return newId;
 }
 
 void ObjectManager::removeObject(int objId) { objects[objId] = nullptr; }
 
-int ObjectManager::updateObject(int objId,
+int ObjectManager::updateObject(int objId, int frame,
                                 std::shared_ptr<WindowManager> window) {
-  std::shared_ptr<type::Object> obj = objects[objId];
+  std::shared_ptr<eng::Object> obj = objects[objId];
   if (!obj) return objId;
   if (obj->isRising() &&
       obj->getPosition().y >= (window->getSize().y - obj->getSize().y -
@@ -66,29 +62,58 @@ int ObjectManager::updateObject(int objId,
   //   obj->position.x = window->getSize().x - obj->size.x / 2;
   // }
   if (obj->isSprite()) {
-    std::reinterpret_pointer_cast<type::Sprite>(obj)->updateTexture();
+    std::reinterpret_pointer_cast<eng::Sprite>(obj)->updateTexture(frame);
   }
   return objId;
 }
 
-int ObjectManager::updateAllObjects(std::shared_ptr<WindowManager> window) {
+int ObjectManager::updateAllObjects(std::shared_ptr<WindowManager> window,
+                                    int frame) {
   for (int i = 0; i < objects.size(); ++i) {
-    updateObject(i, window);
+    updateObject(i, frame, window);
   }
   return objects.size();
 }
 
-std::shared_ptr<type::Object> ObjectManager::getObject(int objId) {
+std::shared_ptr<eng::Object> ObjectManager::getObject(int objId) {
   return objects[objId];
 }
 
-std::shared_ptr<type::Sprite> ObjectManager::getSprite(int objId) {
+std::shared_ptr<eng::Sprite> ObjectManager::getSprite(int objId) {
   auto obj = objects[objId];
   if (obj && obj->isSprite()) {
-    return std::reinterpret_pointer_cast<type::Sprite>(obj);
+    return std::reinterpret_pointer_cast<eng::Sprite>(obj);
   }
   LOG_ERR("ATTEMPTED TO CALL getSprite WITH NON-SPRITE OBJECT")
   return nullptr;
+}
+
+bool ObjectManager::collide(int idA, int idB) {
+  if (!objects[idB]) return false;
+  auto objectA = getObject(idA);
+  auto objectB = getObject(idB);
+  int leftA, leftB;
+  int rightA, rightB;
+  int topA, topB;
+  int bottomA, bottomB;
+
+  // Calculate A
+  leftA = objectA->getPosition().x - objectA->getSize().x / 2;
+  rightA = leftA + objectA->getSize().x;
+  topA = objectA->getPosition().y + objectA->getSize().y;
+  bottomA = objectA->getPosition().y;
+
+  // Calculate B
+  leftB = objectB->getPosition().x - objectB->getSize().x / 2;
+  rightB = leftB + objectB->getSize().x;
+  topB = objectB->getPosition().y + objectB->getSize().y;
+  bottomB = objectB->getPosition().y;
+
+  if (bottomA >= topB) return false;
+  if (topA <= bottomB) return false;
+  if (rightA <= leftB) return false;
+  if (leftA >= rightB) return false;
+  return true;
 }
 
 int ObjectManager::getNumObjects() { return objects.size(); }

@@ -17,8 +17,8 @@ class WindowManager {
   std::vector<std::shared_ptr<SDL_Texture>> background;
   std::vector<float> backgroundSpeeds;
   SDL_Event event;
-  type::Vector2i windowSize;
-  static type::Vector2i getMonitorSize();
+  eng::Vector2i windowSize;
+  static eng::Vector2i getMonitorSize();
   bool quit;
 
   void renderParallex();
@@ -29,11 +29,11 @@ class WindowManager {
   void setParallex(std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds,
                    std::vector<float> speeds);
   int draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst);
-  int draw(std::shared_ptr<type::Object> object);
+  int draw(std::shared_ptr<eng::Object> object);
 
-  type::Vector2i getAbsolutePosition(type::Vector2i pos);
-  type::Vector2i getCenter();
-  type::Vector2i getSize();
+  eng::Vector2i getAbsolutePosition(eng::Vector2i pos);
+  eng::Vector2i getCenter();
+  eng::Vector2i getSize();
 
   std::shared_ptr<SDL_Renderer> getRenderer();
   std::shared_ptr<SDL_Window> getWindow();
@@ -44,7 +44,7 @@ class WindowManager {
 
   void update();
 
-  WindowManager(const std::string &windowName, type::Vector2i pos, Uint32 flag);
+  WindowManager(const std::string &windowName, eng::Vector2i pos, Uint32 flag);
 
   ~WindowManager();
 };
