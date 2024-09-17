@@ -100,14 +100,14 @@ bool ObjectManager::collide(int idA, int idB) {
   // Calculate A
   leftA = objectA->getPosition().x - objectA->getSize().x / 2;
   rightA = leftA + objectA->getSize().x;
-  topA = objectA->getPosition().y + objectA->getSize().y;
-  bottomA = objectA->getPosition().y;
+  topA = objectA->getPosition().y + objectA->getSize().y / 2;
+  bottomA = objectA->getPosition().y - objectA->getSize().y / 2;
 
   // Calculate B
   leftB = objectB->getPosition().x - objectB->getSize().x / 2;
   rightB = leftB + objectB->getSize().x;
-  topB = objectB->getPosition().y + objectB->getSize().y;
-  bottomB = objectB->getPosition().y;
+  topB = objectB->getPosition().y + objectB->getSize().y / 2;
+  bottomB = objectB->getPosition().y - objectB->getSize().y / 2;
 
   if (bottomA >= topB) return false;
   if (topA <= bottomB) return false;

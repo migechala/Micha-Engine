@@ -1,3 +1,5 @@
+#include <random>
+
 #include "Engine.h"
 
 class Game : public ExecutableClass {
@@ -5,6 +7,7 @@ class Game : public ExecutableClass {
   eng::SpriteOptions bulletOptions;
   bool characterDead;
   bool changedToEnd = false;
+  std::random_device dev;
 
  public:
   Game() : characterDead(false) {
@@ -57,6 +60,15 @@ class Game : public ExecutableClass {
         true);
     windowManager->getInternalWindow()->showFPS();
   }
+  int new_random(int lower, int upper) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    gen.seed(static_cast<unsigned long>(
+        std::chrono::system_clock::now().time_since_epoch().count()));
+
+    std::uniform_int_distribution<> distrib(lower, upper);
+    return distrib(gen);
+  }
 
  public:
   void mainloop() override {
@@ -74,9 +86,12 @@ class Game : public ExecutableClass {
             ->getSprite(mainCharacterID)
             ->changeSpritesheet(0);
       }
-      if (projFrame == 100) {
+      if (projFrame == 50) {
         projFrame = 0;
         create_sprite(bulletOptions);
+        bulletOptions.setPosition(
+            {bulletOptions.getPosition().x,
+             new_random(10, windowManager->getSize().y - 10)});
       }
     } else {
       if (!changedToEnd) {
