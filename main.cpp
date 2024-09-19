@@ -89,9 +89,10 @@ class Game : public ExecutableClass {
       if (projFrame == 50) {
         projFrame = 0;
         create_sprite(bulletOptions);
-        bulletOptions.setPosition(
-            {bulletOptions.getPosition().x,
-             new_random(10, windowManager->getSize().y - 10)});
+        bulletOptions
+            .setPosition({bulletOptions.getPosition().x,
+                          new_random(10, windowManager->getSize().y - 10)})
+            .setVelocity({new_random(-20, -1), 0});
       }
     } else {
       if (!changedToEnd) {
