@@ -16,8 +16,8 @@ include(MichaEngine/cmake/imgui.cmake)
 
 
 include_directories(
-    "/opt/homebrew/Cellar/sdl2/2.30.3/include"
-    "/opt/homebrew/Cellar/sdl2_image/2.8.2_1/include"
+    "/opt/homebrew/Cellar/sdl2/2.30.10/include"
+    "/opt/homebrew/Cellar/sdl2_image/2.8.2_2/include"
     "/usr/include/SDL2/"
     ${SDL2TTF_INCLUDE_DIR}
 )

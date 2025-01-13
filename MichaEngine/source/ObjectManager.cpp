@@ -3,6 +3,7 @@
 #include "Logger.h"
 #include "WindowManager.h"
 ObjectManager* ObjectManager::instance = nullptr;
+bool ObjectManager::drawDebug = false;
 
 ObjectManager::ObjectManager() {}
 
@@ -117,5 +118,7 @@ bool ObjectManager::collide(int idA, int idB) {
 }
 
 int ObjectManager::getNumObjects() { return objects.size(); }
+
+void ObjectManager::setDebug(bool dbg) { drawDebug = dbg; }
 
 ObjectManager::~ObjectManager() { delete instance; }

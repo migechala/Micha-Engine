@@ -9,6 +9,9 @@
 #include "InternalWindow.h"
 #include "Logger.h"
 #include "ObjectManager.h"
+#include "ResourceLoader.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_render.h"
 #include "SDLDeleter.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -153,6 +156,12 @@ void WindowManager::setParallex(
   }
   background = newBackgrounds;
   backgroundSpeeds = speeds;
+}
+
+void WindowManager::setTiles(std::string file_path,
+                             std::vector<std::vector<int>> tiles,
+                             eng::Vector2i size) {
+  auto tilesImage = ResourceLoader::loadTexture(getRenderer(), file_path);
 }
 
 WindowManager::~WindowManager() {
