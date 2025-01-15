@@ -142,6 +142,10 @@ void WindowManager::update() {
 
   SDL_RenderPresent(renderer.get());
 }
+void WindowManager::setSize(eng::Vector2i newSize) {
+  windowSize = newSize;
+  SDL_SetWindowSize(window.get(), newSize.x, newSize.y);
+}
 void WindowManager::setBackground(std::shared_ptr<SDL_Texture> bkg) {
   background.clear();
   background.push_back(bkg);

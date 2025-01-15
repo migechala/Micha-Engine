@@ -36,6 +36,7 @@ class WindowManager {
   int frameCount;
 
   // Public methods
+  void setSize(eng::Vector2i newSize);
   void setBackground(std::shared_ptr<SDL_Texture> bkg);
   void setParallex(std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds,
                    std::vector<float> speeds);

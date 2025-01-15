@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "Types.h"
-#include "WindowManager.h"
 
 class ObjectManager {
  private:
@@ -15,7 +14,7 @@ class ObjectManager {
 
  public:
   // Frame size used for position calculations
-  const eng::Vector2i frameSize = {1920, 1080};
+  eng::Vector2i frameSize = {0, 0};
   // Constructor
   ObjectManager();
 
@@ -38,6 +37,9 @@ class ObjectManager {
   // Debugging and utility methods
   int getNumObjects();
   void setDebug(bool dbg);
+
+  // Update Frame Size
+  void updateFrameSize(eng::Vector2i newSize);
 
   // Destructor
   ~ObjectManager();
