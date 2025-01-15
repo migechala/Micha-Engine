@@ -3,16 +3,51 @@
 #include "Engine.h"
 
 class Game : public MichaApp {
+ private:
   int mainCharacterID;
   eng::SpriteOptions bulletOptions;
   bool characterDead;
   bool changedToEnd = false;
   std::random_device dev;
+  static constexpr int bulletSpawnFrameInterval = 50;
 
  public:
   Game() : characterDead(false) {
-    Logger::setLogLevel(LOG_LEVEL::PRIORITY);
+    initializeLogger();
+    initializeWindow();
+    initializeParallaxBackground();
+    initializeBulletOptions();
+    initializeMainCharacter();
+    setupInputListeners();
+    windowManager->getInternalWindow()->showFPS();
+  }
+
+  void mainloop() override {
+    LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
+    static int projFrame = 0;
+
+    if (!characterDead) {
+      handleCharacterAnimation();
+      handleBulletSpawning(projFrame);
+    } else if (!changedToEnd) {
+      transitionToEndScreen();
+    }
+
+    cleanupOffScreenObjects();
+    detectCollisions();
+
+    projFrame++;
+  }
+
+ private:
+  void initializeLogger() { Logger::setLogLevel(LOG_LEVEL::PRIORITY); }
+
+  void initializeWindow() {
     maxFPS = 120;
+    ObjectManager::getInstance()->updateFrameSize(windowManager->getSize());
+  }
+
+  void initializeParallaxBackground() {
     windowManager->setParallex(
         ResourceLoader::loadTextures(
             windowManager->getRenderer(), "../assets/background/1.png",
@@ -21,6 +56,9 @@ class Game : public MichaApp {
             "../assets/background/6.png", "../assets/background/7.png",
             "../assets/background/8.png", "../assets/background/9.png"),
         {-0.9f, -0.2f, -0.3f, -0.4f, -0.5f, -0.6f, -0.7f, -0.8f, -0.9f});
+  }
+
+  void initializeBulletOptions() {
     eng::Vector2i start = {windowManager->getSize().x,
                            windowManager->getSize().y / 2};
     bulletOptions
@@ -32,10 +70,12 @@ class Game : public MichaApp {
         .setSize({249, 144})
         .setVelocity({-10, 0})
         .setFlip(SDL_FLIP_HORIZONTAL);
+  }
 
+  void initializeMainCharacter() {
+    eng::SpriteOptions mainCharacterOptions;
     eng::Vector2i offset = {100, 0};
 
-    eng::SpriteOptions mainCharacterOptions;
     mainCharacterOptions
         .setTextures(ResourceLoader::loadTextures(
             windowManager->getRenderer(), "../assets/character/jetpack.png",
@@ -47,7 +87,11 @@ class Game : public MichaApp {
         .setPosition(offset)
         .setSize({200, 200})
         .enableGravity();
+
     mainCharacterID = create_sprite(mainCharacterOptions);
+  }
+
+  void setupInputListeners() {
     KeyboardManager::getInstance()->addListener(
         SDL_SCANCODE_SPACE,
         [&]() {
@@ -58,50 +102,35 @@ class Game : public MichaApp {
           }
         },
         true);
-    windowManager->getInternalWindow()->showFPS();
-  }
-  int new_random(int lower, int upper) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    gen.seed(static_cast<unsigned long>(
-        std::chrono::system_clock::now().time_since_epoch().count()));
-
-    std::uniform_int_distribution<> distrib(lower, upper);
-    return distrib(gen);
   }
 
- public:
-  void mainloop() override {
-    LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
-    static int projFrame = 0;
-    if (!characterDead) {
-      if (ObjectManager::getInstance()
-              ->getSprite(mainCharacterID)
-              ->isGrounded()) {
-        ObjectManager::getInstance()
-            ->getSprite(mainCharacterID)
-            ->changeSpritesheet(1);
-      } else {
-        ObjectManager::getInstance()
-            ->getSprite(mainCharacterID)
-            ->changeSpritesheet(0);
-      }
-      if (projFrame == 50) {
-        projFrame = 0;
-        create_sprite(bulletOptions);
-        bulletOptions
-            .setPosition({bulletOptions.getPosition().x,
-                          new_random(10, windowManager->getSize().y - 10)})
-            .setVelocity({new_random(-20, -1), 0});
-      }
+  void handleCharacterAnimation() {
+    auto character = ObjectManager::getInstance()->getSprite(mainCharacterID);
+    if (character->isGrounded()) {
+      character->changeSpritesheet(1);
     } else {
-      if (!changedToEnd) {
-        windowManager->setBackground(ResourceLoader::loadTexture(
-            windowManager->getRenderer(), "../assets/background/end.png"));
-      }
-      changedToEnd = true;
+      character->changeSpritesheet(0);
     }
+  }
 
+  void handleBulletSpawning(int& projFrame) {
+    if (projFrame >= bulletSpawnFrameInterval) {
+      projFrame = 0;
+      bulletOptions
+          .setPosition({bulletOptions.getPosition().x,
+                        new_random(10, windowManager->getSize().y - 10)})
+          .setVelocity({new_random(-20, -1), 0});
+      create_sprite(bulletOptions);
+    }
+  }
+
+  void transitionToEndScreen() {
+    windowManager->setBackground(ResourceLoader::loadTexture(
+        windowManager->getRenderer(), "../assets/background/end.png"));
+    changedToEnd = true;
+  }
+
+  void cleanupOffScreenObjects() {
     for (int i = mainCharacterID + 1;
          i < ObjectManager::getInstance()->getNumObjects(); i++) {
       auto obj = ObjectManager::getInstance()->getObject(i);
@@ -109,32 +138,44 @@ class Game : public MichaApp {
         ObjectManager::getInstance()->removeObject(i);
       }
     }
-    if (ObjectManager::getInstance()->getNumObjects() > 1) {
-      for (int i = 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
-        if (!characterDead &&
-            ObjectManager::getInstance()->collide(mainCharacterID, i)) {
-          characterDead = true;
-          ObjectManager::getInstance()
-              ->getSprite(mainCharacterID)
-              ->changeSpritesheet(3);
-          ObjectManager::getInstance()
-              ->getSprite(mainCharacterID)
-              ->setFramesPerUpdate(15);
-          ObjectManager::getInstance()
-              ->getSprite(mainCharacterID)
-              ->toggleUpdate();
-          for (int j = 1; j < ObjectManager::getInstance()->getNumObjects();
-               j++) {
-            if (j != i) {
-              ObjectManager::getInstance()->removeObject(j);
-            }
-          }
-          ObjectManager::getInstance()->getSprite(i)->setVelocity({0, 0});
-          LOG_INFO("Collided", LOG_LEVEL::PRIORITY);
-        }
+  }
+
+  void detectCollisions() {
+    for (int i = 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
+      if (!characterDead &&
+          ObjectManager::getInstance()->collide(mainCharacterID, i)) {
+        handleCollision(i);
+        break;
       }
     }
-    projFrame++;
+  }
+
+  void handleCollision(int collidingObjectID) {
+    characterDead = true;
+    auto character = ObjectManager::getInstance()->getSprite(mainCharacterID);
+    character->changeSpritesheet(3);
+    character->setFramesPerUpdate(15);
+    character->toggleUpdate();
+
+    for (int j = 1; j < ObjectManager::getInstance()->getNumObjects(); j++) {
+      if (j != collidingObjectID) {
+        ObjectManager::getInstance()->removeObject(j);
+      }
+    }
+
+    ObjectManager::getInstance()
+        ->getSprite(collidingObjectID)
+        ->setVelocity({0, 0});
+    LOG_INFO("Collided", LOG_LEVEL::PRIORITY);
+  }
+
+  int new_random(int lower, int upper) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    gen.seed(static_cast<unsigned long>(
+        std::chrono::system_clock::now().time_since_epoch().count()));
+    std::uniform_int_distribution<> distrib(lower, upper);
+    return distrib(gen);
   }
 };
 

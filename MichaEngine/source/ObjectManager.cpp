@@ -1,7 +1,6 @@
 #include "ObjectManager.h"
 
 #include "Logger.h"
-#include "WindowManager.h"
 ObjectManager* ObjectManager::instance = nullptr;
 bool ObjectManager::drawDebug = false;
 
@@ -15,6 +14,10 @@ ObjectManager* ObjectManager::getInstance() {
 }
 
 int ObjectManager::addObject(std::shared_ptr<eng::Object> newObject) {
+  if (frameSize.x == 0 || frameSize.y == 0) {
+    LOG_ERR("Frame size not set")
+    return -1;
+  }
   int newId = 0;
   if (freeObjectLoc.empty()) {
     newId = objects.size();
@@ -123,5 +126,15 @@ bool ObjectManager::collide(int idA, int idB) {
 int ObjectManager::getNumObjects() { return objects.size(); }
 
 void ObjectManager::setDebug(bool dbg) { drawDebug = dbg; }
+
+void ObjectManager::updateFrameSize(eng::Vector2i newSize) {
+  frameSize = newSize;
+  for (int i = 0; i < objects.size(); ++i) {
+    auto obj = objects[i];
+    if (obj->getPosition().y >= frameSize.y) {
+      obj->setPosition({obj->getPosition().x, frameSize.y - obj->getSize().y});
+    }
+  }
+}
 
 ObjectManager::~ObjectManager() { delete instance; }

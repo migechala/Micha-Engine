@@ -8,7 +8,6 @@
 
 class InternalWindow {
  private:
-  bool show_debug = true;  // Flag to control whether debug info is shown
   std::shared_ptr<SDL_Renderer> renderer;  // Renderer for the window
   ImGuiIO* io;                             // ImGui input/output interface
   bool show_fps = false;  // Flag to control whether FPS is shown
@@ -25,6 +24,8 @@ class InternalWindow {
 
   // Displays the FPS counter in the window
   void showFPS();
+
+  bool show_debug = false;  // Flag to control whether debug info is shown
 
   // Destructor: Cleans up the resources when the window is destroyed
   ~InternalWindow();
