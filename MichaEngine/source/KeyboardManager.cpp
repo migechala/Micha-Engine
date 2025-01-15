@@ -34,9 +34,9 @@ void KeyboardManager::addListener(SDL_Scancode key, std::function<void()> func,
 
 bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }
 
-void KeyboardManager::onListners() { listen = true; }
+void KeyboardManager::onListeners() { listen = true; }
 
-void KeyboardManager::printListner() {
+void KeyboardManager::printListener() {
   LOG_INFO("____________________________", LOG_LEVEL::PRIORITY);
   for (auto &i : listeners) {
     LOG_INFO("| " +
@@ -47,7 +47,7 @@ void KeyboardManager::printListner() {
   LOG_INFO("----------------------------", LOG_LEVEL::PRIORITY);
 }
 
-void KeyboardManager::offListners() { listen = false; }
+void KeyboardManager::offListeners() { listen = false; }
 
 const Uint8 *KeyboardManager::getKeyboardStatus() { return state; }
 

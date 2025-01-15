@@ -2,7 +2,7 @@
 
 #include "Engine.h"
 
-class Game : public ExecutableClass {
+class Game : public MichaApp {
   int mainCharacterID;
   eng::SpriteOptions bulletOptions;
   bool characterDead;
@@ -123,7 +123,13 @@ class Game : public ExecutableClass {
           ObjectManager::getInstance()
               ->getSprite(mainCharacterID)
               ->toggleUpdate();
-
+          for (int j = 1; j < ObjectManager::getInstance()->getNumObjects();
+               j++) {
+            if (j != i) {
+              ObjectManager::getInstance()->removeObject(j);
+            }
+          }
+          ObjectManager::getInstance()->getSprite(i)->setVelocity({0, 0});
           LOG_INFO("Collided", LOG_LEVEL::PRIORITY);
         }
       }

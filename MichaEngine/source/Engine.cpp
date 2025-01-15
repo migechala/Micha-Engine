@@ -2,7 +2,7 @@
 
 #include "imgui_impl_sdl2.h"
 
-void start(ExecutableClass* execute) {
+void start(MichaApp* execute) {
   LOG_INFO("Beginning Program...", LOG_LEVEL::PRIORITY);
   LOG_INFO("Max FPS Set to " + std::to_string(execute->maxFPS),
            LOG_LEVEL::MEDIUM);
@@ -15,8 +15,7 @@ void start(ExecutableClass* execute) {
     // Constant Game Loop
     KeyboardManager::getInstance()->update();
 
-    ObjectManager::getInstance()->updateAllObjects(execute->windowManager,
-                                                   frame);
+    ObjectManager::getInstance()->updateAllObjects(frame);
     execute->windowManager->update();
     if (execute->windowManager->hasQuit()) {
       done = true;

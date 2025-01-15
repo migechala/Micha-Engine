@@ -15,24 +15,34 @@ ObjectManager* ObjectManager::getInstance() {
 }
 
 int ObjectManager::addObject(std::shared_ptr<eng::Object> newObject) {
-  int newId = objects.size();
+  int newId = 0;
+  if (freeObjectLoc.empty()) {
+    newId = objects.size();
+  } else {
+    newId = freeObjectLoc.back();
+    freeObjectLoc.pop_back();
+  }
   LOG_INFO("Adding new object with id: " + std::to_string(newId),
            LOG_LEVEL::MEDIUM);
   objects.emplace_back(newObject);
   return newId;
 }
 
-void ObjectManager::removeObject(int objId) { objects[objId] = nullptr; }
+void ObjectManager::removeObject(int objId) {
+  objects[objId] = nullptr;
+  freeObjectLoc.emplace_back(objId);
+  LOG_INFO(std::to_string(freeObjectLoc.size()), LOG_LEVEL::PRIORITY);
+}
 
-int ObjectManager::updateObject(int objId, int frame,
-                                std::shared_ptr<WindowManager> window) {
+int ObjectManager::updateObject(int objId, int frame) {
   std::shared_ptr<eng::Object> obj = objects[objId];
-  if (!obj) return objId;
+  if (!obj) {
+    return objId;
+  }
   if (obj->isRising() &&
-      obj->getPosition().y >= (window->getSize().y - obj->getSize().y -
+      obj->getPosition().y >= (frameSize.y - obj->getSize().y -
                                obj->getVelocity().y)) {  // on upperbound
-    obj->setPosition(
-        {obj->getPosition().x, window->getSize().y - obj->getSize().y});
+    obj->setPosition({obj->getPosition().x, frameSize.y - obj->getSize().y});
     obj->setVelocity({obj->getVelocity().x, 0});
   } else if (obj->getPosition().y <=
              0 - obj->getVelocity().y) {  // on the ground
@@ -56,22 +66,15 @@ int ObjectManager::updateObject(int objId, int frame,
   } else if (!obj->isRising() && obj->getVelocity().y > 0) {
     obj->setRising(true);
   }
-  // if (obj->position.x - obj->size.x / 2 <= 0) {  // left bound
-  //   obj->position.x = obj->size.x / 2;
-  // } else if (obj->position.x + obj->size.x / 2 >=
-  //            window->getSize().x) {  // right bound
-  //   obj->position.x = window->getSize().x - obj->size.x / 2;
-  // }
   if (obj->isSprite()) {
     std::reinterpret_pointer_cast<eng::Sprite>(obj)->updateTexture(frame);
   }
   return objId;
 }
 
-int ObjectManager::updateAllObjects(std::shared_ptr<WindowManager> window,
-                                    int frame) {
+int ObjectManager::updateAllObjects(int frame) {
   for (int i = 0; i < objects.size(); ++i) {
-    updateObject(i, frame, window);
+    updateObject(i, frame);
   }
   return objects.size();
 }

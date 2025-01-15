@@ -36,6 +36,7 @@ class ObjectOptions {
   SDL_RendererFlip p_flip;
   SDL_Color p_color;
   bool p_gravity;
+  int id;
 
  public:
   // Constructors
@@ -49,6 +50,7 @@ class ObjectOptions {
   ObjectOptions& setFlip(SDL_RendererFlip flip);
   ObjectOptions& setColor(SDL_Color color);
   ObjectOptions& enableGravity();
+  void setId(int id);
 
   // Getters
   Vector2i getPosition() const;
@@ -58,6 +60,7 @@ class ObjectOptions {
   SDL_RendererFlip getFlip() const;
   SDL_Color getColor() const;
   bool isGravityEnabled() const;
+  int getId();
 };
 
 // SpriteOptions class inheriting from ObjectOptions
