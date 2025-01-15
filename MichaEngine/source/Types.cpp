@@ -234,6 +234,8 @@ eng::SpriteOptions &eng::SpriteOptions::setFramesPerTextureUpdate(
   return (*this);
 }
 
+void eng::ObjectOptions::setId(int id) { id = id; }
+
 int eng::SpriteOptions::getFramesPerTextureUpdate() { return p_fptu; }
 
 std::vector<int> eng::SpriteOptions::getNumberOfSpritesPerSheet() {
@@ -245,3 +247,5 @@ std::vector<std::shared_ptr<SDL_Texture>> eng::SpriteOptions::getTextures() {
 }
 
 eng::Vector2i eng::SpriteOptions::getRealSpriteSize() { return p_spriteSize; }
+
+int eng::ObjectOptions::getId() { return id; }
