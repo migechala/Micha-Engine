@@ -1,8 +1,4 @@
 //
-// Created by Mikhail Chalakov on 2/18/24.
-//
-
-//
 // Created by mikhail on 5/20/21.
 //
 
@@ -47,7 +43,9 @@ eng::Object::Object(ObjectOptions &options)
       p_acceleration(options.getAcceleration()),
       p_flip(options.getFlip()),
       p_color(options.getColor()),
-      p_gravity(options.isGravityEnabled()) {}
+      p_gravity(options.isGravityEnabled()),
+      p_hitbox(options.getHitbox()),
+      p_hitboxOffset(options.getHitboxOffset()) {}
 
 bool eng::Object::isSprite() { return false; }
 
@@ -68,6 +66,10 @@ int eng::Object::getId() { return p_id; }
 eng::Vector2i eng::Object::getPosition() { return p_position; }
 
 eng::Vector2i eng::Object::getSize() { return p_size; }
+
+eng::Vector2i eng::Object::getHitbox() { return p_hitbox; }
+
+eng::Vector2i eng::Object::getHitboxOffset() { return p_hitboxOffset; }
 
 eng::Vector2i eng::Object::getVelocity() { return p_velocity; }
 
@@ -166,6 +168,16 @@ eng::ObjectOptions &eng::ObjectOptions::setSize(eng::Vector2i size) {
   return (*this);
 }
 
+eng::ObjectOptions &eng::ObjectOptions::setHitbox(eng::Vector2i size) {
+  p_hitbox = size;
+  return (*this);
+}
+
+eng::ObjectOptions &eng::ObjectOptions::setHitboxOffset(eng::Vector2i offset) {
+  p_hitboxOffset = offset;
+  return (*this);
+}
+
 eng::ObjectOptions &eng::ObjectOptions::setVelocity(eng::Vector2i velocity) {
   p_velocity = velocity;
   return (*this);
@@ -195,6 +207,12 @@ eng::ObjectOptions &eng::ObjectOptions::enableGravity() {
 eng::Vector2i eng::ObjectOptions::getPosition() const { return p_position; }
 
 eng::Vector2i eng::ObjectOptions::getSize() const { return p_size; }
+
+eng::Vector2i eng::ObjectOptions::getHitbox() const { return p_hitbox; }
+
+eng::Vector2i eng::ObjectOptions::getHitboxOffset() const {
+  return p_hitboxOffset;
+}
 
 eng::Vector2i eng::ObjectOptions::getVelocity() const { return p_velocity; }
 

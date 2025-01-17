@@ -78,13 +78,23 @@ int WindowManager::draw(std::shared_ptr<eng::Object> object) {
   dst.h = object->getSize().y;
 
   if (object->isSprite()) {
+    if (debugDraw) {
+      SDL_Rect debugDst;
+      debugDst.x =
+          pos.x - object->getHitbox().x / 2 + object->getHitboxOffset().x;
+      debugDst.y = pos.y - object->getHitbox().y - object->getHitboxOffset().y;
+      debugDst.w = object->getHitbox().x;
+      debugDst.h = object->getHitbox().y;
+      SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
+      SDL_RenderDrawRect(renderer.get(), &debugDst);
+      SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
+                             oldColor.a);
+    }
     auto sprite = std::reinterpret_pointer_cast<eng::Sprite>(object);
     LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
     return SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
                             &sprite->getSrc(), &dst, sprite->getAngle(), NULL,
                             sprite->getFlip());
-    return SDL_RenderCopy(renderer.get(), sprite->getTexture().get(),
-                          &sprite->getSrc(), &dst);
   }
 
   SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
@@ -176,7 +186,10 @@ WindowManager::~WindowManager() {
 
 WindowManager::WindowManager(const std::string &windowName, eng::Vector2i pos,
                              Uint32 flag)
-    : frameCount(0), windowSize(getMonitorSize()), quit(false) {
+    : frameCount(0),
+      windowSize(getMonitorSize()),
+      quit(false),
+      debugDraw(false) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
   windowSize.y -= 100;
   window.reset(SDL_CreateWindow(windowName.c_str(), pos.x, pos.y, windowSize.x,

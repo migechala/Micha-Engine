@@ -83,7 +83,8 @@
         "variant": "cpp",
         "__availability": "cpp",
         "__verbose_abort": "cpp",
-        "execution": "cpp"
+        "execution": "cpp",
+        "print": "cpp"
     },
     "C_Cpp.default.includePath": [],
     "C_Cpp.errorSquiggles": "Enabled"

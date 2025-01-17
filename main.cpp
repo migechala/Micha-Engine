@@ -13,6 +13,7 @@ class Game : public MichaApp {
 
  public:
   Game() : characterDead(false) {
+    windowManager->debugDraw = true;
     initializeLogger();
     initializeWindow();
     initializeParallaxBackground();
@@ -68,6 +69,8 @@ class Game : public MichaApp {
         .setRealSpriteSize({249, 144})
         .setPosition(start)
         .setSize({249, 144})
+        .setHitbox({20, 50})
+        .setHitboxOffset({-50, 50})
         .setVelocity({-10, 0})
         .setFlip(SDL_FLIP_HORIZONTAL);
   }
@@ -86,6 +89,7 @@ class Game : public MichaApp {
         .setRealSpriteSize({692, 599})
         .setPosition(offset)
         .setSize({200, 200})
+        .setHitbox({120, 200})
         .enableGravity();
 
     mainCharacterID = create_sprite(mainCharacterOptions);
@@ -142,7 +146,7 @@ class Game : public MichaApp {
 
   void detectCollisions() {
     for (int i = 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
-      if (!characterDead &&
+      if (!characterDead && ObjectManager::getInstance()->doesExist(i) &&
           ObjectManager::getInstance()->collide(mainCharacterID, i)) {
         handleCollision(i);
         break;

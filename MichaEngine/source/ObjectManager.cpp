@@ -1,8 +1,42 @@
 #include "ObjectManager.h"
 
+#include <iostream>
+
 #include "Logger.h"
 ObjectManager* ObjectManager::instance = nullptr;
-bool ObjectManager::drawDebug = false;
+
+int ObjectManager::top(int id) {
+  if (!objects[id]) {
+    LOG_ERR("id does not exist");
+  };
+
+  return objects[id]->getPosition().y + objects[id]->getHitbox().y +
+         objects[id]->getHitboxOffset().y;
+}
+
+int ObjectManager::bottom(int id) {
+  if (!objects[id]) {
+    LOG_ERR("id does not exist");
+  };
+
+  return objects[id]->getPosition().y + objects[id]->getHitboxOffset().y;
+}
+
+int ObjectManager::left(int id) {
+  if (!objects[id]) {
+    LOG_ERR("id does not exist");
+  };
+  return objects[id]->getPosition().x - objects[id]->getHitbox().x / 2 +
+         objects[id]->getHitboxOffset().x;
+}
+
+int ObjectManager::right(int id) {
+  if (!objects[id]) {
+    LOG_ERR("id does not exist");
+  };
+  return objects[id]->getPosition().x + objects[id]->getHitbox().x / 2 +
+         objects[id]->getHitboxOffset().x;
+}
 
 ObjectManager::ObjectManager() {}
 
@@ -82,6 +116,8 @@ int ObjectManager::updateAllObjects(int frame) {
   return objects.size();
 }
 
+bool ObjectManager::doesExist(int objId) { return objects[objId] != nullptr; }
+
 std::shared_ptr<eng::Object> ObjectManager::getObject(int objId) {
   return objects[objId];
 }
@@ -96,25 +132,22 @@ std::shared_ptr<eng::Sprite> ObjectManager::getSprite(int objId) {
 }
 
 bool ObjectManager::collide(int idA, int idB) {
-  if (!objects[idB]) return false;
-  auto objectA = getObject(idA);
-  auto objectB = getObject(idB);
   int leftA, leftB;
   int rightA, rightB;
   int topA, topB;
   int bottomA, bottomB;
 
   // Calculate A
-  leftA = objectA->getPosition().x - objectA->getSize().x / 2;
-  rightA = leftA + objectA->getSize().x / 2;
-  topA = objectA->getPosition().y + objectA->getSize().y / 2;
-  bottomA = objectA->getPosition().y - objectA->getSize().y / 2;
+  leftA = left(idA);
+  rightA = right(idA);
+  topA = top(idA);
+  bottomA = bottom(idA);
 
   // Calculate B
-  leftB = objectB->getPosition().x - objectB->getSize().x / 2;
-  rightB = leftB + objectB->getSize().x / 2;
-  topB = objectB->getPosition().y + objectB->getSize().y / 2;
-  bottomB = objectB->getPosition().y - objectB->getSize().y / 2;
+  leftB = left(idB);
+  rightB = right(idB);
+  topB = top(idB);
+  bottomB = bottom(idB);
 
   if (bottomA >= topB) return false;
   if (topA <= bottomB) return false;
@@ -124,8 +157,6 @@ bool ObjectManager::collide(int idA, int idB) {
 }
 
 int ObjectManager::getNumObjects() { return objects.size(); }
-
-void ObjectManager::setDebug(bool dbg) { drawDebug = dbg; }
 
 void ObjectManager::updateFrameSize(eng::Vector2i newSize) {
   frameSize = newSize;

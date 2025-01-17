@@ -35,6 +35,8 @@ class WindowManager {
   // Public member variable for frame count
   int frameCount;
 
+  bool debugDraw;
+
   // Public methods
   void setSize(eng::Vector2i newSize);
   void setBackground(std::shared_ptr<SDL_Texture> bkg);
