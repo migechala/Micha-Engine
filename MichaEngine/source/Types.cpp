@@ -37,43 +37,25 @@ eng::Vector2i eng::Vector2i::operator/(const int &change) const {
   return {this->x / change, this->y / change};
 }
 eng::Object::Object(ObjectOptions &options)
-    : p_position(options.getPosition()),
-      p_size(options.getSize()),
-      p_velocity(options.getVelocity()),
-      p_acceleration(options.getAcceleration()),
-      p_flip(options.getFlip()),
-      p_color(options.getColor()),
-      p_gravity(options.isGravityEnabled()),
-      p_hitbox(options.getHitbox()),
-      p_hitboxOffset(options.getHitboxOffset()) {}
+    : p_options(options), p_flip(options.getFlip()) {}
 
 bool eng::Object::isSprite() { return false; }
 
 void eng::Object::setPosition(eng::Vector2i newPosition) {
-  p_position = newPosition;
+  p_options.setPosition(newPosition);
 }
 
 void eng::Object::setVelocity(eng::Vector2i newVelocity) {
-  p_velocity = newVelocity;
+  p_options.setVelocity(newVelocity);
 }
 
 void eng::Object::setAcceleration(eng::Vector2i newAcceleration) {
-  p_acceleration = newAcceleration;
+  p_options.setAcceleration(newAcceleration);
 }
 
-int eng::Object::getId() { return p_id; }
+int eng::Object::getId() { return p_options.getId(); }
 
-eng::Vector2i eng::Object::getPosition() { return p_position; }
-
-eng::Vector2i eng::Object::getSize() { return p_size; }
-
-eng::Vector2i eng::Object::getHitbox() { return p_hitbox; }
-
-eng::Vector2i eng::Object::getHitboxOffset() { return p_hitboxOffset; }
-
-eng::Vector2i eng::Object::getVelocity() { return p_velocity; }
-
-eng::Vector2i eng::Object::getAcceleration() { return p_acceleration; }
+eng::ObjectOptions eng::Object::getOptions() { return p_options; }
 
 SDL_Rect &eng::Sprite::getSrc() { return p_src; }
 
@@ -81,13 +63,9 @@ float eng::Object::getAngle() { return p_angle; }
 
 SDL_RendererFlip eng::Object::getFlip() { return p_flip; }
 
-SDL_Color eng::Object::getColor() { return p_color; }
-
 bool eng::Object::isRising() { return p_rising; }
 
 bool eng::Object::isGrounded() { return p_grounded; }
-
-bool eng::Object::hasGravity() { return p_gravity; }
 
 void eng::Object::setRising(bool arg) { p_rising = arg; }
 

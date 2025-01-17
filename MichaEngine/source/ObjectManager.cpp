@@ -10,8 +10,9 @@ int ObjectManager::top(int id) {
     LOG_ERR("id does not exist");
   };
 
-  return objects[id]->getPosition().y + objects[id]->getHitbox().y +
-         objects[id]->getHitboxOffset().y;
+  return objects[id]->getOptions().getPosition().y +
+         objects[id]->getOptions().getHitbox().y +
+         objects[id]->getOptions().getHitboxOffset().y;
 }
 
 int ObjectManager::bottom(int id) {
@@ -19,23 +20,26 @@ int ObjectManager::bottom(int id) {
     LOG_ERR("id does not exist");
   };
 
-  return objects[id]->getPosition().y + objects[id]->getHitboxOffset().y;
+  return objects[id]->getOptions().getPosition().y +
+         objects[id]->getOptions().getHitboxOffset().y;
 }
 
 int ObjectManager::left(int id) {
   if (!objects[id]) {
     LOG_ERR("id does not exist");
   };
-  return objects[id]->getPosition().x - objects[id]->getHitbox().x / 2 +
-         objects[id]->getHitboxOffset().x;
+  return objects[id]->getOptions().getPosition().x -
+         objects[id]->getOptions().getHitbox().x / 2 +
+         objects[id]->getOptions().getHitboxOffset().x;
 }
 
 int ObjectManager::right(int id) {
   if (!objects[id]) {
     LOG_ERR("id does not exist");
   };
-  return objects[id]->getPosition().x + objects[id]->getHitbox().x / 2 +
-         objects[id]->getHitboxOffset().x;
+  return objects[id]->getOptions().getPosition().x +
+         objects[id]->getOptions().getHitbox().x / 2 +
+         objects[id]->getOptions().getHitboxOffset().x;
 }
 
 ObjectManager::ObjectManager() {}
@@ -77,30 +81,34 @@ int ObjectManager::updateObject(int objId, int frame) {
     return objId;
   }
   if (obj->isRising() &&
-      obj->getPosition().y >= (frameSize.y - obj->getSize().y -
-                               obj->getVelocity().y)) {  // on upperbound
-    obj->setPosition({obj->getPosition().x, frameSize.y - obj->getSize().y});
-    obj->setVelocity({obj->getVelocity().x, 0});
-  } else if (obj->getPosition().y <=
-             0 - obj->getVelocity().y) {  // on the ground
+      obj->getOptions().getPosition().y >=
+          (frameSize.y - obj->getOptions().getSize().y -
+           obj->getOptions().getVelocity().y)) {  // on upperbound
+    obj->setPosition({obj->getOptions().getPosition().x,
+                      frameSize.y - obj->getOptions().getSize().y});
+    obj->setVelocity({obj->getOptions().getVelocity().x, 0});
+  } else if (obj->getOptions().getPosition().y <=
+             0 - obj->getOptions().getVelocity().y) {  // on the ground
     obj->setGrounded(true);
-    obj->setPosition({obj->getPosition().x, 0});
-    if (obj->getAcceleration().y > 0) {
-      obj->setVelocity({obj->getVelocity().x, 0});
-      obj->setPosition({obj->getPosition().x, 1});
+    obj->setPosition({obj->getOptions().getPosition().x, 0});
+    if (obj->getOptions().getAcceleration().y > 0) {
+      obj->setVelocity({obj->getOptions().getVelocity().x, 0});
+      obj->setPosition({obj->getOptions().getPosition().x, 1});
       obj->setGrounded(false);
     }
   } else {
-    obj->setPosition(obj->getVelocity() + obj->getPosition());
-    obj->setVelocity(obj->getAcceleration() + obj->getVelocity());
-    if (obj->hasGravity()) {
-      obj->setAcceleration({obj->getAcceleration().x, -1});
+    obj->setPosition(obj->getOptions().getVelocity() +
+                     obj->getOptions().getPosition());
+    obj->setVelocity(obj->getOptions().getAcceleration() +
+                     obj->getOptions().getVelocity());
+    if (obj->getOptions().isGravityEnabled()) {
+      obj->setAcceleration({obj->getOptions().getAcceleration().x, -1});
     }
   }
-  if (obj->isRising() && obj->getVelocity().y <= 0) {
+  if (obj->isRising() && obj->getOptions().getVelocity().y <= 0) {
     obj->setRising(false);
     return objId;
-  } else if (!obj->isRising() && obj->getVelocity().y > 0) {
+  } else if (!obj->isRising() && obj->getOptions().getVelocity().y > 0) {
     obj->setRising(true);
   }
   if (obj->isSprite()) {
@@ -162,8 +170,9 @@ void ObjectManager::updateFrameSize(eng::Vector2i newSize) {
   frameSize = newSize;
   for (int i = 0; i < objects.size(); ++i) {
     auto obj = objects[i];
-    if (obj->getPosition().y >= frameSize.y) {
-      obj->setPosition({obj->getPosition().x, frameSize.y - obj->getSize().y});
+    if (obj->getOptions().getPosition().y >= frameSize.y) {
+      obj->setPosition({obj->getOptions().getPosition().x,
+                        frameSize.y - obj->getOptions().getSize().y});
     }
   }
 }

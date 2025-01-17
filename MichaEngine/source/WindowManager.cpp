@@ -71,20 +71,21 @@ int WindowManager::draw(std::shared_ptr<eng::Object> object) {
   if (!object) return -1;
   SDL_Color oldColor;
   SDL_Rect dst;
-  eng::Vector2i pos = getAbsolutePosition(object->getPosition());
-  dst.x = pos.x - object->getSize().x / 2;
-  dst.y = pos.y - object->getSize().y;
-  dst.w = object->getSize().x;
-  dst.h = object->getSize().y;
+  eng::Vector2i pos = getAbsolutePosition(object->getOptions().getPosition());
+  dst.x = pos.x - object->getOptions().getSize().x / 2;
+  dst.y = pos.y - object->getOptions().getSize().y;
+  dst.w = object->getOptions().getSize().x;
+  dst.h = object->getOptions().getSize().y;
 
   if (object->isSprite()) {
     if (debugDraw) {
       SDL_Rect debugDst;
-      debugDst.x =
-          pos.x - object->getHitbox().x / 2 + object->getHitboxOffset().x;
-      debugDst.y = pos.y - object->getHitbox().y - object->getHitboxOffset().y;
-      debugDst.w = object->getHitbox().x;
-      debugDst.h = object->getHitbox().y;
+      debugDst.x = pos.x - object->getOptions().getHitbox().x / 2 +
+                   object->getOptions().getHitboxOffset().x;
+      debugDst.y = pos.y - object->getOptions().getHitbox().y -
+                   object->getOptions().getHitboxOffset().y;
+      debugDst.w = object->getOptions().getHitbox().x;
+      debugDst.h = object->getOptions().getHitbox().y;
       SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
       SDL_RenderDrawRect(renderer.get(), &debugDst);
       SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
@@ -99,9 +100,10 @@ int WindowManager::draw(std::shared_ptr<eng::Object> object) {
 
   SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
                          &oldColor.a);
-  SDL_SetRenderDrawColor(renderer.get(), object->getColor().r,
-                         object->getColor().g, object->getColor().b,
-                         object->getColor().a);
+  SDL_SetRenderDrawColor(renderer.get(), object->getOptions().getColor().r,
+                         object->getOptions().getColor().g,
+                         object->getOptions().getColor().b,
+                         object->getOptions().getColor().a);
   int ret = SDL_RenderFillRect(renderer.get(), &dst);
   SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
                          oldColor.a);
