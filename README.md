@@ -4,7 +4,7 @@
 
 ### Overview
 
-Micha Engine is a basic game engine using SDL2 for rendering. It provides a simple framework for creating games with C++. The engine is designed to be easy to use and extend, with core functionalities for creating and managing sprites.
+Micha Engine is a basic game engine using SDL2 for rendering. It provides a simple framework for creating games with C++. The engine is designed to be easy to use and extend, with core functionalities for creating and managing sprites. Keep in mind, in this engine, each window position is based off of bottom-center.
 
 ### Basic Usage
 
