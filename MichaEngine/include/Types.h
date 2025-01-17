@@ -98,20 +98,12 @@ class SpriteOptions : public ObjectOptions {
 // Object class to represent an object in the game world
 class Object {
  protected:
-  int p_id;
-  eng::Vector2i p_position;
-  eng::Vector2i p_velocity;
-  eng::Vector2i p_acceleration;
-  eng::Vector2i p_size;
-  eng::Vector2i p_hitbox;
-  eng::Vector2i p_hitboxOffset;
-  SDL_Color p_color;
-  bool p_gravity;
   bool p_rising;
   bool p_grounded;
   bool p_animated;
   double p_angle;
   SDL_RendererFlip p_flip;
+  ObjectOptions p_options;
 
  public:
   // Constructor accepting ObjectOptions
@@ -128,18 +120,11 @@ class Object {
 
   // Getters
   int getId();
-  eng::Vector2i getPosition();
-  eng::Vector2i getSize();
-  eng::Vector2i getHitbox();
-  eng::Vector2i getHitboxOffset();
-  eng::Vector2i getVelocity();
-  eng::Vector2i getAcceleration();
+  ObjectOptions getOptions();
   float getAngle();
   SDL_RendererFlip getFlip();
-  SDL_Color getColor();
   bool isRising();
   bool isGrounded();
-  bool hasGravity();
 
   // State setters
   void setRising(bool arg);

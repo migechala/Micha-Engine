@@ -13,7 +13,7 @@ class Game : public MichaApp {
 
  public:
   Game() : characterDead(false) {
-    windowManager->debugDraw = true;
+    // windowManager->debugDraw = true;
     initializeLogger();
     initializeWindow();
     initializeParallaxBackground();
@@ -138,7 +138,9 @@ class Game : public MichaApp {
     for (int i = mainCharacterID + 1;
          i < ObjectManager::getInstance()->getNumObjects(); i++) {
       auto obj = ObjectManager::getInstance()->getObject(i);
-      if (obj && obj->getPosition().x + obj->getVelocity().x <= 0) {
+      if (obj && obj->getOptions().getPosition().x +
+                         obj->getOptions().getVelocity().x <=
+                     0) {
         ObjectManager::getInstance()->removeObject(i);
       }
     }
