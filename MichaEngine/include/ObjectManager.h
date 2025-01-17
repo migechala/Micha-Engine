@@ -10,7 +10,7 @@ class ObjectManager {
   std::vector<std::shared_ptr<eng::Object>> objects;
   std::vector<int> freeObjectLoc;
   static ObjectManager* instance;
-  static bool drawDebug;
+  int top(int id), bottom(int id), left(int id), right(int id);
 
  public:
   // Frame size used for position calculations
@@ -27,6 +27,8 @@ class ObjectManager {
   int updateObject(int objId, int frame);
   int updateAllObjects(int frame);
 
+  bool doesExist(int objId);
+
   // Accessor methods
   std::shared_ptr<eng::Object> getObject(int objId);
   std::shared_ptr<eng::Sprite> getSprite(int objId);
@@ -36,7 +38,6 @@ class ObjectManager {
 
   // Debugging and utility methods
   int getNumObjects();
-  void setDebug(bool dbg);
 
   // Update Frame Size
   void updateFrameSize(eng::Vector2i newSize);

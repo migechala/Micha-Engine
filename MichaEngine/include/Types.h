@@ -33,6 +33,8 @@ class ObjectOptions {
   eng::Vector2i p_size;
   eng::Vector2i p_velocity;
   eng::Vector2i p_acceleration;
+  eng::Vector2i p_hitbox;
+  eng::Vector2i p_hitboxOffset;
   SDL_RendererFlip p_flip;
   SDL_Color p_color;
   bool p_gravity;
@@ -45,6 +47,8 @@ class ObjectOptions {
   // Builder pattern for setting options
   ObjectOptions& setPosition(eng::Vector2i position);
   ObjectOptions& setSize(eng::Vector2i size);
+  ObjectOptions& setHitbox(eng::Vector2i size);
+  ObjectOptions& setHitboxOffset(eng::Vector2i offset);
   ObjectOptions& setVelocity(eng::Vector2i velocity);
   ObjectOptions& setAcceleration(eng::Vector2i acceleration);
   ObjectOptions& setFlip(SDL_RendererFlip flip);
@@ -55,6 +59,8 @@ class ObjectOptions {
   // Getters
   Vector2i getPosition() const;
   Vector2i getSize() const;
+  Vector2i getHitbox() const;
+  Vector2i getHitboxOffset() const;
   Vector2i getVelocity() const;
   Vector2i getAcceleration() const;
   SDL_RendererFlip getFlip() const;
@@ -97,6 +103,8 @@ class Object {
   eng::Vector2i p_velocity;
   eng::Vector2i p_acceleration;
   eng::Vector2i p_size;
+  eng::Vector2i p_hitbox;
+  eng::Vector2i p_hitboxOffset;
   SDL_Color p_color;
   bool p_gravity;
   bool p_rising;
@@ -122,6 +130,8 @@ class Object {
   int getId();
   eng::Vector2i getPosition();
   eng::Vector2i getSize();
+  eng::Vector2i getHitbox();
+  eng::Vector2i getHitboxOffset();
   eng::Vector2i getVelocity();
   eng::Vector2i getAcceleration();
   float getAngle();
