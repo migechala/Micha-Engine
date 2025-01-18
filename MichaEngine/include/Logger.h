@@ -7,6 +7,17 @@
 
 #include "imgui.h"
 
+#define CHECK_RESULT(fnc)                                                   \
+  {                                                                         \
+    auto res = fnc;                                                         \
+    if (res != 0) {                                                         \
+      std::cout << "ERR: " << __FILE__ << "(" << __LINE__ << ") SDL_Error(" \
+                << SDL_GetError() << ")  err: " << res << " in " << #fnc    \
+                << std::endl;                                               \
+      exit(-2);                                                             \
+    }                                                                       \
+  }
+
 struct LogApp {
   ImGuiTextBuffer buf;
   ImGuiTextFilter filter;

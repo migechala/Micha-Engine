@@ -72,7 +72,6 @@ int ObjectManager::addObject(std::shared_ptr<eng::Object> newObject) {
 void ObjectManager::removeObject(int objId) {
   objects[objId] = nullptr;
   freeObjectLoc.emplace_back(objId);
-  LOG_INFO(std::to_string(freeObjectLoc.size()), LOG_LEVEL::PRIORITY);
 }
 
 int ObjectManager::updateObject(int objId, int frame) {

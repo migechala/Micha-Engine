@@ -40,18 +40,20 @@ void WindowManager::renderParallex() {
     destRect.w = windowSize.x;
     destRect.h = windowSize.y;
 
-    SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect);
+    CHECK_RESULT(
+        SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect));
 
     if (destRect.x < 0) {
       destRect.x += windowSize.x;
-      SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect);
+      CHECK_RESULT(
+          SDL_RenderCopy(renderer.get(), background[i].get(), NULL, &destRect));
     }
   }
 }
 
-int WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
-                        const SDL_Rect *dst) {
-  return SDL_RenderCopy(renderer.get(), txt, src, dst);
+void WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
+                         const SDL_Rect *dst) {
+  CHECK_RESULT(SDL_RenderCopy(renderer.get(), txt, src, dst));
 }
 eng::Vector2i WindowManager::getCenter() { return getSize() / 2; }
 eng::Vector2i WindowManager::getSize() { return windowSize; }
@@ -67,8 +69,8 @@ std::shared_ptr<InternalWindow> WindowManager::getInternalWindow() {
 eng::Vector2i WindowManager::getAbsolutePosition(eng::Vector2i position) {
   return {position.x, (windowSize.y - position.y)};
 }
-int WindowManager::draw(std::shared_ptr<eng::Object> object) {
-  if (!object) return -1;
+void WindowManager::draw(std::shared_ptr<eng::Object> object) {
+  if (!object) return;
   SDL_Color oldColor;
   SDL_Rect dst;
   eng::Vector2i pos = getAbsolutePosition(object->getOptions().getPosition());
@@ -86,41 +88,43 @@ int WindowManager::draw(std::shared_ptr<eng::Object> object) {
                    object->getOptions().getHitboxOffset().y;
       debugDst.w = object->getOptions().getHitbox().x;
       debugDst.h = object->getOptions().getHitbox().y;
-      SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255);
-      SDL_RenderDrawRect(renderer.get(), &debugDst);
-      SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
-                             oldColor.a);
+      CHECK_RESULT(SDL_SetRenderDrawColor(renderer.get(), 255, 0, 0, 255));
+      CHECK_RESULT(SDL_RenderDrawRect(renderer.get(), &debugDst));
+      CHECK_RESULT(SDL_SetRenderDrawColor(renderer.get(), oldColor.r,
+                                          oldColor.g, oldColor.b, oldColor.a));
     }
     auto sprite = std::reinterpret_pointer_cast<eng::Sprite>(object);
-    LOG_INFO("Rendering Texture", LOG_LEVEL::LOW)
-    return SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
-                            &sprite->getSrc(), &dst, sprite->getAngle(), NULL,
-                            sprite->getFlip());
+    LOG_INFO("Rendering Texture " + std::to_string(sprite->getId()),
+             LOG_LEVEL::LOW)
+    CHECK_RESULT(SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
+                                  &sprite->getSrc(), &dst, sprite->getAngle(),
+                                  NULL, sprite->getFlip()));
+    return;
   }
 
-  SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
-                         &oldColor.a);
-  SDL_SetRenderDrawColor(renderer.get(), object->getOptions().getColor().r,
-                         object->getOptions().getColor().g,
-                         object->getOptions().getColor().b,
-                         object->getOptions().getColor().a);
-  int ret = SDL_RenderFillRect(renderer.get(), &dst);
-  SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
-                         oldColor.a);
-  return ret;
+  CHECK_RESULT(SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g,
+                                      &oldColor.b, &oldColor.a));
+  CHECK_RESULT(SDL_SetRenderDrawColor(
+      renderer.get(), object->getOptions().getColor().r,
+      object->getOptions().getColor().g, object->getOptions().getColor().b,
+      object->getOptions().getColor().a));
+  CHECK_RESULT(SDL_RenderFillRect(renderer.get(), &dst));
+  CHECK_RESULT(SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g,
+                                      oldColor.b, oldColor.a));
 }
 
 void WindowManager::update() {
   SDL_Color oldColor;
-  SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g, &oldColor.b,
-                         &oldColor.a);
-  SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255);
-  int ret = SDL_RenderFillRect(renderer.get(), NULL);
-  SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g, oldColor.b,
-                         oldColor.a);
+  CHECK_RESULT(SDL_GetRenderDrawColor(renderer.get(), &oldColor.r, &oldColor.g,
+                                      &oldColor.b, &oldColor.a));
+  CHECK_RESULT(SDL_SetRenderDrawColor(renderer.get(), 128, 128, 128, 255));
+  CHECK_RESULT(SDL_RenderFillRect(renderer.get(), NULL));
+  CHECK_RESULT(SDL_SetRenderDrawColor(renderer.get(), oldColor.r, oldColor.g,
+                                      oldColor.b, oldColor.a));
   if (!background.empty()) {
     if (background.size() == 1) {
-      SDL_RenderCopy(renderer.get(), background[0].get(), NULL, NULL);
+      CHECK_RESULT(
+          SDL_RenderCopy(renderer.get(), background[0].get(), NULL, NULL));
     } else {
       renderParallex();
     }
@@ -130,10 +134,7 @@ void WindowManager::update() {
     if (!curObject) continue;
 
     LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::LOW)
-    if (draw(curObject) != 0) {
-      LOG_ERR(SDL_GetError());
-      exit(-1);
-    }
+    draw(curObject);
   }
   ++frameCount;
   //
