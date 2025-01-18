@@ -34,7 +34,6 @@ To use the Micha Engine, follow these steps:
     public:
         void mainloop() override {...}
         MyGame(){
-        SDL_Init(SDL_INIT_VIDEO);
         maxFPS = 120;
 
         windowManager.reset(new WindowManager("Hello World!", {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED},SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI));

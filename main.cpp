@@ -46,6 +46,7 @@ class Game : public MichaApp {
   void initializeWindow() {
     maxFPS = 120;
     ObjectManager::getInstance()->updateFrameSize(windowManager->getSize());
+    windowManager->getInternalWindow()->show_debug = true;
   }
 
   void initializeParallaxBackground() {
@@ -172,7 +173,6 @@ class Game : public MichaApp {
     ObjectManager::getInstance()
         ->getSprite(collidingObjectID)
         ->setVelocity({0, 0});
-    LOG_INFO("Collided", LOG_LEVEL::PRIORITY);
   }
 
   int new_random(int lower, int upper) {

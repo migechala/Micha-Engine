@@ -45,8 +45,8 @@ class WindowManager {
   void setTiles(std::string file_path, std::vector<std::vector<int>> tiles,
                 eng::Vector2i size);
 
-  int draw(SDL_Texture* txt, const SDL_Rect* src, const SDL_Rect* dst);
-  int draw(std::shared_ptr<eng::Object> object);
+  void draw(SDL_Texture* txt, const SDL_Rect* src, const SDL_Rect* dst);
+  void draw(std::shared_ptr<eng::Object> object);
 
   eng::Vector2i getAbsolutePosition(eng::Vector2i pos);
   eng::Vector2i getCenter();

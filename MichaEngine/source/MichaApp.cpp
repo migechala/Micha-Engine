@@ -8,7 +8,7 @@ void MichaApp::mainloop() {
 }
 
 MichaApp::MichaApp() {
-  SDL_Init(SDL_INIT_EVERYTHING);
+  CHECK_RESULT(SDL_Init(SDL_INIT_EVERYTHING));
   eng::Vector2i position = {SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED};
   windowManager = std::make_shared<WindowManager>("Test Engine", position,
                                                   SDL_WINDOW_SHOWN);
