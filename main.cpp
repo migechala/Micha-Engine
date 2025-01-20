@@ -13,7 +13,7 @@ class Game : public MichaApp {
 
  public:
   Game() : characterDead(false) {
-    // windowManager->debugDraw = true;
+    windowManager->debugDraw = true;
     initializeLogger();
     initializeWindow();
     initializeParallaxBackground();
