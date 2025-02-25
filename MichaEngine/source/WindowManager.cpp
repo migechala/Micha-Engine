@@ -51,11 +51,8 @@ void WindowManager::renderParallex() {
   }
 }
 
-void WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
-                         const SDL_Rect *dst) {
-  CHECK_RESULT(SDL_RenderCopy(renderer.get(), txt, src, dst));
-}
 eng::Vector2i WindowManager::getCenter() { return getSize() / 2; }
+
 eng::Vector2i WindowManager::getSize() { return windowSize; }
 
 std::shared_ptr<SDL_Renderer> WindowManager::getRenderer() { return renderer; }
@@ -68,6 +65,11 @@ std::shared_ptr<InternalWindow> WindowManager::getInternalWindow() {
 
 eng::Vector2i WindowManager::getAbsolutePosition(eng::Vector2i position) {
   return {position.x, (windowSize.y - position.y)};
+}
+
+void WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
+                         const SDL_Rect *dst) {
+  CHECK_RESULT(SDL_RenderCopy(renderer.get(), txt, src, dst));
 }
 void WindowManager::draw(std::shared_ptr<eng::Object> object) {
   if (!object) return;

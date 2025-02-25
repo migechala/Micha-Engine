@@ -3,8 +3,10 @@
 #include <dirent.h>
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <numeric>
 #include <string>
 
 #include "Logger.h"
@@ -19,95 +21,56 @@ FileManager *FileManager::getInstance() {
 }
 
 int FileManager::getFileCountInDirectory(const std::string &path) {
-  DIR *dp;
-  int i = 0;
-  struct dirent *ep;
-  dp = opendir(path.c_str());
-
-  if (dp != nullptr) {
-    while ((ep = readdir(dp))) i++;
-
-    (void)closedir(dp);
-  } else {
-    perror("Couldn't open the directory");
-    return -1;
-  }
-
-  return i;
+  std::filesystem::path p(path);
+  return std::distance(std::filesystem::directory_iterator{p},
+                       std::filesystem::directory_iterator{});
 }
 
 std::vector<std::string> FileManager::getFiles(const std::string &path) {
+  std::filesystem::path p(path);
   std::vector<std::string> files;
-  struct dirent *entry;
-  DIR *dir = opendir(path.c_str());
 
-  if (dir == nullptr) {
-    return files;
-  }
-  while ((entry = readdir(dir)) != nullptr) {
-    files.push_back(entry->d_name);
-  }
-  closedir(dir);
+  std::transform(
+      std::filesystem::directory_iterator{p},
+      std::filesystem::directory_iterator{}, std::back_inserter(files),
+      [](const auto &entry) { return entry.path().filename().string(); });
+
   return files;
 }
 
-void FileManager::removeCharacters(std::string &str, char c) {
-  str.erase(std::remove(str.begin(), str.end(), c), str.end());
-}
-
-std::string FileManager::getSettingsFromJson(std::string path, std::string tree,
-                                             std::string child) {
-  char START = '{', END = '}', NEXT = ',', VALUE = ':';
-  std::vector<std::string> fileContents;
-  std::string ret = ":(";
-
-  std::ifstream json;
-  json.open(path);
+std::unordered_map<std::string, std::string> FileManager::readSettings(
+    const std::string &path) {
+  std::ifstream settings;
+  settings.open(path);
   std::string line;
-  if (json.is_open()) {
-    while (getline(json, line)) {
-      // Write all content of json file to vector fileContents
-      fileContents.push_back(line);
+  if (settings.is_open()) {
+    while (getline(settings, line)) {
+      // Write all content of settings file to vector fileContents
+      std::string key = line.substr(0, line.find(":"));
+      key = key.erase(0, key.find_first_not_of(" \t\n\v\f\r"))
+                .erase(key.find_last_not_of(" \t\n\v\f\r") + 1);
+      std::string value = line.substr(line.find(":") + 1);
+      value = value.erase(0, value.find_first_not_of(" \t\n\v\f\r"))
+                  .erase(value.find_last_not_of(" \t\n\v\f\r") + 1);
+      settingsMap[key] = value;
     }
   } else {
     LOG_ERR("Failed to open config file " + path);
   }
-  json.close();
-
-  bool continueLoops = true;
-  for (int i = 0; i < fileContents.size() && continueLoops; ++i) {
-    // Loop through each value in fileContents to find tree string
-    std::string line = fileContents[i];
-    if (line.find(tree) != std::string::npos) {
-      int skip = i;
-      // Get skip from index i to the first opening brace ( { )
-      for (; fileContents[skip].find(START) == std::string::npos &&
-             skip < fileContents.size();
-           ++skip);
-
-      // Get closest closing brace after skip ( } )
-      for (int j = skip; fileContents[j].find(END) == std::string::npos &&
-                         j < fileContents.size();
-           ++j) {
-        if (fileContents[j].find("\"" + child + "\"") != std::string::npos) {
-          std::string line = fileContents[j];
-          size_t pos = line.find(child);
-          size_t Ipos = 1;
-
-          for (; Ipos + pos < line.size() && line[Ipos + pos] != '"'; ++Ipos);
-
-          line = line.substr(Ipos + pos + 2);
-          // remove " and ,
-          removeCharacters(line, '"');
-          removeCharacters(line, ',');
-          continueLoops = false;
-          ret = line;
-          break;
-        }
-      }
-    }
+  return settingsMap;
+}
+std::string FileManager::getSettings(std::string key) {
+  if (settingsMap.empty()) {
+    LOG_ERR(
+        "Settings map is empty or is not initialized. Ensure that you have "
+        "called readSettings() before calling getSettings()");
+    return "";
   }
-  return ret;
+  if (settingsMap.find(key) == settingsMap.end()) {
+    LOG_ERR("Key " + key + " not found in settings map");
+    return key + " NOT FOUND";
+  }
+  return settingsMap[key];
 }
 
 FileManager::~FileManager() { delete instance; }
