@@ -13,9 +13,15 @@ class KeyboardManager {
   static KeyboardManager* instance;  // Singleton instance
   static bool listen;                // Flag to control listener status
 
+  KeyboardManager() = default;  // Private constructor for singleton pattern
+
  public:
   // Singleton pattern to get the instance of KeyboardManager
   static KeyboardManager* getInstance();
+
+  KeyboardManager(const KeyboardManager&) = delete;  // Delete copy constructor
+  KeyboardManager& operator=(const KeyboardManager&) =
+      delete;  // Delete copy assignment operator
 
   // Retrieves the current state of the keyboard
   const Uint8* getKeyboardStatus();

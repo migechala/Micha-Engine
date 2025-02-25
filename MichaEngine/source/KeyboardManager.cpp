@@ -9,12 +9,14 @@ KeyboardManager *KeyboardManager::instance = nullptr;
 bool KeyboardManager::listen = true;
 
 const Uint8 *KeyboardManager::state = SDL_GetKeyboardState(NULL);
+
 KeyboardManager *KeyboardManager::getInstance() {
   if (instance == nullptr) {
     instance = new KeyboardManager();
   }
   return instance;
 }
+
 void KeyboardManager::addListener(SDL_Scancode key, std::function<void()> func,
                                   bool repeatable) {
   listeners.insert({key, std::make_tuple(func, false, repeatable)});
