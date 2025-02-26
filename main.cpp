@@ -1,6 +1,7 @@
 #include <random>
 
 #include "Engine.h"
+#include "FileManager.h"
 
 class Game : public MichaApp {
  private:
@@ -11,40 +12,16 @@ class Game : public MichaApp {
   std::random_device dev;
   static constexpr int bulletSpawnFrameInterval = 50;
 
- public:
-  Game() : characterDead(false) {
-    windowManager->debugDraw = true;
-    initializeLogger();
-    initializeWindow();
-    initializeParallaxBackground();
-    initializeBulletOptions();
-    initializeMainCharacter();
-    setupInputListeners();
-    windowManager->getInternalWindow()->showFPS();
-  }
-
-  void mainloop() override {
-    LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
-    static int projFrame = 0;
-
-    if (!characterDead) {
-      handleCharacterAnimation();
-      handleBulletSpawning(projFrame);
-    } else if (!changedToEnd) {
-      transitionToEndScreen();
-    }
-
-    cleanupOffScreenObjects();
-    detectCollisions();
-
-    projFrame++;
-  }
-
  private:
   void initializeLogger() { Logger::setLogLevel(LOG_LEVEL::PRIORITY); }
 
   void initializeWindow() {
     maxFPS = 120;
+    std::cout << windowManager->getSize().x << " " << windowManager->getSize().y
+              << std::endl;
+    windowManager->setSize(
+        {std::stoi(FileManager::getInstance()->getSettings("height")),
+         std::stoi(FileManager::getInstance()->getSettings("width"))});
     ObjectManager::getInstance()->updateFrameSize(windowManager->getSize());
     windowManager->getInternalWindow()->show_debug = true;
   }
@@ -109,6 +86,37 @@ class Game : public MichaApp {
         true);
   }
 
+ public:
+  Game() : characterDead(false) {
+    windowManager->debugDraw = true;
+    FileManager::getInstance()->readSettings("../assets/settings.ini");
+    initializeLogger();
+    initializeWindow();
+    initializeParallaxBackground();
+    initializeBulletOptions();
+    initializeMainCharacter();
+    setupInputListeners();
+    windowManager->getInternalWindow()->showFPS();
+  }
+
+  void mainloop() override {
+    LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
+    static int projFrame = 0;
+
+    if (!characterDead) {
+      handleCharacterAnimation();
+      handleBulletSpawning(projFrame);
+    } else if (!changedToEnd) {
+      transitionToEndScreen();
+    }
+
+    cleanupOffScreenObjects();
+    detectCollisions();
+
+    projFrame++;
+  }
+
+ private:
   void handleCharacterAnimation() {
     auto character = ObjectManager::getInstance()->getSprite(mainCharacterID);
     if (character->isGrounded()) {
