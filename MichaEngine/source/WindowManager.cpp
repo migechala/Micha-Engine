@@ -72,7 +72,7 @@ void WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src,
   CHECK_RESULT(SDL_RenderCopy(renderer.get(), txt, src, dst));
 }
 void WindowManager::draw(std::shared_ptr<eng::Object> object) {
-  if (!object) return;
+  if (!object || std::is_null_pointer_v<decltype(object)>) return;
   SDL_Color oldColor;
   SDL_Rect dst;
   eng::Vector2i pos = getAbsolutePosition(object->getOptions().getPosition());
@@ -80,8 +80,9 @@ void WindowManager::draw(std::shared_ptr<eng::Object> object) {
   dst.y = pos.y - object->getOptions().getSize().y;
   dst.w = object->getOptions().getSize().x;
   dst.h = object->getOptions().getSize().y;
-
-  if (object->isSprite()) {
+  if (std::is_convertible_v<std::shared_ptr<eng::Object>,
+                            std::shared_ptr<eng::Sprite>>) {
+    auto sprite = std::reinterpret_pointer_cast<eng::Sprite>(object);
     if (debugDraw) {
       SDL_Rect debugDst;
       debugDst.x = pos.x - object->getOptions().getHitbox().x / 2 +
@@ -95,7 +96,6 @@ void WindowManager::draw(std::shared_ptr<eng::Object> object) {
       CHECK_RESULT(SDL_SetRenderDrawColor(renderer.get(), oldColor.r,
                                           oldColor.g, oldColor.b, oldColor.a));
     }
-    auto sprite = std::reinterpret_pointer_cast<eng::Sprite>(object);
     LOG_INFO("Rendering Texture " + std::to_string(sprite->getId()),
              LOG_LEVEL::LOW)
     CHECK_RESULT(SDL_RenderCopyEx(renderer.get(), sprite->getTexture().get(),
@@ -132,7 +132,7 @@ void WindowManager::update() {
     }
   }
   for (int i = 0; i < ObjectManager::getInstance()->getNumObjects(); ++i) {
-    auto curObject = ObjectManager::getInstance()->getObject(i);
+    auto curObject = ObjectManager::getInstance()->getSprite(i);
     if (!curObject) continue;
 
     LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::LOW)

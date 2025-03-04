@@ -33,13 +33,18 @@ void eng::Vector2i::operator+=(const eng::Vector2i &change) {
   this->y += change.y;
 }
 
+void eng::Vector2i::operator-=(const Vector2i &change) {
+  this->x -= change.x;
+  this->y += change.y;
+}
+
 eng::Vector2i eng::Vector2i::operator/(const int &change) const {
   return {this->x / change, this->y / change};
 }
 eng::Object::Object(ObjectOptions &options)
     : p_options(options), p_flip(options.getFlip()) {}
 
-bool eng::Object::isSprite() { return false; }
+void eng::Object::accept(Visitor &visitor) { visitor.visit(*this); }
 
 void eng::Object::setPosition(eng::Vector2i newPosition) {
   p_options.setPosition(newPosition);
@@ -70,6 +75,8 @@ bool eng::Object::isGrounded() { return p_grounded; }
 void eng::Object::setRising(bool arg) { p_rising = arg; }
 
 void eng::Object::setGrounded(bool arg) { p_grounded = arg; }
+
+void eng::Sprite::accept(Visitor &visitor) { visitor.visit(*this); }
 
 void eng::Sprite::setCutOut(eng::Vector2i pos) {
   p_src.x = pos.x;
@@ -106,8 +113,6 @@ void eng::Sprite::changeSpritesheet(int index) {
   }
 }
 
-bool eng::Sprite::isSprite() { return true; }
-
 void eng::Sprite::toggleUpdate() { p_update = !p_update; }
 
 void eng::Sprite::setFramesPerUpdate(int fpu) { framesPerUpdate = fpu; }
@@ -134,114 +139,10 @@ eng::Sprite::Sprite(SpriteOptions &options)
   }
 }
 
-eng::ObjectOptions::ObjectOptions() {}
+eng::UpdateTextureVisitor::UpdateTextureVisitor(int frame) : frame(frame) {}
 
-eng::ObjectOptions &eng::ObjectOptions::setPosition(eng::Vector2i position) {
-  p_position = position;
-  return (*this);
+void eng::UpdateTextureVisitor::visit(Object &obj) { return; }
+
+void eng::UpdateTextureVisitor::visit(Sprite &sprite) {
+  sprite.updateTexture(frame);
 }
-
-eng::ObjectOptions &eng::ObjectOptions::setSize(eng::Vector2i size) {
-  p_size = size;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::setHitbox(eng::Vector2i size) {
-  p_hitbox = size;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::setHitboxOffset(eng::Vector2i offset) {
-  p_hitboxOffset = offset;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::setVelocity(eng::Vector2i velocity) {
-  p_velocity = velocity;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::setAcceleration(
-    eng::Vector2i acceleration) {
-  p_acceleration = acceleration;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::setFlip(SDL_RendererFlip flip) {
-  p_flip = flip;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::setColor(SDL_Color color) {
-  p_color = color;
-  return (*this);
-}
-
-eng::ObjectOptions &eng::ObjectOptions::enableGravity() {
-  p_gravity = true;
-  return (*this);
-}
-
-eng::Vector2i eng::ObjectOptions::getPosition() const { return p_position; }
-
-eng::Vector2i eng::ObjectOptions::getSize() const { return p_size; }
-
-eng::Vector2i eng::ObjectOptions::getHitbox() const { return p_hitbox; }
-
-eng::Vector2i eng::ObjectOptions::getHitboxOffset() const {
-  return p_hitboxOffset;
-}
-
-eng::Vector2i eng::ObjectOptions::getVelocity() const { return p_velocity; }
-
-eng::Vector2i eng::ObjectOptions::getAcceleration() const {
-  return p_acceleration;
-}
-
-SDL_RendererFlip eng::ObjectOptions::getFlip() const { return p_flip; }
-
-SDL_Color eng::ObjectOptions::getColor() const { return p_color; }
-
-bool eng::ObjectOptions::isGravityEnabled() const { return p_gravity; }
-
-eng::SpriteOptions::SpriteOptions() {}
-
-eng::SpriteOptions &eng::SpriteOptions::setTextures(
-    std::vector<std::shared_ptr<SDL_Texture>> textures) {
-  p_textures = textures;
-  return (*this);
-}
-
-eng::SpriteOptions &eng::SpriteOptions::setNumberOfSpritesPerSheet(
-    std::vector<int> num) {
-  p_numSpritesPerSheet = num;
-  return (*this);
-}
-
-eng::SpriteOptions &eng::SpriteOptions::setRealSpriteSize(
-    eng::Vector2i spriteSize) {
-  p_spriteSize = spriteSize;
-  return (*this);
-}
-
-eng::SpriteOptions &eng::SpriteOptions::setFramesPerTextureUpdate(
-    int numFrames) {
-  p_fptu = numFrames;
-  return (*this);
-}
-
-void eng::ObjectOptions::setId(int id) { id = id; }
-
-int eng::SpriteOptions::getFramesPerTextureUpdate() { return p_fptu; }
-
-std::vector<int> eng::SpriteOptions::getNumberOfSpritesPerSheet() {
-  return p_numSpritesPerSheet;
-}
-
-std::vector<std::shared_ptr<SDL_Texture>> eng::SpriteOptions::getTextures() {
-  return p_textures;
-}
-
-eng::Vector2i eng::SpriteOptions::getRealSpriteSize() { return p_spriteSize; }
-
-int eng::ObjectOptions::getId() { return id; }

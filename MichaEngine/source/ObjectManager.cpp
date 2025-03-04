@@ -110,9 +110,8 @@ int ObjectManager::updateObject(int objId, int frame) {
   } else if (!obj->isRising() && obj->getOptions().getVelocity().y > 0) {
     obj->setRising(true);
   }
-  if (obj->isSprite()) {
-    std::reinterpret_pointer_cast<eng::Sprite>(obj)->updateTexture(frame);
-  }
+  eng::UpdateTextureVisitor visitor(frame);
+  obj->accept(visitor);
   return objId;
 }
 
@@ -124,19 +123,6 @@ int ObjectManager::updateAllObjects(int frame) {
 }
 
 bool ObjectManager::doesExist(int objId) { return objects[objId] != nullptr; }
-
-std::shared_ptr<eng::Object> ObjectManager::getObject(int objId) {
-  return objects[objId];
-}
-
-std::shared_ptr<eng::Sprite> ObjectManager::getSprite(int objId) {
-  auto obj = objects[objId];
-  if (obj && obj->isSprite()) {
-    return std::reinterpret_pointer_cast<eng::Sprite>(obj);
-  }
-  LOG_ERR("ATTEMPTED TO CALL getSprite WITH NON-SPRITE OBJECT")
-  return nullptr;
-}
 
 bool ObjectManager::collide(int idA, int idB) {
   int leftA, leftB;

@@ -8,6 +8,7 @@
 class ObjectManager {
  private:
   std::vector<std::shared_ptr<eng::Object>> objects;
+  std::vector<std::shared_ptr<eng::Sprite>> sprites;
   std::vector<int> freeObjectLoc;
   static ObjectManager* instance;
   int top(int id), bottom(int id), left(int id), right(int id);
@@ -30,8 +31,9 @@ class ObjectManager {
   bool doesExist(int objId);
 
   // Accessor methods
-  std::shared_ptr<eng::Object> getObject(int objId);
-  std::shared_ptr<eng::Sprite> getSprite(int objId);
+
+  std::shared_ptr<eng::Object> getObject(int objId) { return objects[objId]; }
+  std::shared_ptr<eng::Sprite> getSprite(int objId) { return sprites[objId]; }
 
   // Collision detection
   bool collide(int idA, int idB);

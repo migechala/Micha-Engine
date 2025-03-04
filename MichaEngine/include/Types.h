@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace eng {
+class Visitor;
 
 // Struct to represent 2D vectors
 struct Vector2i {
@@ -20,10 +21,11 @@ struct Vector2i {
   // Operator overloads for vector arithmetic
   Vector2i operator+(const Vector2i& change) const;
   Vector2i operator-(const Vector2i& change) const;
-  void operator+=(const Vector2i& change);
   Vector2i operator/(const Vector2i& change) const;
   Vector2i operator/(const int& change) const;
   Vector2i operator*(const Vector2i& change) const;
+  void operator+=(const Vector2i& change);
+  void operator-=(const Vector2i& change);
 };
 
 // ObjectOptions class for configuring objects
@@ -42,31 +44,70 @@ class ObjectOptions {
 
  public:
   // Constructors
-  ObjectOptions();
+  ObjectOptions() = default;
+
+  // Destructor
+  virtual ~ObjectOptions() = default;
 
   // Builder pattern for setting options
-  ObjectOptions& setPosition(eng::Vector2i position);
-  ObjectOptions& setSize(eng::Vector2i size);
-  ObjectOptions& setHitbox(eng::Vector2i size);
-  ObjectOptions& setHitboxOffset(eng::Vector2i offset);
-  ObjectOptions& setVelocity(eng::Vector2i velocity);
-  ObjectOptions& setAcceleration(eng::Vector2i acceleration);
-  ObjectOptions& setFlip(SDL_RendererFlip flip);
-  ObjectOptions& setColor(SDL_Color color);
-  ObjectOptions& enableGravity();
-  void setId(int id);
+  ObjectOptions& setPosition(eng::Vector2i newPos) {
+    p_position = newPos;
+    return (*this);
+  }
+
+  ObjectOptions& setSize(eng::Vector2i newSize) {
+    p_size = newSize;
+    return (*this);
+  }
+
+  ObjectOptions& setHitbox(eng::Vector2i size) {
+    p_hitbox = size;
+    return (*this);
+  }
+
+  ObjectOptions& setHitboxOffset(eng::Vector2i offset) {
+    p_hitboxOffset = offset;
+    return (*this);
+  }
+
+  ObjectOptions& setVelocity(eng::Vector2i velocity) {
+    p_velocity = velocity;
+    return (*this);
+  }
+
+  ObjectOptions& setAcceleration(eng::Vector2i acceleration) {
+    p_acceleration = acceleration;
+    return (*this);
+  }
+
+  ObjectOptions& setFlip(SDL_RendererFlip flip) {
+    p_flip = flip;
+    return (*this);
+  }
+
+  ObjectOptions& setColor(SDL_Color color) {
+    p_color = color;
+    return (*this);
+  }
+
+  ObjectOptions& enableGravity() {
+    p_gravity = true;
+    return (*this);
+  }
+
+  inline void setId(int id) { id = id; }
 
   // Getters
-  Vector2i getPosition() const;
-  Vector2i getSize() const;
-  Vector2i getHitbox() const;
-  Vector2i getHitboxOffset() const;
-  Vector2i getVelocity() const;
-  Vector2i getAcceleration() const;
-  SDL_RendererFlip getFlip() const;
-  SDL_Color getColor() const;
-  bool isGravityEnabled() const;
-  int getId();
+  Vector2i getPosition() const { return p_position; }
+  Vector2i getSize() const { return p_size; }
+  Vector2i getHitbox() const { return p_hitbox; }
+  Vector2i getHitboxOffset() const { return p_hitboxOffset; }
+  Vector2i getVelocity() const { return p_velocity; }
+  Vector2i getAcceleration() const { return p_acceleration; }
+  SDL_RendererFlip getFlip() const { return p_flip; }
+  SDL_Color getColor() const { return p_color; }
+  bool isGravityEnabled() const { return p_gravity; }
+  int getId() const { return id; };
 };
 
 // SpriteOptions class inheriting from ObjectOptions
@@ -79,20 +120,42 @@ class SpriteOptions : public ObjectOptions {
 
  public:
   // Constructors
-  SpriteOptions();
+  SpriteOptions() = default;
+
+  // Desturctor
+  virtual ~SpriteOptions() = default;
 
   // Setters for sprite-specific options
   SpriteOptions& setTextures(
-      std::vector<std::shared_ptr<SDL_Texture>> textures);
-  SpriteOptions& setNumberOfSpritesPerSheet(std::vector<int> num);
-  SpriteOptions& setRealSpriteSize(eng::Vector2i spriteSize);
-  SpriteOptions& setFramesPerTextureUpdate(int numFrames);
+      std::vector<std::shared_ptr<SDL_Texture>> textures) {
+    p_textures = std::move(textures);
+    return (*this);
+  }
+
+  SpriteOptions& setNumberOfSpritesPerSheet(std::vector<int> num) {
+    p_numSpritesPerSheet = std::move(num);
+    return (*this);
+  }
+
+  SpriteOptions& setRealSpriteSize(eng::Vector2i spriteSize) {
+    p_spriteSize = spriteSize;
+    return (*this);
+  }
+
+  SpriteOptions& setFramesPerTextureUpdate(int numFrames) {
+    p_fptu = numFrames;
+    return (*this);
+  }
 
   // Getters
-  int getFramesPerTextureUpdate();
-  std::vector<int> getNumberOfSpritesPerSheet();
-  std::vector<std::shared_ptr<SDL_Texture>> getTextures();
-  eng::Vector2i getRealSpriteSize();
+  int getFramesPerTextureUpdate() const { return p_fptu; }
+  std::vector<int> getNumberOfSpritesPerSheet() const {
+    return p_numSpritesPerSheet;
+  }
+  std::vector<std::shared_ptr<SDL_Texture>> getTextures() const {
+    return p_textures;
+  }
+  eng::Vector2i getRealSpriteSize() const { return p_spriteSize; }
 };
 
 // Object class to represent an object in the game world
@@ -109,9 +172,7 @@ class Object {
   // Constructor accepting ObjectOptions
   Object(ObjectOptions& options);
   virtual ~Object() = default;
-
-  // Check if the object is a sprite
-  virtual bool isSprite();
+  virtual void accept(Visitor& visitor);
 
   // Setters
   void setPosition(eng::Vector2i newPosition);
@@ -147,6 +208,9 @@ class Sprite : public Object {
   void setCutOut(eng::Vector2i pos);
 
  public:
+  // Constructor accepting SpriteOptions
+  Sprite(SpriteOptions& options);
+  virtual ~Sprite() = default;
   // Getter
   std::shared_ptr<SDL_Texture> getTexture();
   std::vector<Vector2i> getCutOuts();
@@ -154,13 +218,28 @@ class Sprite : public Object {
   // Update and change sprite-related properties
   void updateTexture(int frame);
   void changeSpritesheet(int index);
-  bool isSprite() override;
   void toggleUpdate();
   void setFramesPerUpdate(int fpu);
   SDL_Rect& getSrc();
 
-  // Constructor accepting SpriteOptions
-  Sprite(SpriteOptions& options);
+  virtual void accept(Visitor& visitor) override;
+};
+
+class Visitor {
+ public:
+  virtual void visit(Object& obj) = 0;
+  virtual void visit(Sprite& sprite) = 0;
+  virtual ~Visitor() = default;
+};
+
+class UpdateTextureVisitor : public Visitor {
+  int frame;
+
+ public:
+  UpdateTextureVisitor(int frame);
+  void visit(Object& obj) override;
+
+  void visit(Sprite& sprite) override;
 };
 
 }  // namespace eng

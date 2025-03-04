@@ -79,7 +79,7 @@ class Game : public MichaApp {
         [&]() {
           if (!characterDead) {
             ObjectManager::getInstance()
-                ->getSprite(mainCharacterID)
+                ->getObject(mainCharacterID)
                 ->setAcceleration({0, 1});
           }
         },
@@ -179,7 +179,7 @@ class Game : public MichaApp {
     }
 
     ObjectManager::getInstance()
-        ->getSprite(collidingObjectID)
+        ->getObject(collidingObjectID)
         ->setVelocity({0, 0});
   }
 
