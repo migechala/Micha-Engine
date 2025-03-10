@@ -22,24 +22,20 @@ FileManager *FileManager::getInstance() {
 
 int FileManager::getFileCountInDirectory(const std::string &path) {
   std::filesystem::path p(path);
-  return std::distance(std::filesystem::directory_iterator{p},
-                       std::filesystem::directory_iterator{});
+  return std::distance(std::filesystem::directory_iterator{p}, std::filesystem::directory_iterator{});
 }
 
 std::vector<std::string> FileManager::getFiles(const std::string &path) {
   std::filesystem::path p(path);
   std::vector<std::string> files;
 
-  std::transform(
-      std::filesystem::directory_iterator{p},
-      std::filesystem::directory_iterator{}, std::back_inserter(files),
-      [](const auto &entry) { return entry.path().filename().string(); });
+  std::transform(std::filesystem::directory_iterator{p}, std::filesystem::directory_iterator{},
+                 std::back_inserter(files), [](const auto &entry) { return entry.path().filename().string(); });
 
   return files;
 }
 
-std::unordered_map<std::string, std::string> FileManager::readSettings(
-    const std::string &path) {
+std::unordered_map<std::string, std::string> FileManager::readSettings(const std::string &path) {
   std::ifstream settings;
   settings.open(path);
   std::string line;
@@ -47,11 +43,9 @@ std::unordered_map<std::string, std::string> FileManager::readSettings(
     while (getline(settings, line)) {
       // Write all content of settings file to vector fileContents
       std::string key = line.substr(0, line.find(":"));
-      key = key.erase(0, key.find_first_not_of(" \t\n\v\f\r"))
-                .erase(key.find_last_not_of(" \t\n\v\f\r") + 1);
+      key = key.erase(0, key.find_first_not_of(" \t\n\v\f\r")).erase(key.find_last_not_of(" \t\n\v\f\r") + 1);
       std::string value = line.substr(line.find(":") + 1);
-      value = value.erase(0, value.find_first_not_of(" \t\n\v\f\r"))
-                  .erase(value.find_last_not_of(" \t\n\v\f\r") + 1);
+      value = value.erase(0, value.find_first_not_of(" \t\n\v\f\r")).erase(value.find_last_not_of(" \t\n\v\f\r") + 1);
       settingsMap[key] = value;
     }
   } else {
@@ -61,9 +55,8 @@ std::unordered_map<std::string, std::string> FileManager::readSettings(
 }
 std::string FileManager::getSettings(std::string key) {
   if (settingsMap.empty()) {
-    LOG_ERR(
-        "Settings map is empty or is not initialized. Ensure that you have "
-        "called readSettings() before calling getSettings()");
+    LOG_ERR("Settings map is empty or is not initialized. Ensure that you have "
+            "called readSettings() before calling getSettings()");
     return "";
   }
   if (settingsMap.find(key) == settingsMap.end()) {

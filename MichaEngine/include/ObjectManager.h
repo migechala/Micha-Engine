@@ -6,33 +6,30 @@
 #include "Types.h"
 
 class ObjectManager {
- private:
-  std::vector<std::shared_ptr<eng::Object>> objects;
+private:
   std::vector<std::shared_ptr<eng::Sprite>> sprites;
   std::vector<int> freeObjectLoc;
-  static ObjectManager* instance;
+  static ObjectManager *instance;
   int top(int id), bottom(int id), left(int id), right(int id);
 
- public:
+public:
   // Frame size used for position calculations
   eng::Vector2i frameSize = {0, 0};
   // Constructor
   ObjectManager();
 
   // Singleton instance retrieval
-  static ObjectManager* getInstance();
+  static ObjectManager *getInstance();
 
   // Object management methods
-  int addObject(std::shared_ptr<eng::Object> newObject);
-  void removeObject(int objId);
-  int updateObject(int objId, int frame);
-  int updateAllObjects(int frame);
+  int addSprite(std::shared_ptr<eng::Sprite> newSprite);
+  void removeSprite(int objId);
+  int updateSprite(int objId, int frame);
+  int updateAllSprites(int frame);
 
   bool doesExist(int objId);
 
   // Accessor methods
-
-  std::shared_ptr<eng::Object> getObject(int objId) { return objects[objId]; }
   std::shared_ptr<eng::Sprite> getSprite(int objId) { return sprites[objId]; }
 
   // Collision detection

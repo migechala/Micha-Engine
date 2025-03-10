@@ -1,0 +1,7 @@
+/Users/migecha/Projects/game_engine/debug-build/CMakeFiles/imgui.dir
+/Users/migecha/Projects/game_engine/debug-build/CMakeFiles/Game.dir
+/Users/migecha/Projects/game_engine/debug-build/CMakeFiles/edit_cache.dir
+/Users/migecha/Projects/game_engine/debug-build/CMakeFiles/rebuild_cache.dir
+/Users/migecha/Projects/game_engine/debug-build/MichaEngine/source/CMakeFiles/source.dir
+/Users/migecha/Projects/game_engine/debug-build/MichaEngine/source/CMakeFiles/edit_cache.dir
+/Users/migecha/Projects/game_engine/debug-build/MichaEngine/source/CMakeFiles/rebuild_cache.dir

@@ -13,7 +13,7 @@
 #include "imgui.h"
 
 class WindowManager {
- private:
+private:
   // Private member variables
   float cameraX = 0;
   std::shared_ptr<SDL_Window> window;
@@ -31,7 +31,7 @@ class WindowManager {
   // Static method to get monitor size
   static eng::Vector2i getMonitorSize();
 
- public:
+public:
   // Public member variable for frame count
   int frameCount;
 
@@ -40,13 +40,11 @@ class WindowManager {
   // Public methods
   void setSize(eng::Vector2i newSize);
   void setBackground(std::shared_ptr<SDL_Texture> bkg);
-  void setParallex(std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds,
-                   std::vector<float> speeds);
-  void setTiles(std::string file_path, std::vector<std::vector<int>> tiles,
-                eng::Vector2i size);
+  void setParallex(std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds, std::vector<float> speeds);
+  void setTiles(std::string file_path, std::vector<std::vector<int>> tiles, eng::Vector2i size);
 
-  void draw(SDL_Texture* txt, const SDL_Rect* src, const SDL_Rect* dst);
-  void draw(std::shared_ptr<eng::Object> object);
+  void draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst);
+  void draw(std::shared_ptr<eng::Sprite> object);
 
   eng::Vector2i getAbsolutePosition(eng::Vector2i pos);
   eng::Vector2i getCenter();
@@ -61,6 +59,6 @@ class WindowManager {
   void update();
 
   // Constructor and Destructor
-  WindowManager(const std::string& windowName, eng::Vector2i pos, Uint32 flag);
+  WindowManager(const std::string &windowName, eng::Vector2i pos, Uint32 flag);
   ~WindowManager();
 };
