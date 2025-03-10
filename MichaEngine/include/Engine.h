@@ -9,8 +9,7 @@
 #include "ResourceLoader.h"
 #include "Types.h"
 #include "WindowManager.h"
-void start(MichaApp* execute);
+void start(MichaApp *execute);
 
 //
-int create_object(eng::ObjectOptions& options);
-int create_sprite(eng::SpriteOptions& options);
+int create_sprite(eng::SpriteOptions &options);

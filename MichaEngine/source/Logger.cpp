@@ -12,37 +12,34 @@ void Logger::deleteLastLog() {
 
 void Logger::setLogLevel(LOG_LEVEL level) { ll = level; }
 
-void Logger::showLogApp(bool* open_app) {
+void Logger::showLogApp(bool *open_app) {
   ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
   ImGui::Begin("Log", open_app);
   ImGui::End();
   logApp.draw("Log", open_app);
 }
 
-void Logger::writeToFile(const std::string& write) {
-  file.open("../log.txt",
-            std::fstream::in | std::fstream::out | std::fstream::app);
+void Logger::writeToFile(const std::string &write) {
+  file.open("../log.txt", std::fstream::in | std::fstream::out | std::fstream::app);
   file << write + "\n";
   file.close();
 }
-void Logger::writeToWindow(const std::string& write) {
-  Logger::logApp.addLog(write.c_str());
-}
+void Logger::writeToWindow(const std::string &write) { Logger::logApp.addLog(write.c_str()); }
 void Logger::resetLogger() { deleteLastLog(); }
-void Logger::log(const std::string& msg, LOG_VALUES severity, LOG_LEVEL level,
-                 const char* filename, int line) {
-  if (ll < level) return;
+void Logger::log(const std::string &msg, LOG_VALUES severity, LOG_LEVEL level, const char *filename, int line) {
+  if (ll < level)
+    return;
   std::string _msg;
   switch (severity) {
-    case LOG_VALUES::INFO:
-      _msg = "INFO: ";
-      break;
-    case LOG_VALUES::WARNING:
-      _msg = "WARN: ";
-      break;
-    case LOG_VALUES::ERROR:
-      _msg = "ERR: ";
-      break;
+  case LOG_VALUES::INFO:
+    _msg = "INFO: ";
+    break;
+  case LOG_VALUES::WARNING:
+    _msg = "WARN: ";
+    break;
+  case LOG_VALUES::ERROR:
+    _msg = "ERR: ";
+    break;
   }
 
   _msg.append(msg);
@@ -61,7 +58,8 @@ void LogApp::addLog(std::string fmt, ...) {
   buf.appendfv(fmt.c_str(), args);
   va_end(args);
   for (int new_size = buf.size(); old_size < new_size; old_size++)
-    if (buf[old_size] == '\n') lineOffsets.push_back(old_size + 1);
+    if (buf[old_size] == '\n')
+      lineOffsets.push_back(old_size + 1);
 }
 
 LogApp::LogApp() {
@@ -75,7 +73,7 @@ void LogApp::clear() {
   lineOffsets.push_back(0);
 }
 
-void LogApp::draw(const char* title, bool* open_app) {
+void LogApp::draw(const char *title, bool *open_app) {
   if (!ImGui::Begin(title, open_app)) {
     ImGui::End();
     return;
@@ -88,7 +86,8 @@ void LogApp::draw(const char* title, bool* open_app) {
   }
 
   // Main window
-  if (ImGui::Button("Options")) ImGui::OpenPopup("Options");
+  if (ImGui::Button("Options"))
+    ImGui::OpenPopup("Options");
   ImGui::SameLine();
   bool clear = ImGui::Button("Clear");
   ImGui::SameLine();
@@ -98,20 +97,19 @@ void LogApp::draw(const char* title, bool* open_app) {
 
   ImGui::Separator();
 
-  if (ImGui::BeginChild("scrolling", ImVec2(0, 0), ImGuiChildFlags_None,
-                        ImGuiWindowFlags_HorizontalScrollbar)) {
-    if (clear) this->clear();
-    if (copy) ImGui::LogToClipboard();
+  if (ImGui::BeginChild("scrolling", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar)) {
+    if (clear)
+      this->clear();
+    if (copy)
+      ImGui::LogToClipboard();
 
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-    const char* buf_start = buf.begin();
-    const char* buf_end = buf.end();
+    const char *buf_start = buf.begin();
+    const char *buf_end = buf.end();
     if (filter.IsActive()) {
       for (int line_no = 0; line_no < lineOffsets.Size; line_no++) {
-        const char* line_start = buf_start + lineOffsets[line_no];
-        const char* line_end = (line_no + 1 < lineOffsets.Size)
-                                   ? (buf_start + lineOffsets[line_no + 1] - 1)
-                                   : buf_end;
+        const char *line_start = buf_start + lineOffsets[line_no];
+        const char *line_end = (line_no + 1 < lineOffsets.Size) ? (buf_start + lineOffsets[line_no + 1] - 1) : buf_end;
         if (filter.PassFilter(line_start, line_end))
           ImGui::TextUnformatted(line_start, line_end);
       }
@@ -119,13 +117,10 @@ void LogApp::draw(const char* title, bool* open_app) {
       ImGuiListClipper clipper;
       clipper.Begin(lineOffsets.Size);
       while (clipper.Step()) {
-        for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd;
-             line_no++) {
-          const char* line_start = buf_start + lineOffsets[line_no];
-          const char* line_end =
-              (line_no + 1 < lineOffsets.Size)
-                  ? (buf_start + lineOffsets[line_no + 1] - 1)
-                  : buf_end;
+        for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++) {
+          const char *line_start = buf_start + lineOffsets[line_no];
+          const char *line_end =
+              (line_no + 1 < lineOffsets.Size) ? (buf_start + lineOffsets[line_no + 1] - 1) : buf_end;
           ImGui::TextUnformatted(line_start, line_end);
         }
       }

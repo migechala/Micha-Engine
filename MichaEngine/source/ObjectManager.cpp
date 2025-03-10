@@ -3,140 +3,115 @@
 #include <iostream>
 
 #include "Logger.h"
-ObjectManager* ObjectManager::instance = nullptr;
+ObjectManager *ObjectManager::instance = nullptr;
 
 int ObjectManager::top(int id) {
-  if (!objects[id]) {
+  if (!sprites[id]) {
     LOG_ERR("id does not exist");
   };
 
-  return objects[id]->getOptions().getPosition().y +
-         objects[id]->getOptions().getHitbox().y +
-         objects[id]->getOptions().getHitboxOffset().y;
+  return sprites[id]->getOptions().getPosition().y + sprites[id]->getOptions().getHitbox().y +
+         sprites[id]->getOptions().getHitboxOffset().y;
 }
 
 int ObjectManager::bottom(int id) {
-  if (!objects[id]) {
+  if (!sprites[id]) {
     LOG_ERR("id does not exist");
   };
 
-  return objects[id]->getOptions().getPosition().y +
-         objects[id]->getOptions().getHitboxOffset().y;
+  return sprites[id]->getOptions().getPosition().y + sprites[id]->getOptions().getHitboxOffset().y;
 }
 
 int ObjectManager::left(int id) {
-  if (!objects[id]) {
+  if (!sprites[id]) {
     LOG_ERR("id does not exist");
   };
-  return objects[id]->getOptions().getPosition().x -
-         objects[id]->getOptions().getHitbox().x / 2 +
-         objects[id]->getOptions().getHitboxOffset().x;
+  return sprites[id]->getOptions().getPosition().x - sprites[id]->getOptions().getHitbox().x / 2 +
+         sprites[id]->getOptions().getHitboxOffset().x;
 }
 
 int ObjectManager::right(int id) {
-  if (!objects[id]) {
+  if (!sprites[id]) {
     LOG_ERR("id does not exist");
   };
-  return objects[id]->getOptions().getPosition().x +
-         objects[id]->getOptions().getHitbox().x / 2 +
-         objects[id]->getOptions().getHitboxOffset().x;
+  return sprites[id]->getOptions().getPosition().x + sprites[id]->getOptions().getHitbox().x / 2 +
+         sprites[id]->getOptions().getHitboxOffset().x;
 }
 
 ObjectManager::ObjectManager() {}
 
-ObjectManager* ObjectManager::getInstance() {
+ObjectManager *ObjectManager::getInstance() {
   if (instance == nullptr) {
     instance = new ObjectManager();
   }
   return instance;
 }
 
-int ObjectManager::addObject(std::shared_ptr<eng::Object> newObject) {
+int ObjectManager::addSprite(std::shared_ptr<eng::Sprite> newSprite) {
   if (frameSize.x == 0 || frameSize.y == 0) {
     LOG_ERR("Frame size not set")
     return -1;
   }
   int newId = 0;
   if (freeObjectLoc.empty()) {
-    newId = objects.size();
+    newId = sprites.size();
   } else {
     newId = freeObjectLoc.back();
     freeObjectLoc.pop_back();
   }
-  LOG_INFO("Adding new object with id: " + std::to_string(newId),
-           LOG_LEVEL::MEDIUM);
-  objects.emplace_back(newObject);
+  LOG_INFO("Adding new object with id: " + std::to_string(newId), LOG_LEVEL::MEDIUM);
+  sprites.emplace_back(newSprite);
   return newId;
 }
 
-void ObjectManager::removeObject(int objId) {
-  objects[objId] = nullptr;
+void ObjectManager::removeSprite(int objId) {
+  sprites[objId] = nullptr;
   freeObjectLoc.emplace_back(objId);
 }
 
-int ObjectManager::updateObject(int objId, int frame) {
-  std::shared_ptr<eng::Object> obj = objects[objId];
-  if (!obj) {
+int ObjectManager::updateSprite(int objId, int frame) {
+  std::shared_ptr<eng::Sprite> sprite = sprites[objId];
+  if (!sprite) {
     return objId;
   }
-  if (obj->isRising() &&
-      obj->getOptions().getPosition().y >=
-          (frameSize.y - obj->getOptions().getSize().y -
-           obj->getOptions().getVelocity().y)) {  // on upperbound
-    obj->setPosition({obj->getOptions().getPosition().x,
-                      frameSize.y - obj->getOptions().getSize().y});
-    obj->setVelocity({obj->getOptions().getVelocity().x, 0});
-  } else if (obj->getOptions().getPosition().y <=
-             0 - obj->getOptions().getVelocity().y) {  // on the ground
-    obj->setGrounded(true);
-    obj->setPosition({obj->getOptions().getPosition().x, 0});
-    if (obj->getOptions().getAcceleration().y > 0) {
-      obj->setVelocity({obj->getOptions().getVelocity().x, 0});
-      obj->setPosition({obj->getOptions().getPosition().x, 1});
-      obj->setGrounded(false);
+  if (sprite->isRising() &&
+      sprite->getOptions().getPosition().y >=
+          (frameSize.y - sprite->getOptions().getSize().y - sprite->getOptions().getVelocity().y)) { // on upperbound
+    sprite->setPosition({sprite->getOptions().getPosition().x, frameSize.y - sprite->getOptions().getSize().y});
+    sprite->setVelocity({sprite->getOptions().getVelocity().x, 0});
+  } else if (sprite->getOptions().getPosition().y <= 0 - sprite->getOptions().getVelocity().y) { // on the ground
+    sprite->setGrounded(true);
+    sprite->setPosition({sprite->getOptions().getPosition().x, 0});
+    if (sprite->getOptions().getAcceleration().y > 0) {
+      sprite->setVelocity({sprite->getOptions().getVelocity().x, 0});
+      sprite->setPosition({sprite->getOptions().getPosition().x, 1});
+      sprite->setGrounded(false);
     }
   } else {
-    obj->setPosition(obj->getOptions().getVelocity() +
-                     obj->getOptions().getPosition());
-    obj->setVelocity(obj->getOptions().getAcceleration() +
-                     obj->getOptions().getVelocity());
-    if (obj->getOptions().isGravityEnabled()) {
-      obj->setAcceleration({obj->getOptions().getAcceleration().x, -1});
+    sprite->setPosition(sprite->getOptions().getVelocity() + sprite->getOptions().getPosition());
+    sprite->setVelocity(sprite->getOptions().getAcceleration() + sprite->getOptions().getVelocity());
+    if (sprite->getOptions().isGravityEnabled()) {
+      sprite->setAcceleration({sprite->getOptions().getAcceleration().x, -1});
     }
   }
-  if (obj->isRising() && obj->getOptions().getVelocity().y <= 0) {
-    obj->setRising(false);
+  if (sprite->isRising() && sprite->getOptions().getVelocity().y <= 0) {
+    sprite->setRising(false);
     return objId;
-  } else if (!obj->isRising() && obj->getOptions().getVelocity().y > 0) {
-    obj->setRising(true);
+  } else if (!sprite->isRising() && sprite->getOptions().getVelocity().y > 0) {
+    sprite->setRising(true);
   }
-  if (obj->isSprite()) {
-    std::reinterpret_pointer_cast<eng::Sprite>(obj)->updateTexture(frame);
-  }
+  sprite->updateTexture(frame);
   return objId;
 }
 
-int ObjectManager::updateAllObjects(int frame) {
-  for (int i = 0; i < objects.size(); ++i) {
-    updateObject(i, frame);
+int ObjectManager::updateAllSprites(int frame) {
+  for (int i = 0; i < sprites.size(); ++i) {
+    updateSprite(i, frame);
   }
-  return objects.size();
+  return sprites.size();
 }
 
-bool ObjectManager::doesExist(int objId) { return objects[objId] != nullptr; }
-
-std::shared_ptr<eng::Object> ObjectManager::getObject(int objId) {
-  return objects[objId];
-}
-
-std::shared_ptr<eng::Sprite> ObjectManager::getSprite(int objId) {
-  auto obj = objects[objId];
-  if (obj && obj->isSprite()) {
-    return std::reinterpret_pointer_cast<eng::Sprite>(obj);
-  }
-  LOG_ERR("ATTEMPTED TO CALL getSprite WITH NON-SPRITE OBJECT")
-  return nullptr;
-}
+bool ObjectManager::doesExist(int objId) { return sprites[objId] != nullptr; }
 
 bool ObjectManager::collide(int idA, int idB) {
   int leftA, leftB;
@@ -156,22 +131,25 @@ bool ObjectManager::collide(int idA, int idB) {
   topB = top(idB);
   bottomB = bottom(idB);
 
-  if (bottomA >= topB) return false;
-  if (topA <= bottomB) return false;
-  if (rightA <= leftB) return false;
-  if (leftA >= rightB) return false;
+  if (bottomA >= topB)
+    return false;
+  if (topA <= bottomB)
+    return false;
+  if (rightA <= leftB)
+    return false;
+  if (leftA >= rightB)
+    return false;
   return true;
 }
 
-int ObjectManager::getNumObjects() { return objects.size(); }
+int ObjectManager::getNumObjects() { return sprites.size(); }
 
 void ObjectManager::updateFrameSize(eng::Vector2i newSize) {
   frameSize = newSize;
-  for (int i = 0; i < objects.size(); ++i) {
-    auto obj = objects[i];
-    if (obj->getOptions().getPosition().y >= frameSize.y) {
-      obj->setPosition({obj->getOptions().getPosition().x,
-                        frameSize.y - obj->getOptions().getSize().y});
+  for (int i = 0; i < sprites.size(); ++i) {
+    auto sprite = sprites[i];
+    if (sprite->getOptions().getPosition().y >= frameSize.y) {
+      sprite->setPosition({sprite->getOptions().getPosition().x, frameSize.y - sprite->getOptions().getSize().y});
     }
   }
 }
