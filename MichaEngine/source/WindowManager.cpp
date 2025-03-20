@@ -17,8 +17,6 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 
-bool WindowManager::hasQuit() { return quit; }
-
 eng::Vector2i WindowManager::getMonitorSize() {
   SDL_DisplayMode t_dm;
   if (SDL_GetCurrentDisplayMode(0, &t_dm) != 0) {
@@ -35,7 +33,7 @@ void WindowManager::renderParallex() {
     float offset = frameCount * backgroundSpeeds[i];
 
     SDL_Rect destRect;
-    destRect.x = static_cast<int>(offset) % windowSize.x;
+    destRect.x = -(static_cast<int>(offset) % windowSize.x);
     destRect.y = 0;
     destRect.w = windowSize.x;
     destRect.h = windowSize.y;
@@ -49,23 +47,6 @@ void WindowManager::renderParallex() {
   }
 }
 
-eng::Vector2i WindowManager::getCenter() { return getSize() / 2; }
-
-eng::Vector2i WindowManager::getSize() { return windowSize; }
-
-std::shared_ptr<SDL_Renderer> WindowManager::getRenderer() { return renderer; }
-
-std::shared_ptr<SDL_Window> WindowManager::getWindow() { return window; }
-
-std::shared_ptr<InternalWindow> WindowManager::getInternalWindow() { return internalWindow; }
-
-eng::Vector2i WindowManager::getAbsolutePosition(eng::Vector2i position) {
-  return {position.x, (windowSize.y - position.y)};
-}
-
-void WindowManager::draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst) {
-  CHECK_RESULT(SDL_RenderCopy(renderer.get(), txt, src, dst));
-}
 void WindowManager::draw(std::shared_ptr<eng::Sprite> sprite) {
   SDL_Color oldColor;
   SDL_Rect dst;
@@ -139,33 +120,6 @@ void WindowManager::update() {
   internalWindow->update();
 
   SDL_RenderPresent(renderer.get());
-}
-void WindowManager::setSize(eng::Vector2i newSize) {
-  windowSize = newSize;
-  SDL_SetWindowSize(window.get(), newSize.x, newSize.y);
-}
-void WindowManager::setBackground(std::shared_ptr<SDL_Texture> bkg) {
-  background.clear();
-  background.push_back(bkg);
-}
-
-void WindowManager::setParallex(std::vector<std::shared_ptr<SDL_Texture>> newBackgrounds, std::vector<float> speeds) {
-  if (newBackgrounds.size() != speeds.size()) {
-    LOG_ERR("Mismatch between number of parallax layers and speeds");
-    return;
-  }
-  background = newBackgrounds;
-  backgroundSpeeds = speeds;
-}
-
-void WindowManager::setTiles(std::string file_path, std::vector<std::vector<int>> tiles, eng::Vector2i size) {
-  auto tilesImage = ResourceLoader::loadTexture(getRenderer(), file_path);
-}
-
-WindowManager::~WindowManager() {
-  SDL_DestroyRenderer(renderer.get());
-  SDL_DestroyWindow(window.get());
-  SDL_Quit();
 }
 
 WindowManager::WindowManager(const std::string &windowName, eng::Vector2i pos, Uint32 flag)

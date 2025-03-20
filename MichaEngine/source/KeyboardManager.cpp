@@ -17,14 +17,17 @@ KeyboardManager *KeyboardManager::getInstance() {
   return instance;
 }
 
-void KeyboardManager::addListener(SDL_Scancode key, std::function<void()> func, bool repeatable) {
-  listeners.insert({key, std::make_tuple(func, false, repeatable)});
-  LOG_INFO(std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::LOW);
-  if (repeatable) {
+void KeyboardManager::addListener(std::vector<SDL_Scancode> keys, std::function<void()> func, bool repeatable) {
+  for (auto key : keys) {
+    listeners.insert({key, std::make_tuple(func, false, repeatable)});
+    LOG_INFO(std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::LOW);
+    if (repeatable) {
+      LOG_INFO(std::string("Successfully added listener for key: ").append(SDL_GetScancodeName(key)),
+               LOG_LEVEL::MEDIUM);
+      continue;
+    }
     LOG_INFO(std::string("Successfully added listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::MEDIUM);
-    return;
   }
-  LOG_INFO(std::string("Successfully added listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::MEDIUM);
 }
 
 bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }

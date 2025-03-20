@@ -25,7 +25,7 @@ public:
   const Uint8 *getKeyboardStatus();
 
   // Adds a listener for a key press event with an optional repeatable flag
-  void addListener(SDL_Scancode key, std::function<void()> func, bool repeatable = false);
+  void addListener(std::vector<SDL_Scancode> keys, std::function<void()> func, bool repeatable = false);
 
   // Removes the listener for a specific key
   void removeListener(SDL_Scancode key);

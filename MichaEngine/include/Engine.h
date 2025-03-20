@@ -13,3 +13,4 @@ void start(MichaApp *execute);
 
 //
 int create_sprite(eng::SpriteOptions &options);
+int getTime();

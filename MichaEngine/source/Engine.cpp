@@ -34,3 +34,5 @@ void start(MichaApp *execute) {
 int create_sprite(eng::SpriteOptions &options) {
   return ObjectManager::getInstance()->addSprite(std::make_shared<eng::Sprite>(options));
 }
+
+int getTime() { return SDL_GetTicks(); }

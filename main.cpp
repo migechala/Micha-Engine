@@ -10,11 +10,11 @@ private:
   bool characterDead;
   bool changedToEnd = false;
   std::random_device dev;
-  static constexpr int bulletSpawnFrameInterval = 50;
+  const int bulletSpawnFrameInterval = 35;
 
 public:
   Game() : characterDead(false) {
-    windowManager->debugDraw = true;
+    // windowManager->debugDraw = true;
     FileManager::getInstance()->readSettings("../assets/settings.ini");
     Logger::setLogLevel(LOG_LEVEL::PRIORITY);
     maxFPS = 120;
@@ -27,7 +27,7 @@ public:
                                                             "../assets/background/4.png", "../assets/background/5.png",
                                                             "../assets/background/6.png", "../assets/background/7.png",
                                                             "../assets/background/8.png", "../assets/background/9.png"),
-                               {-0.9f, -0.2f, -0.3f, -0.4f, -0.5f, -0.6f, -0.7f, -0.8f, -0.9f});
+                               {0.9f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f});
     bulletOptions.setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "../assets/projectiles/1.png"))
         .setNumberOfSpritesPerSheet({1})
         .setRealSpriteSize({249, 144})
@@ -52,7 +52,7 @@ public:
 
     mainCharacterID = create_sprite(mainCharacterOptions);
     KeyboardManager::getInstance()->addListener(
-        SDL_SCANCODE_SPACE,
+        {SDL_SCANCODE_SPACE, SDL_SCANCODE_W, SDL_SCANCODE_UP},
         [&]() {
           if (!characterDead) {
             ObjectManager::getInstance()->getSprite(mainCharacterID)->setAcceleration({0, 1});
@@ -65,7 +65,6 @@ public:
   void mainloop() override {
     LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
     static int projFrame = 0;
-
     if (!characterDead) {
       handleCharacterAnimation();
       handleBulletSpawning(projFrame);
@@ -93,7 +92,7 @@ private:
     if (projFrame >= bulletSpawnFrameInterval) {
       projFrame = 0;
       bulletOptions.setPosition({bulletOptions.getPosition().x, newRandom(10, windowManager->getSize().y - 10)})
-          .setVelocity({newRandom(-20, -1), 0});
+          .setVelocity({newRandom(-30, -10), 0});
       create_sprite(bulletOptions);
     }
   }

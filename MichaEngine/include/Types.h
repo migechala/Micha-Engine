@@ -81,22 +81,6 @@ public:
   inline bool isGravityEnabled() const { return p_gravity; }
 };
 
-/*
-
-
-  eng::Vector2i p_position, p_size, p_velocity, p_acceleration, p_hitbox, p_hitboxOffset;
-  SDL_RendererFlip p_flip;
-  SDL_Color p_color;
-  bool p_gravity = false;
-  int id = -1;
-
-  std::vector<std::shared_ptr<SDL_Texture>> p_textures;
-  std::vector<int> p_numSpritesPerSheet;
-  eng::Vector2i p_realSpriteSize;
-
-*/
-
-// Sprite class representing an animated object
 class Sprite {
 private:
   std::vector<std::vector<eng::Vector2i>> cutOuts;

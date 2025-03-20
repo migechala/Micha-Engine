@@ -1,2 +1,0 @@
-/usr/bin/ar qc libsource.a CMakeFiles/source.dir/Engine.cpp.o CMakeFiles/source.dir/FileManager.cpp.o CMakeFiles/source.dir/InternalWindow.cpp.o CMakeFiles/source.dir/KeyboardManager.cpp.o CMakeFiles/source.dir/Logger.cpp.o CMakeFiles/source.dir/MichaApp.cpp.o CMakeFiles/source.dir/ObjectManager.cpp.o CMakeFiles/source.dir/ResourceLoader.cpp.o CMakeFiles/source.dir/Types.cpp.o CMakeFiles/source.dir/WindowManager.cpp.o
-/usr/bin/ranlib libsource.a
