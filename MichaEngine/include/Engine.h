@@ -7,6 +7,7 @@
 #include "MichaApp.h"
 #include "ObjectManager.h"
 #include "ResourceLoader.h"
+#include "TileManager.h"
 #include "Types.h"
 #include "WindowManager.h"
 void start(MichaApp *execute);

@@ -88,7 +88,8 @@ int ObjectManager::updateSprite(int objId, int frame) {
       sprite->setGrounded(false);
     }
   } else {
-    sprite->setPosition(sprite->getOptions().getVelocity() + sprite->getOptions().getPosition());
+
+    sprite->setPosition(sprite->getOptions().getPosition() + sprite->getOptions().getVelocity());
     sprite->setVelocity(sprite->getOptions().getAcceleration() + sprite->getOptions().getVelocity());
     if (sprite->getOptions().isGravityEnabled()) {
       sprite->setAcceleration({sprite->getOptions().getAcceleration().x, -1});

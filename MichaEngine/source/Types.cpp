@@ -1,35 +1,8 @@
 #include "Types.h"
 #include "Logger.h"
-
+#include <iostream>
 namespace eng {
-
-// Vector2i implementation
-Vector2i::Vector2i(int x, int y) : x(x), y(y) {}
-
-Vector2i Vector2i::operator+(const Vector2i &change) const { return {x + change.x, y + change.y}; }
-
-Vector2i Vector2i::operator-(const Vector2i &change) const { return {x - change.x, y - change.y}; }
-
-Vector2i Vector2i::operator/(const Vector2i &change) const { return {x / change.x, y / change.y}; }
-
-Vector2i Vector2i::operator/(int change) const { return {x / change, y / change}; }
-
-Vector2i Vector2i::operator*(const Vector2i &change) const { return {x * change.x, y * change.y}; }
-
-void Vector2i::operator+=(const Vector2i &change) {
-  x += change.x;
-  y += change.y;
-}
-
-void Vector2i::operator=(const Vector2i &newVector) {
-  x = newVector.x;
-  y = newVector.y;
-}
-
-void Vector2i::operator-=(const Vector2i &change) {
-  x -= change.x;
-  y -= change.y;
-}
+Vector2i::Vector2i(const Vector2f &vec) : x(static_cast<int>(vec.x)), y(static_cast<int>(vec.y)) {}
 
 // SpriteOptions implementation
 SpriteOptions &SpriteOptions::setPosition(Vector2i newPos) {
@@ -53,12 +26,12 @@ SpriteOptions &SpriteOptions::setHitboxOffset(Vector2i offset) {
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setVelocity(Vector2i velocity) {
+SpriteOptions &SpriteOptions::setVelocity(Vector2f velocity) {
   p_velocity = velocity;
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setAcceleration(Vector2i acceleration) {
+SpriteOptions &SpriteOptions::setAcceleration(Vector2f acceleration) {
   p_acceleration = acceleration;
   return *this;
 }

@@ -59,9 +59,6 @@ public:
     background = newBackgrounds;
     backgroundSpeeds = speeds;
   }
-  void setTiles(std::string file_path, std::vector<std::vector<int>> tiles, eng::Vector2i size) {
-    std::shared_ptr<SDL_Texture> tilesImage = ResourceLoader::loadTexture(getRenderer(), file_path);
-  }
 
   void draw(SDL_Texture *txt, const SDL_Rect *src, const SDL_Rect *dst) {
     CHECK_RESULT(SDL_RenderCopy(renderer.get(), txt, src, dst));
