@@ -118,7 +118,7 @@ public:
   SpriteOptions &setFlip(SDL_RendererFlip flip);
   SpriteOptions &setColor(SDL_Color color);
   SpriteOptions &enableGravity();
-  SpriteOptions &setTextures(std::vector<std::shared_ptr<SDL_Texture>> textures);
+  SpriteOptions &setTextures(std::vector<std::shared_ptr<SDL_Texture>> textures, bool surpress = true);
   SpriteOptions &setNumberOfSpritesPerSheet(std::vector<int> num);
   SpriteOptions &setRealSpriteSize(eng::Vector2i spriteSize);
   SpriteOptions &setFramesPerTextureUpdate(int numFrames);

@@ -11,17 +11,31 @@ SpriteOptions &SpriteOptions::setPosition(Vector2i newPos) {
 }
 
 SpriteOptions &SpriteOptions::setSize(Vector2i newSize) {
+  if (newSize.x <= 0 || newSize.y <= 0) {
+    Logger::log("Warning: Sprite size must be positive. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::MEDIUM,
+                __FILE__, __LINE__);
+    return *this;
+  }
   p_size = newSize;
-
   return *this;
 }
 
 SpriteOptions &SpriteOptions::setHitbox(Vector2i size) {
+  if (size.x <= 0 || size.y <= 0) {
+    Logger::log("Warning: Hitbox size must be positive. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::MEDIUM,
+                __FILE__, __LINE__);
+    return *this;
+  }
   p_hitbox = size;
   return *this;
 }
 
 SpriteOptions &SpriteOptions::setHitboxOffset(Vector2i offset) {
+  if (offset.x <= 0 || offset.y <= 0) {
+    Logger::log("Warning: Sprite hitbox offset must be positive. No changes made.", LOG_VALUES::WARNING,
+                LOG_LEVEL::MEDIUM, __FILE__, __LINE__);
+    return *this;
+  }
   p_hitboxOffset = offset;
   return *this;
 }
@@ -37,11 +51,22 @@ SpriteOptions &SpriteOptions::setAcceleration(Vector2f acceleration) {
 }
 
 SpriteOptions &SpriteOptions::setFlip(SDL_RendererFlip flip) {
+  if (flip != SDL_FLIP_NONE && flip != SDL_FLIP_HORIZONTAL && flip != SDL_FLIP_VERTICAL) {
+    Logger::log("Warning: Invalid sprite flip value. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::LOW, __FILE__,
+                __LINE__);
+    return *this;
+  }
   p_flip = flip;
   return *this;
 }
 
 SpriteOptions &SpriteOptions::setColor(SDL_Color color) {
+  if (color.r < 0 || color.r > 255 || color.g < 0 || color.g > 255 || color.b < 0 || color.b > 255 || color.a < 0 ||
+      color.a > 255) {
+    Logger::log("Warning: Color must be valid (0, 0, 0) - (255, 255, 255) bound.", LOG_VALUES::WARNING,
+                LOG_LEVEL::MEDIUM, __FILE__, __LINE__);
+    return *this;
+  }
   p_color = color;
   return *this;
 }
@@ -51,23 +76,46 @@ SpriteOptions &SpriteOptions::enableGravity() {
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setTextures(std::vector<std::shared_ptr<SDL_Texture>> textures) {
+SpriteOptions &SpriteOptions::setTextures(std::vector<std::shared_ptr<SDL_Texture>> textures, bool surpress) {
+  if (textures.empty()) {
+    Logger::log("Warning: Sprite size must be positive. Changes have been made however. SURPRESS WARNING BY ADDING "
+                "TRUE BOOL PARAM",
+                LOG_VALUES::WARNING, LOG_LEVEL::MEDIUM, __FILE__, __LINE__);
+  }
   p_textures = textures;
   return *this;
 }
 
 SpriteOptions &SpriteOptions::setNumberOfSpritesPerSheet(std::vector<int> num) {
+  if (num.size() != p_textures.size()) {
+    Logger::log("Warning: number of sprite per sheet missmatch with sheet textures. Truncated.", LOG_VALUES::WARNING,
+                LOG_LEVEL::LOW, __FILE__, __LINE__);
+    if (num.size() > p_textures.size()) {
+      num.resize(p_textures.size());
+    }
+    return *this;
+  }
   p_numSpritesPerSheet = num;
   return *this;
 }
 
 SpriteOptions &SpriteOptions::setRealSpriteSize(Vector2i spriteSize) {
+  if (spriteSize.x <= 0 || spriteSize.y <= 0) {
+    Logger::log("Warning: Sprite size must be positive. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::LOW,
+                __FILE__, __LINE__);
+    return *this;
+  }
   p_size = spriteSize;
   p_realSpriteSize = spriteSize;
   return *this;
 }
 
 SpriteOptions &SpriteOptions::setFramesPerTextureUpdate(int numFrames) {
+  if (numFrames <= 0) {
+    Logger::log("Warning: The number of frames per texture update must be > 0. No changes made.", LOG_VALUES::WARNING,
+                LOG_LEVEL::LOW, __FILE__, __LINE__);
+    return *this;
+  }
   p_fptu = numFrames;
   return *this;
 }
