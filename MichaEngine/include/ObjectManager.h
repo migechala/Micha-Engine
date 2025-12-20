@@ -14,7 +14,7 @@ private:
 
 public:
   // Frame size used for position calculations
-  eng::Vector2i frameSize = {0, 0};
+  eng::Vector2<int> frameSize = {0, 0};
   // Constructor
   ObjectManager();
 
@@ -39,7 +39,7 @@ public:
   int getNumObjects();
 
   // Update Frame Size
-  void updateFrameSize(eng::Vector2i newSize);
+  void updateFrameSize(eng::Vector2<int> newSize);
 
   // Destructor
   ~ObjectManager();

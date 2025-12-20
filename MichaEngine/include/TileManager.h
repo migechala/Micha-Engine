@@ -26,7 +26,7 @@ class TileManager {
   }
 
 public:
-  inline void setTiles(std::string tileFile, eng::Vector2i size, std::shared_ptr<SDL_Texture> img) {
+  inline void setTiles(std::string tileFile, eng::Vector2<int> size, std::shared_ptr<SDL_Texture> img) {
     std::unordered_map<std::string, std::shared_ptr<std::vector<std::vector<int>>>>::iterator it = cache.find(tileFile);
     if (it == cache.end()) {
       readFile(tileFile);
@@ -34,7 +34,7 @@ public:
     }
     tiles.swap(it->second);
   }
-  void renderTile(SDL_Renderer *renderer, int tileId, eng::Vector2i position, eng::Vector2i size) {
+  void renderTile(SDL_Renderer *renderer, int tileId, eng::Vector2<int> position, eng::Vector2<int> size) {
     if (!tiles || tileId < 0 || tileId >= tiles->size()) {
       return;
     }
@@ -53,7 +53,7 @@ public:
 
     SDL_RenderCopy(renderer, tilesImage.get(), &srcRect, &destRect);
   }
-  void renderMap(SDL_Renderer *renderer, eng::Vector2i position, eng::Vector2i tileSize) {
+  void renderMap(SDL_Renderer *renderer, eng::Vector2<int> position, eng::Vector2<int> tileSize) {
     if (!tiles) {
       return;
     }
@@ -62,8 +62,8 @@ public:
       for (size_t x = 0; x < (*tiles)[y].size(); ++x) {
         int tileId = (*tiles)[y][x];
         if (tileId >= 0) {
-          eng::Vector2i tilePosition = {position.x + static_cast<int>(x * tileSize.x),
-                                        position.y + static_cast<int>(y * tileSize.y)};
+          eng::Vector2<int> tilePosition = {position.x + static_cast<int>(x * tileSize.x),
+                                            position.y + static_cast<int>(y * tileSize.y)};
           renderTile(renderer, tileId, tilePosition, tileSize);
         }
       }

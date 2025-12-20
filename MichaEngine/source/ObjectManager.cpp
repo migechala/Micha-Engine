@@ -145,7 +145,7 @@ bool ObjectManager::collide(int idA, int idB) {
 
 int ObjectManager::getNumObjects() { return sprites.size(); }
 
-void ObjectManager::updateFrameSize(eng::Vector2i newSize) {
+void ObjectManager::updateFrameSize(eng::Vector2<int> newSize) {
   frameSize = newSize;
   for (int i = 0; i < sprites.size(); ++i) {
     auto sprite = sprites[i];

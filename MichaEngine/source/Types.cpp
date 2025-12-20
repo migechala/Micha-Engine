@@ -2,15 +2,13 @@
 #include "Logger.h"
 #include <iostream>
 namespace eng {
-Vector2i::Vector2i(const Vector2f &vec) : x(static_cast<int>(vec.x)), y(static_cast<int>(vec.y)) {}
-
 // SpriteOptions implementation
-SpriteOptions &SpriteOptions::setPosition(Vector2i newPos) {
+SpriteOptions &SpriteOptions::setPosition(Vector2<int> newPos) {
   p_position = newPos;
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setSize(Vector2i newSize) {
+SpriteOptions &SpriteOptions::setSize(Vector2<int> newSize) {
   if (newSize.x <= 0 || newSize.y <= 0) {
     Logger::log("Warning: Sprite size must be positive. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::MEDIUM,
                 __FILE__, __LINE__);
@@ -20,7 +18,7 @@ SpriteOptions &SpriteOptions::setSize(Vector2i newSize) {
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setHitbox(Vector2i size) {
+SpriteOptions &SpriteOptions::setHitbox(Vector2<int> size) {
   if (size.x <= 0 || size.y <= 0) {
     Logger::log("Warning: Hitbox size must be positive. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::MEDIUM,
                 __FILE__, __LINE__);
@@ -30,7 +28,7 @@ SpriteOptions &SpriteOptions::setHitbox(Vector2i size) {
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setHitboxOffset(Vector2i offset) {
+SpriteOptions &SpriteOptions::setHitboxOffset(Vector2<int> offset) {
   if (offset.x <= 0 || offset.y <= 0) {
     Logger::log("Warning: Sprite hitbox offset must be positive. No changes made.", LOG_VALUES::WARNING,
                 LOG_LEVEL::MEDIUM, __FILE__, __LINE__);
@@ -40,12 +38,12 @@ SpriteOptions &SpriteOptions::setHitboxOffset(Vector2i offset) {
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setVelocity(Vector2f velocity) {
+SpriteOptions &SpriteOptions::setVelocity(Vector2<float> velocity) {
   p_velocity = velocity;
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setAcceleration(Vector2f acceleration) {
+SpriteOptions &SpriteOptions::setAcceleration(Vector2<float> acceleration) {
   p_acceleration = acceleration;
   return *this;
 }
@@ -99,7 +97,7 @@ SpriteOptions &SpriteOptions::setNumberOfSpritesPerSheet(std::vector<int> num) {
   return *this;
 }
 
-SpriteOptions &SpriteOptions::setRealSpriteSize(Vector2i spriteSize) {
+SpriteOptions &SpriteOptions::setRealSpriteSize(Vector2<int> spriteSize) {
   if (spriteSize.x <= 0 || spriteSize.y <= 0) {
     Logger::log("Warning: Sprite size must be positive. No changes made.", LOG_VALUES::WARNING, LOG_LEVEL::LOW,
                 __FILE__, __LINE__);

@@ -103,22 +103,22 @@ To use the Micha Engine, follow these steps:
 
 A complete example of a `main.cpp` file using the Micha Engine can be found in the file `main.cpp`
 
-### **Class: `eng::Vector2i`**
+### **Class: `eng::Vector2<int>`**
 
 A 2D integer vector class used to represent positions, velocities, and other vector-related operations in the game engine.
 
 #### **Constructors:**
-- **`Vector2i()`**: Initializes the vector to (0, 0).
-- **`Vector2i(int x, int y)`**: Initializes the vector with the provided `x` and `y` values.
+- **`Vector2<int>()`**: Initializes the vector to (0, 0).
+- **`Vector2<int>(int x, int y)`**: Initializes the vector with the provided `x` and `y` values.
 
 #### **Operators:**
 - **Arithmetic Operators:**
-  - `+`: Adds two `Vector2i` vectors.
-  - `-`: Subtracts one `Vector2i` vector from another.
-  - `*`: Multiplies two `Vector2i` vectors element-wise.
-  - `/`: Divides one `Vector2i` vector by another or a scalar.
+  - `+`: Adds two `Vector2<int>` vectors.
+  - `-`: Subtracts one `Vector2<int>` vector from another.
+  - `*`: Multiplies two `Vector2<int>` vectors element-wise.
+  - `/`: Divides one `Vector2<int>` vector by another or a scalar.
 - **Assignment Operators:**
-  - `+=`: Adds another `Vector2i` to the current vector.
+  - `+=`: Adds another `Vector2<int>` to the current vector.
 
 ---
 
@@ -127,9 +127,9 @@ A 2D integer vector class used to represent positions, velocities, and other vec
 Represents a game object with position, velocity, and other customizable options.
 
 #### **Key Methods:**
-- **`setPosition(Vector2i newPosition)`**: Updates the object's position.
-- **`setVelocity(Vector2i newVelocity)`**: Sets the object's velocity.
-- **`setAcceleration(Vector2i newAcceleration)`**: Updates the object's acceleration.
+- **`setPosition(Vector2<int> newPosition)`**: Updates the object's position.
+- **`setVelocity(Vector2<int> newVelocity)`**: Sets the object's velocity.
+- **`setAcceleration(Vector2<int> newAcceleration)`**: Updates the object's acceleration.
 - **`getId()`**: Returns the object's unique ID.
 - **`isSprite()`**: Returns whether the object is a sprite (default: `false`).
 

@@ -2,6 +2,10 @@
 
 #include "imgui_impl_sdl2.h"
 
+/**
+ * Handle the main loop of the Engine and execute the provided MichaApp.
+ * \param execute The MichaApp instance to run.
+ */
 void start(MichaApp *execute) {
   LOG_INFO("Beginning Program...", LOG_LEVEL::PRIORITY);
   LOG_INFO("Max FPS Set to " + std::to_string(execute->maxFPS), LOG_LEVEL::MEDIUM);
@@ -31,8 +35,17 @@ void start(MichaApp *execute) {
   LOG_INFO("Program Finished.", LOG_LEVEL::PRIORITY);
 }
 
+/**
+ * Create a sprite with the provided options and add it to the ObjectManager.
+ * \param options The SpriteOptions to create the sprite with.
+ * \return The ID of the created sprite.
+ */
 int create_sprite(eng::SpriteOptions &options) {
   return ObjectManager::getInstance()->addSprite(std::make_shared<eng::Sprite>(options));
 }
 
+/**
+ * Get the current time in milliseconds since the SDL library was initialized.
+ * \return The current time in milliseconds.
+ */
 int getTime() { return SDL_GetTicks(); }

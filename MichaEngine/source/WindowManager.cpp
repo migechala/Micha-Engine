@@ -17,7 +17,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 
-eng::Vector2i WindowManager::getMonitorSize() {
+eng::Vector2<int> WindowManager::getMonitorSize() {
   SDL_DisplayMode t_dm;
   if (SDL_GetCurrentDisplayMode(0, &t_dm) != 0) {
     std::string err = "DP error: ";
@@ -50,7 +50,7 @@ void WindowManager::renderParallex() {
 void WindowManager::draw(std::shared_ptr<eng::Sprite> sprite) {
   SDL_Color oldColor;
   SDL_Rect dst;
-  eng::Vector2i pos = getAbsolutePosition(sprite->getOptions().getPosition());
+  eng::Vector2<int> pos = getAbsolutePosition(sprite->getOptions().getPosition());
   dst.x = pos.x - sprite->getOptions().getSize().x / 2;
   dst.y = pos.y - sprite->getOptions().getSize().y;
   dst.w = sprite->getOptions().getSize().x;
@@ -122,7 +122,7 @@ void WindowManager::update() {
   SDL_RenderPresent(renderer.get());
 }
 
-WindowManager::WindowManager(const std::string &windowName, eng::Vector2i pos, Uint32 flag)
+WindowManager::WindowManager(const std::string &windowName, eng::Vector2<int> pos, Uint32 flag)
     : frameCount(0), windowSize(getMonitorSize()), quit(false), debugDraw(false) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
   windowSize.y -= 100;

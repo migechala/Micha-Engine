@@ -20,7 +20,7 @@ KeyboardManager *KeyboardManager::getInstance() {
 void KeyboardManager::addListener(std::vector<SDL_Scancode> keys, std::function<void()> func, bool repeatable) {
   for (auto key : keys) {
     listeners.insert({key, std::make_tuple(func, false, repeatable)});
-    LOG_INFO(std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::LOW);
+    LOG_INFO(std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::MEDIUM);
     if (repeatable) {
       LOG_INFO(std::string("Successfully added listener for key: ").append(SDL_GetScancodeName(key)),
                LOG_LEVEL::MEDIUM);
@@ -35,13 +35,13 @@ bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }
 void KeyboardManager::onListeners() { listen = true; }
 
 void KeyboardManager::printListener() {
-  LOG_INFO("____________________________", LOG_LEVEL::PRIORITY);
+  LOG_INFO("____________________________", LOG_LEVEL::LOW);
   for (auto &i : listeners) {
     LOG_INFO("| " + std::string(SDL_GetKeyName(SDL_GetKeyFromScancode(i.first))) + " | func | " +
                  std::to_string(std::get<1>(i.second)) + " |",
-             LOG_LEVEL::PRIORITY);
+             LOG_LEVEL::LOW);
   }
-  LOG_INFO("----------------------------", LOG_LEVEL::PRIORITY);
+  LOG_INFO("----------------------------", LOG_LEVEL::LOW);
 }
 
 void KeyboardManager::offListeners() { listen = false; }
