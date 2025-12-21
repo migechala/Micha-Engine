@@ -49,7 +49,7 @@ std::unordered_map<std::string, std::string> FileManager::readSettings(const std
       settingsMap[key] = value;
     }
   } else {
-    LOG_ERR("Failed to open config file " + path);
+    throw std::invalid_argument("Failed to open file " + path);
   }
   return settingsMap;
 }

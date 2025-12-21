@@ -30,7 +30,7 @@ eng::Vector2<int> WindowManager::getMonitorSize() {
 
 void WindowManager::renderParallex() {
   for (size_t i = 0; i < background.size(); ++i) {
-    float offset = frameCount * backgroundSpeeds[i];
+    float offset = backgroundSpeeds[i];
 
     SDL_Rect destRect;
     destRect.x = -(static_cast<int>(offset) % windowSize.x);
@@ -102,7 +102,6 @@ void WindowManager::update() {
     LOG_INFO("Drawing object with id: " + std::to_string(i), LOG_LEVEL::PRIORITY)
     draw(curObject);
   }
-  ++frameCount;
   //
   SDL_Event e;
   while (SDL_PollEvent(&event)) {
@@ -123,7 +122,7 @@ void WindowManager::update() {
 }
 
 WindowManager::WindowManager(const std::string &windowName, eng::Vector2<int> pos, Uint32 flag)
-    : frameCount(0), windowSize(getMonitorSize()), quit(false), debugDraw(false) {
+    : windowSize(getMonitorSize()), quit(false), debugDraw(false) {
   LOG_INFO("Created Window", LOG_LEVEL::MEDIUM);
   windowSize.y -= 100;
   window.reset(SDL_CreateWindow(windowName.c_str(), pos.x, pos.y, windowSize.x, windowSize.y, flag), SDLDeleter());

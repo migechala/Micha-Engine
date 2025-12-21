@@ -11,6 +11,7 @@ private:
   std::vector<int> freeObjectLoc;
   static ObjectManager *instance;
   int top(int id), bottom(int id), left(int id), right(int id);
+  float gravityStrength;
 
 public:
   // Frame size used for position calculations
@@ -40,6 +41,12 @@ public:
 
   // Update Frame Size
   void updateFrameSize(eng::Vector2<int> newSize);
+
+  /**
+   * Set the strength of gravity
+   * \param gravity the new gravity strength
+   */
+  void setGravity(float gravity) { gravityStrength = gravity; }
 
   // Destructor
   ~ObjectManager();

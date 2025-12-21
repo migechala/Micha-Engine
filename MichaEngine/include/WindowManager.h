@@ -1,7 +1,6 @@
 // Created by Mikhail Chalakov on 2/18/24.
 
 #pragma once
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -28,7 +27,6 @@ private:
   SDL_Event event;
   eng::Vector2<int> windowSize;
   bool quit;
-
   /**
    * Render the parallax background.
    */
@@ -39,9 +37,6 @@ private:
    * \return Vector2<int> representing the width and height of the monitor.
    */
   static eng::Vector2<int> getMonitorSize();
-
-protected:
-  int frameCount;
 
 public:
   // Public member variable for debug

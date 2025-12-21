@@ -1,9 +1,9 @@
 // Created by Mikhail Chalakov on 2/18/24.
 
 #pragma once
-
 #include <SDL2/SDL.h>
 #include <memory>
+#include <ostream>
 #include <vector>
 
 namespace eng {
@@ -11,11 +11,12 @@ namespace eng {
 template <typename T>
 concept Numeric = std::is_arithmetic_v<T>;
 
-template <Numeric T> struct Vector2 {
+template <Numeric T> class Vector2 {
+public:
   T x, y;
 
   // Constructors
-  Vector2() = default;
+  Vector2() : x(0), y(0) {}
   Vector2(T x, T y) : x(x), y(y) {}
 
   // Arithmetic operators
@@ -48,7 +49,9 @@ template <Numeric T> struct Vector2 {
    */
   T length() const { return std::sqrt(x * x + y * y); }
 };
-
+template <Numeric T> std::ostream &operator<<(std::ostream &os, const Vector2<T> &v) {
+  return os << "Vector2(" << v.x << ", " << v.y << ")";
+}
 // Class for configuring objects
 class SpriteOptions {
 private:
@@ -271,6 +274,11 @@ public:
    * \return The angle of the sprite in degrees.
    */
   inline float getAngle() { return p_angle; }
+  /**
+   * Get the position of the sprite.
+   * \return The position of the sprite as a Vector<int>
+   */
+  inline Vector2<int> getPosition() { return p_options.getPosition(); }
   /**
    * Check if the sprite is rising.
    * \return True if the sprite is rising, false otherwise.

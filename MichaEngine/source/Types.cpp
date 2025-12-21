@@ -29,11 +29,6 @@ SpriteOptions &SpriteOptions::setHitbox(Vector2<int> size) {
 }
 
 SpriteOptions &SpriteOptions::setHitboxOffset(Vector2<int> offset) {
-  if (offset.x <= 0 || offset.y <= 0) {
-    Logger::log("Warning: Sprite hitbox offset must be positive. No changes made.", LOG_VALUES::WARNING,
-                LOG_LEVEL::MEDIUM, __FILE__, __LINE__);
-    return *this;
-  }
   p_hitboxOffset = offset;
   return *this;
 }
@@ -126,7 +121,7 @@ Sprite::Sprite(SpriteOptions &options)
   int w, h;
   SDL_QueryTexture(getTexture().get(), NULL, NULL, &w, &h);
   int numColumns = w / options.getRealSpriteSize().x;
-  cutOuts.resize(numSpritesPerSheet.size());
+  cutOuts.reserve(numSpritesPerSheet.size());
   for (size_t i = 0; i < numSpritesPerSheet.size(); i++) {
     for (int j = 0; j < numSpritesPerSheet[i]; j++) {
       cutOuts[i].push_back(

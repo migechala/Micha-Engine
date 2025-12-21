@@ -13,7 +13,7 @@ std::shared_ptr<SDL_Texture> ResourceLoader::loadTexture(std::shared_ptr<SDL_Ren
   SDL_Surface *srf = IMG_Load(location.c_str());
   if (!srf) {
     LOG_ERR("Surface is null " + location + " >>> " + SDL_GetError());
-    return nullptr;
+    throw std::invalid_argument("File '" + location + "' could not be loaded");
   }
   std::shared_ptr<SDL_Texture> texturePtr(SDL_CreateTextureFromSurface(renderer.get(), srf), SDLDeleter());
 

@@ -17,7 +17,7 @@ public:
     // windowManager->debugDraw = true;
     FileManager::getInstance()->readSettings("../assets/settings.ini");
     Logger::setLogLevel(LOG_LEVEL::PRIORITY);
-    maxFPS = 120;
+    maxFPS = 60;
     windowManager->setSize({std::stoi(FileManager::getInstance()->getSettings("height")),
                             std::stoi(FileManager::getInstance()->getSettings("width"))});
     ObjectManager::getInstance()->updateFrameSize(windowManager->getSize());
@@ -33,9 +33,9 @@ public:
         .setRealSpriteSize({249, 144})
         .setPosition({windowManager->getSize().x, windowManager->getSize().y / 2})
         .setSize({249, 144})
-        .setHitbox({20, 50})
-        .setHitboxOffset({-50, 50})
-        .setVelocity({-10, 0})
+        .setHitbox({20, 77})
+        .setHitboxOffset({-65, 33})
+        .setVelocity({-2, 0})
         .setFlip(SDL_FLIP_HORIZONTAL);
     eng::SpriteOptions mainCharacterOptions;
     mainCharacterOptions
@@ -55,7 +55,7 @@ public:
         {SDL_SCANCODE_SPACE, SDL_SCANCODE_W, SDL_SCANCODE_UP},
         [&]() {
           if (!characterDead) {
-            ObjectManager::getInstance()->getSprite(mainCharacterID)->setAcceleration({0, 1});
+            ObjectManager::getInstance()->getSprite(mainCharacterID)->setAcceleration({0.f, 0.6f});
           }
         },
         true);
@@ -104,7 +104,7 @@ private:
   }
 
   void cleanupOffScreenObjects() {
-    for (int i = mainCharacterID + 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
+    for (int i = 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
       auto obj = ObjectManager::getInstance()->getSprite(i);
       if (obj && obj->getOptions().getPosition().x + obj->getOptions().getVelocity().x <= 0) {
         ObjectManager::getInstance()->removeSprite(i);

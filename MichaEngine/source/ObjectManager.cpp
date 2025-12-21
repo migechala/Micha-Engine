@@ -38,7 +38,7 @@ int ObjectManager::right(int id) {
          sprites[id]->getOptions().getHitboxOffset().x;
 }
 
-ObjectManager::ObjectManager() {}
+ObjectManager::ObjectManager() : gravityStrength(0.7f) {}
 
 ObjectManager *ObjectManager::getInstance() {
   if (instance == nullptr) {
@@ -92,7 +92,7 @@ int ObjectManager::updateSprite(int objId, int frame) {
     sprite->setPosition(sprite->getOptions().getPosition() + sprite->getOptions().getVelocity());
     sprite->setVelocity(sprite->getOptions().getAcceleration() + sprite->getOptions().getVelocity());
     if (sprite->getOptions().isGravityEnabled()) {
-      sprite->setAcceleration({sprite->getOptions().getAcceleration().x, -1});
+      sprite->setAcceleration({sprite->getOptions().getAcceleration().x, -gravityStrength});
     }
   }
   if (sprite->isRising() && sprite->getOptions().getVelocity().y <= 0) {
