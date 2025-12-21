@@ -1,0 +1,2 @@
+Todo
+Sprite and Object, the user should be able to call getObject() or getSprite() and then without upcasting/type checking, I should be able to get that object from a data type.

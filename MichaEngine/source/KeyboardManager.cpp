@@ -8,28 +8,26 @@
 KeyboardManager* KeyboardManager::instance = nullptr;
 bool KeyboardManager::listen = true;
 
-const Uint8* KeyboardManager::state = SDL_GetKeyboardState(NULL);
-KeyboardManager* KeyboardManager::getInstance() {
+const Uint8 *KeyboardManager::state = SDL_GetKeyboardState(NULL);
+
+KeyboardManager *KeyboardManager::getInstance() {
   if (instance == nullptr) {
     instance = new KeyboardManager();
   }
   return instance;
 }
-void KeyboardManager::addListener(SDL_Scancode key, std::function<void()> func,
-                                  bool repeatable) {
-  listeners.insert({key, std::make_tuple(func, false, repeatable)});
-  LOG_INFO(
-      std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)),
-      LOG_LEVEL::LOW);
-  if (repeatable) {
-    LOG_INFO(std::string("Successfully added listener for key: ")
-                 .append(SDL_GetScancodeName(key)),
-             LOG_LEVEL::MEDIUM);
-    return;
+
+void KeyboardManager::addListener(std::vector<SDL_Scancode> keys, std::function<void()> func, bool repeatable) {
+  for (auto key : keys) {
+    listeners.insert({key, std::make_tuple(func, false, repeatable)});
+    LOG_INFO(std::string("Adding listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::MEDIUM);
+    if (repeatable) {
+      LOG_INFO(std::string("Successfully added listener for key: ").append(SDL_GetScancodeName(key)),
+               LOG_LEVEL::MEDIUM);
+      continue;
+    }
+    LOG_INFO(std::string("Successfully added listener for key: ").append(SDL_GetScancodeName(key)), LOG_LEVEL::MEDIUM);
   }
-  LOG_INFO(std::string("Successfully added listener for key: ")
-               .append(SDL_GetScancodeName(key)),
-           LOG_LEVEL::MEDIUM);
 }
 
 bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }
@@ -37,14 +35,13 @@ bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }
 void KeyboardManager::onListeners() { listen = true; }
 
 void KeyboardManager::printListener() {
-  LOG_INFO("____________________________", LOG_LEVEL::PRIORITY);
-  for (auto& i : listeners) {
-    LOG_INFO("| " +
-                 std::string(SDL_GetKeyName(SDL_GetKeyFromScancode(i.first))) +
-                 " | func | " + std::to_string(std::get<1>(i.second)) + " |",
-             LOG_LEVEL::PRIORITY);
+  LOG_INFO("____________________________", LOG_LEVEL::LOW);
+  for (auto &i : listeners) {
+    LOG_INFO("| " + std::string(SDL_GetKeyName(SDL_GetKeyFromScancode(i.first))) + " | func | " +
+                 std::to_string(std::get<1>(i.second)) + " |",
+             LOG_LEVEL::LOW);
   }
-  LOG_INFO("----------------------------", LOG_LEVEL::PRIORITY);
+  LOG_INFO("----------------------------", LOG_LEVEL::LOW);
 }
 
 void KeyboardManager::offListeners() { listen = false; }
@@ -66,9 +63,9 @@ void KeyboardManager::update() {
      */
     if (state[i.first] && (!std::get<1>(i.second) || std::get<2>(i.second))) {
       std::get<0>(i.second)();
-      std::get<1>(i.second) = true;  // lock
+      std::get<1>(i.second) = true; // lock
     } else if (!state[i.first] && std::get<1>(i.second)) {
-      std::get<1>(i.second) = false;  // unlock
+      std::get<1>(i.second) = false; // unlock
     }
   }
 }

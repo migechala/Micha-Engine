@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 set(CMAKE_C_COMPILER "/usr/bin/gcc")
 
 project(Game)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/MichaEngine/cmake/")
 
@@ -18,6 +18,7 @@ include(MichaEngine/cmake/imgui.cmake)
 include_directories(
     "/opt/homebrew/Cellar/sdl2/2.32.10/include"
     "/opt/homebrew/Cellar/sdl2_image/2.8.8/include"
+    "/opt/homebrew/Cellar/sdl2_ttf/2.24.0/include"
     "/usr/include/SDL2/"
     ${SDL2TTF_INCLUDE_DIR}
 )
