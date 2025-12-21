@@ -5,7 +5,7 @@
 
 #include "Logger.h"
 
-KeyboardManager *KeyboardManager::instance = nullptr;
+KeyboardManager* KeyboardManager::instance = nullptr;
 bool KeyboardManager::listen = true;
 
 const Uint8 *KeyboardManager::state = SDL_GetKeyboardState(NULL);
@@ -46,7 +46,7 @@ void KeyboardManager::printListener() {
 
 void KeyboardManager::offListeners() { listen = false; }
 
-const Uint8 *KeyboardManager::getKeyboardStatus() { return state; }
+const Uint8* KeyboardManager::getKeyboardStatus() { return state; }
 
 void KeyboardManager::removeListener(SDL_Scancode key) { listeners.erase(key); }
 
@@ -54,7 +54,7 @@ void KeyboardManager::update() {
   if (!listen) {
     return;
   }
-  for (auto &i : listeners) {
+  for (auto& i : listeners) {
     /*
      * i->first is the scancode key
      * i->second will return the std::pair of the function that will be ran and
