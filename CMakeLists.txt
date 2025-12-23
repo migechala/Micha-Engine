@@ -23,6 +23,8 @@ include_directories(
     ${SDL2TTF_INCLUDE_DIR}
 )
 
+get_filename_component(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets" REALPATH)
+
 add_executable(${PROJECT_NAME} main.cpp)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OSX_ARCHITECTURES arm64)

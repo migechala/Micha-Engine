@@ -15,20 +15,20 @@ private:
 public:
   Game() : characterDead(false) {
     // windowManager->debugDraw = true;
-    FileManager::getInstance()->readSettings("../assets/settings.ini");
+    FileManager::getInstance()->readSettings("assets/settings.ini");
     Logger::setLogLevel(LOG_LEVEL::PRIORITY);
     maxFPS = 60;
     windowManager->setSize({std::stoi(FileManager::getInstance()->getSettings("height")),
                             std::stoi(FileManager::getInstance()->getSettings("width"))});
     ObjectManager::getInstance()->updateFrameSize(windowManager->getSize());
     windowManager->getInternalWindow()->show_debug = true;
-    windowManager->setParallex(ResourceLoader::loadTextures(windowManager->getRenderer(), "../assets/background/1.png",
-                                                            "../assets/background/2.png", "../assets/background/3.png",
-                                                            "../assets/background/4.png", "../assets/background/5.png",
-                                                            "../assets/background/6.png", "../assets/background/7.png",
-                                                            "../assets/background/8.png", "../assets/background/9.png"),
+    windowManager->setParallex(ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/background/1.png",
+                                                            "assets/background/2.png", "assets/background/3.png",
+                                                            "assets/background/4.png", "assets/background/5.png",
+                                                            "assets/background/6.png", "assets/background/7.png",
+                                                            "assets/background/8.png", "assets/background/9.png"),
                                {0.9f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f});
-    bulletOptions.setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "../assets/projectiles/1.png"))
+    bulletOptions.setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/projectiles/1.png"))
         .setNumberOfSpritesPerSheet({1})
         .setRealSpriteSize({249, 144})
         .setPosition({windowManager->getSize().x, windowManager->getSize().y / 2})
@@ -39,9 +39,9 @@ public:
         .setFlip(SDL_FLIP_HORIZONTAL);
     eng::SpriteOptions mainCharacterOptions;
     mainCharacterOptions
-        .setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "../assets/character/jetpack.png",
-                                                  "../assets/character/running.png", "../assets/character/standing.png",
-                                                  "../assets/character/die.png"))
+        .setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/character/jetpack.png",
+                                                  "assets/character/running.png", "assets/character/standing.png",
+                                                  "assets/character/die.png"))
         .setNumberOfSpritesPerSheet({15, 15, 15, 4})
         .setFramesPerTextureUpdate(1)
         .setRealSpriteSize({692, 599})
@@ -99,7 +99,7 @@ private:
 
   void transitionToEndScreen() {
     windowManager->setBackground(
-        ResourceLoader::loadTexture(windowManager->getRenderer(), "../assets/background/end.png"));
+        ResourceLoader::loadTexture(windowManager->getRenderer(), "assets/background/end.png"));
     changedToEnd = true;
   }
 

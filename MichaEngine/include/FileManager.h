@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
@@ -13,5 +14,6 @@ public:
   std::unordered_map<std::string, std::string> readSettings(const std::string &path);
   std::string getSettings(std::string key);
   static std::vector<std::string> getFiles(const std::string &path);
+  static std::filesystem::path getPath(const std::string &path);
   ~FileManager();
 };

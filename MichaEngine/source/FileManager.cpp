@@ -12,6 +12,7 @@
 #include "Logger.h"
 
 FileManager *FileManager::instance = nullptr;
+static const std::filesystem::path BASE_DIR = BASE_PATH;
 
 FileManager *FileManager::getInstance() {
   if (instance == nullptr) {
@@ -22,11 +23,21 @@ FileManager *FileManager::getInstance() {
 
 int FileManager::getFileCountInDirectory(const std::string &path) {
   std::filesystem::path p(path);
-  return std::distance(std::filesystem::directory_iterator{p}, std::filesystem::directory_iterator{});
+  if (p.is_relative()) {
+    p = std::filesystem::path(BASE_DIR) / p;
+    ;
+  }
+  if (!std::filesystem::exists(p) || !std::filesystem::is_directory(p)) {
+    return -1;
+  }
+  return static_cast<int>(std::distance(std::filesystem::directory_iterator{p}, std::filesystem::directory_iterator{}));
 }
 
 std::vector<std::string> FileManager::getFiles(const std::string &path) {
   std::filesystem::path p(path);
+  if (p.is_relative()) {
+    p = std::filesystem::path(BASE_DIR) / p;
+  }
   std::vector<std::string> files;
 
   std::transform(std::filesystem::directory_iterator{p}, std::filesystem::directory_iterator{},
@@ -35,9 +46,19 @@ std::vector<std::string> FileManager::getFiles(const std::string &path) {
   return files;
 }
 
+std::filesystem::path FileManager::getPath(const std::string &path) {
+  std::filesystem::path p(path);
+  if (p.is_relative()) {
+    p = std::filesystem::path(BASE_DIR) / p;
+  }
+  return p;
+}
+
 std::unordered_map<std::string, std::string> FileManager::readSettings(const std::string &path) {
   std::ifstream settings;
-  settings.open(path);
+  std::filesystem::path p(getPath(path));
+
+  settings.open(p);
   std::string line;
   if (settings.is_open()) {
     while (getline(settings, line)) {
