@@ -5,4 +5,5 @@ struct MichaApp {
   std::shared_ptr<WindowManager> windowManager;
   int maxFPS = 60;
   MichaApp();
+  virtual ~MichaApp() = default;
 };

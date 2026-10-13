@@ -26,7 +26,10 @@ void start(MichaApp *execute) {
     // Limit fps
     Uint32 end = SDL_GetPerformanceCounter();
     float elapsedMS = (end - start) / (float)SDL_GetPerformanceFrequency() * 1000.0f;
-    SDL_Delay(floor(1000.00f / execute->maxFPS - elapsedMS));
+    float targetFrameMS = 1000.0f / execute->maxFPS;
+    if (elapsedMS < targetFrameMS) {
+      SDL_Delay(static_cast<Uint32>(targetFrameMS - elapsedMS));
+    }
     frame++;
     if (frame == execute->maxFPS)
       frame = 0;

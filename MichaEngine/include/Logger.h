@@ -43,9 +43,9 @@ enum LOG_VALUES { INFO, WARNING, ERROR };
 enum LOG_LEVEL { PRIORITY, MEDIUM, LOW };
 
 namespace Logger {
-static std::ofstream file;      // File stream for logging
-static LogApp logApp;           // LogApp instance for managing logs
-static int ll = LOG_LEVEL::LOW; // Default log level
+extern std::ofstream file; // File stream for logging
+extern LogApp logApp;      // LogApp instance for managing logs
+extern int ll;             // Current log level
 
 // Resets the logger (closes file, clears logs)
 void resetLogger();

@@ -9,13 +9,14 @@ class ObjectManager {
 private:
   std::vector<std::shared_ptr<eng::Sprite>> sprites;
   std::vector<int> freeObjectLoc;
-  static ObjectManager *instance;
+  bool isValidId(int objId) const;
+  eng::Vector2<int> frameSize = {0, 0};
   int top(int id), bottom(int id), left(int id), right(int id);
+  bool hasSolidGroundBelow(int objId);
+  void resolveSolidCollisions(int objId, eng::Vector2<float> attemptedVelocity);
   float gravityStrength;
 
 public:
-  // Frame size used for position calculations
-  eng::Vector2<int> frameSize = {0, 0};
   // Constructor
   ObjectManager();
 
@@ -31,7 +32,7 @@ public:
   bool doesExist(int objId);
 
   // Accessor methods
-  std::shared_ptr<eng::Sprite> getSprite(int objId) { return sprites[objId]; }
+  std::shared_ptr<eng::Sprite> getSprite(int objId);
 
   // Collision detection
   bool collide(int idA, int idB);
@@ -41,6 +42,7 @@ public:
 
   // Update Frame Size
   void updateFrameSize(eng::Vector2<int> newSize);
+  eng::Vector2<int> getFrameSize() const { return frameSize; }
 
   /**
    * Set the strength of gravity
@@ -49,5 +51,5 @@ public:
   void setGravity(float gravity) { gravityStrength = gravity; }
 
   // Destructor
-  ~ObjectManager();
+  ~ObjectManager() = default;
 };

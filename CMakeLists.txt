@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_C_COMPILER "/usr/bin/gcc")
-
 project(Game)
 set(CMAKE_CXX_STANDARD 20)
 
@@ -16,18 +14,14 @@ include(MichaEngine/cmake/imgui.cmake)
 
 
 include_directories(
-    "/opt/homebrew/Cellar/sdl2/2.32.10/include"
-    "/opt/homebrew/Cellar/sdl2_image/2.8.8/include"
-    "/opt/homebrew/Cellar/sdl2_ttf/2.24.0/include"
-    "/usr/include/SDL2/"
+    ${SDL2_INCLUDE_DIR}
+    ${SDL2_IMAGE_INCLUDE_DIRS}
     ${SDL2TTF_INCLUDE_DIR}
 )
 
 get_filename_component(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets" REALPATH)
 
 add_executable(${PROJECT_NAME} main.cpp)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES OSX_ARCHITECTURES arm64)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES} ${SDL2TTF_LIBRARY} ${OPENGL_LIBRARIES} ${IMGUI_LIBRARIES})
 

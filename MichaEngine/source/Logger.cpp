@@ -4,6 +4,10 @@
 #include <iostream>
 #include <string>
 
+std::ofstream Logger::file;
+LogApp Logger::logApp;
+int Logger::ll = LOG_LEVEL::LOW;
+
 void Logger::deleteLastLog() {
   file.open("../log.txt");
   file << "\n";

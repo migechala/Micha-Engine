@@ -11,14 +11,11 @@
 
 #include "Logger.h"
 
-FileManager *FileManager::instance = nullptr;
 static const std::filesystem::path BASE_DIR = BASE_PATH;
 
 FileManager *FileManager::getInstance() {
-  if (instance == nullptr) {
-    instance = new FileManager();
-  }
-  return instance;
+  static FileManager instance;
+  return &instance;
 }
 
 int FileManager::getFileCountInDirectory(const std::string &path) {
@@ -86,5 +83,3 @@ std::string FileManager::getSettings(std::string key) {
   }
   return settingsMap[key];
 }
-
-FileManager::~FileManager() { delete instance; }

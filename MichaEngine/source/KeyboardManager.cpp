@@ -5,16 +5,15 @@
 
 #include "Logger.h"
 
-KeyboardManager* KeyboardManager::instance = nullptr;
 bool KeyboardManager::listen = true;
 
-const Uint8 *KeyboardManager::state = SDL_GetKeyboardState(NULL);
+const Uint8 *KeyboardManager::state = nullptr;
+
+KeyboardManager::KeyboardManager() { state = SDL_GetKeyboardState(NULL); }
 
 KeyboardManager *KeyboardManager::getInstance() {
-  if (instance == nullptr) {
-    instance = new KeyboardManager();
-  }
-  return instance;
+  static KeyboardManager instance;
+  return &instance;
 }
 
 void KeyboardManager::addListener(std::vector<SDL_Scancode> keys, std::function<void()> func, bool repeatable) {
@@ -30,7 +29,12 @@ void KeyboardManager::addListener(std::vector<SDL_Scancode> keys, std::function<
   }
 }
 
-bool KeyboardManager::isPressed(SDL_Scancode key) { return state[key]; }
+bool KeyboardManager::isPressed(SDL_Scancode key) {
+  if (!state) {
+    state = SDL_GetKeyboardState(NULL);
+  }
+  return state && state[key];
+}
 
 void KeyboardManager::onListeners() { listen = true; }
 
@@ -46,11 +50,19 @@ void KeyboardManager::printListener() {
 
 void KeyboardManager::offListeners() { listen = false; }
 
-const Uint8* KeyboardManager::getKeyboardStatus() { return state; }
+const Uint8* KeyboardManager::getKeyboardStatus() {
+  if (!state) {
+    state = SDL_GetKeyboardState(NULL);
+  }
+  return state;
+}
 
 void KeyboardManager::removeListener(SDL_Scancode key) { listeners.erase(key); }
 
 void KeyboardManager::update() {
+  if (!state) {
+    state = SDL_GetKeyboardState(NULL);
+  }
   if (!listen) {
     return;
   }
@@ -68,8 +80,4 @@ void KeyboardManager::update() {
       std::get<1>(i.second) = false; // unlock
     }
   }
-}
-KeyboardManager::~KeyboardManager() {
-  delete state;
-  delete instance;
 }

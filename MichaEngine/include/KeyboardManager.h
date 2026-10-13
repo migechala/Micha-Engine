@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <functional>
 #include <map>
@@ -9,10 +9,9 @@ class KeyboardManager {
 private:
   static const Uint8 *state;                                                            // SDL keyboard state
   std::multimap<SDL_Scancode, std::tuple<std::function<void()>, bool, bool>> listeners; // Registered listeners
-  static KeyboardManager *instance;                                                     // Singleton instance
   static bool listen; // Flag to control listener status
 
-  KeyboardManager() = default; // Private constructor for singleton pattern
+  KeyboardManager(); // Private constructor for singleton pattern
 
 public:
   // Singleton pattern to get the instance of KeyboardManager
@@ -49,7 +48,7 @@ public:
   void offListeners();
 
   // Destructor
-  ~KeyboardManager();
+  ~KeyboardManager() = default;
 };
 
 // Template function to check if none of the specified keys are pressed

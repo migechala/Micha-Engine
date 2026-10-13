@@ -1,7 +1,8 @@
 // Created by Mikhail Chalakov on 2/18/24.
 
 #pragma once
-#include <SDL2/SDL.h>
+#include <SDL.h>
+#include <cmath>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -55,16 +56,22 @@ template <Numeric T> std::ostream &operator<<(std::ostream &os, const Vector2<T>
 // Class for configuring objects
 class SpriteOptions {
 private:
-  eng::Vector2<int> p_position, p_size, p_hitbox, p_hitboxOffset;
-  eng::Vector2<float> p_velocity, p_acceleration;
-  SDL_RendererFlip p_flip;
-  SDL_Color p_color;
+  eng::Vector2<int> p_position{0, 0};
+  eng::Vector2<int> p_size{0, 0};
+  eng::Vector2<int> p_hitbox{0, 0};
+  eng::Vector2<int> p_hitboxOffset{0, 0};
+  eng::Vector2<float> p_velocity{0.0f, 0.0f};
+  eng::Vector2<float> p_acceleration{0.0f, 0.0f};
+  SDL_RendererFlip p_flip = SDL_FLIP_NONE;
+  SDL_Color p_color{255, 255, 255, 255};
   bool p_gravity = false;
+  bool p_solid = false;
+  bool p_static = false;
   int id = -1;
 
   std::vector<std::shared_ptr<SDL_Texture>> p_textures;
   std::vector<int> p_numSpritesPerSheet;
-  eng::Vector2<int> p_realSpriteSize;
+  eng::Vector2<int> p_realSpriteSize{0, 0};
   int p_fptu = 0; // Frames per texture update
 
 public:
@@ -126,11 +133,21 @@ public:
    */
   SpriteOptions &enableGravity();
   /**
+   * Mark this sprite as a solid collision body.
+   * \return Reference to this SpriteOptions instance for chaining.
+   */
+  SpriteOptions &setSolid(bool solid = true);
+  /**
+   * Mark this sprite as static, so physics updates do not move it.
+   * \return Reference to this SpriteOptions instance for chaining.
+   */
+  SpriteOptions &setStatic(bool isStatic = true);
+  /**
    * Set the textures of the sprite.
    * \param textures The new textures as a vector of shared pointers to SDL_Texture.
    * \return Reference to this SpriteOptions instance for chaining.
    */
-  SpriteOptions &setTextures(std::vector<std::shared_ptr<SDL_Texture>> textures, bool surpress = true);
+  SpriteOptions &setTextures(std::vector<std::shared_ptr<SDL_Texture>> textures, bool suppressWarning = true);
   /**
    * Set the number of sprites per sheet.
    * \param num The new number of sprites per sheet as a vector of integers.
@@ -152,8 +169,8 @@ public:
 
   // Getters
   inline int getFramesPerTextureUpdate() const { return p_fptu; }
-  inline std::vector<int> getNumberOfSpritesPerSheet() const { return p_numSpritesPerSheet; }
-  inline std::vector<std::shared_ptr<SDL_Texture>> getTextures() const { return p_textures; }
+  inline const std::vector<int> &getNumberOfSpritesPerSheet() const { return p_numSpritesPerSheet; }
+  inline const std::vector<std::shared_ptr<SDL_Texture>> &getTextures() const { return p_textures; }
   inline eng::Vector2<int> getRealSpriteSize() const { return p_realSpriteSize; }
 
   inline void setId(int id) { this->id = id; }
@@ -168,21 +185,29 @@ public:
   inline SDL_RendererFlip getFlip() const { return p_flip; }
   inline SDL_Color getColor() const { return p_color; }
   inline bool isGravityEnabled() const { return p_gravity; }
+  inline bool isSolid() const { return p_solid; }
+  inline bool isStatic() const { return p_static; }
 };
 
 class Sprite {
 private:
   std::vector<std::vector<eng::Vector2<int>>> cutOuts;
+  std::vector<eng::Vector2<int>> sourceSizes;
   std::vector<int> numSpritesPerSheet;
   int spritesheetIndex = 0;
   int currentCutIndex = 0;
   int framesPerUpdate = 0;
   SDL_Rect p_src{};
   bool p_update = false;
+  bool p_manualSource = false;
 
   inline void setCutOut(eng::Vector2<int> pos) {
     p_src.x = pos.x;
     p_src.y = pos.y;
+  }
+  inline void setSourceSize(eng::Vector2<int> size) {
+    p_src.w = size.x;
+    p_src.h = size.y;
   }
 
   bool p_rising = false;
@@ -199,7 +224,13 @@ public:
    * Get the current texture of the sprite.
    * \return Shared pointer to the current SDL_Texture.
    */
-  inline std::shared_ptr<SDL_Texture> getTexture() { return getOptions().getTextures()[spritesheetIndex]; }
+  inline std::shared_ptr<SDL_Texture> getTexture() const {
+    const auto &textures = p_options.getTextures();
+    if (spritesheetIndex < 0 || spritesheetIndex >= static_cast<int>(textures.size())) {
+      return nullptr;
+    }
+    return textures[spritesheetIndex];
+  }
   /**
    * Get the cutouts for the current spritesheet.
    * \return Vector of Vector2<int> representing the cutouts.
@@ -230,6 +261,10 @@ public:
    * \return Reference to the SDL_Rect representing the source rectangle.
    */
   inline SDL_Rect &getSrc() { return p_src; }
+  inline void setSourcePosition(eng::Vector2<int> pos) {
+    p_manualSource = true;
+    setCutOut(pos);
+  }
 
   // Setters
   /**
@@ -248,6 +283,13 @@ public:
    */
   inline void setAcceleration(eng::Vector2<float> newAcceleration) { p_options.setAcceleration(newAcceleration); }
   /**
+   * Set the sprite flip mode.
+   * \param flip The new SDL_RendererFlip value.
+   */
+  inline void setFlip(SDL_RendererFlip flip) { p_options.setFlip(flip); }
+  inline void setSolid(bool solid = true) { p_options.setSolid(solid); }
+  inline void setStatic(bool isStatic = true) { p_options.setStatic(isStatic); }
+  /**
    * Set the rising state of the sprite.
    * \param arg The new rising state.
    */
@@ -257,6 +299,11 @@ public:
    * \param arg The new grounded state.
    */
   inline void setGrounded(bool arg) { p_grounded = arg; }
+  /**
+   * Set the ID of the sprite.
+   * \param id The new ID of the sprite.
+   */
+  inline void setId(int id) { p_options.setId(id); }
 
   // Getters
   /**
@@ -268,7 +315,8 @@ public:
    * Get the options of the sprite.
    * \return The options of the sprite.
    */
-  inline SpriteOptions getOptions() { return p_options; }
+  inline const SpriteOptions &getOptions() const { return p_options; }
+  inline SpriteOptions &getOptions() { return p_options; }
   /**
    * Get the angle of the sprite.
    * \return The angle of the sprite in degrees.

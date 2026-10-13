@@ -1,10 +1,33 @@
+# Editor / OS
 .vscode/
+.idea/
+.DS_Store
+**/.DS_Store
+*.swp
+*.swo
+
+# Build outputs
 build/
 Debug/
-.cache/
-.idea/
+cmake-build-debug/
 cmake-buld-debug/
-.DS_Store
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+Game
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.dSYM/
+
+# Runtime / local cache
 .cache/
 log.txt
 imgui.ini

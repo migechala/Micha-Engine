@@ -1,11 +1,10 @@
 #pragma once
 
 #include <filesystem>
-#include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 class FileManager {
-  static FileManager *instance;
   std::unordered_map<std::string, std::string> settingsMap;
 
 public:
@@ -15,5 +14,5 @@ public:
   std::string getSettings(std::string key);
   static std::vector<std::string> getFiles(const std::string &path);
   static std::filesystem::path getPath(const std::string &path);
-  ~FileManager();
+  ~FileManager() = default;
 };

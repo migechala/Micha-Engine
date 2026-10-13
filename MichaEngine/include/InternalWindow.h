@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include <iostream>
 
@@ -16,6 +16,8 @@ private:
 public:
   // Constructor: Initializes the internal window with the renderer and window
   InternalWindow(std::shared_ptr<SDL_Renderer> rendererToAttach, std::shared_ptr<SDL_Window> windowToAttach);
+  InternalWindow(const InternalWindow &) = delete;
+  InternalWindow &operator=(const InternalWindow &) = delete;
 
   // Updates the internal window (called every frame)
   int update();

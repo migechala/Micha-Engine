@@ -1,6 +1,6 @@
 #include "InternalWindow.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "Logger.h"
 #include "imgui.h"
@@ -45,4 +45,8 @@ int InternalWindow::update() {
 
 void InternalWindow::showFPS() { show_fps = true; }
 
-InternalWindow::~InternalWindow() {}
+InternalWindow::~InternalWindow() {
+  ImGui_ImplSDLRenderer2_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
+  ImGui::DestroyContext();
+}

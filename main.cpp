@@ -1,161 +1,314 @@
-#include <random>
+#include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include "Engine.h"
 #include "FileManager.h"
 
-class Game : public MichaApp {
+class PlatformerGame : public MichaApp {
 private:
-  int mainCharacterID;
-  eng::SpriteOptions bulletOptions;
-  bool characterDead;
-  bool changedToEnd = false;
-  std::random_device dev;
-  const int bulletSpawnFrameInterval = 35;
+  static constexpr int kViewportWidth = 1536;
+  static constexpr int kViewportHeight = 864;
+  static constexpr int kTileSize = 64;
+  static constexpr float kMoveSpeed = 5.0f;
+  static constexpr float kJumpVelocity = 17.5f;
+  static constexpr float kWallJumpHorizontalVelocity = 9.0f;
+  static constexpr int kWallJumpInputLockFrames = 10;
+
+  struct TileDefinition {
+    eng::Vector2<int> source;
+    bool solid;
+  };
+
+  int playerID = -1;
+  SDL_RendererFlip playerFacing = SDL_FLIP_NONE;
+  bool playerMoving = false;
+  bool jumpPressedLastFrame = false;
+  int wallJumpInputLockFrames = 0;
+  int playerAnimationState = -1;
 
 public:
-  Game() : characterDead(false) {
-    // windowManager->debugDraw = true;
-    FileManager::getInstance()->readSettings("assets/settings.ini");
+  PlatformerGame() {
     Logger::setLogLevel(LOG_LEVEL::PRIORITY);
     maxFPS = 60;
-    windowManager->setSize({std::stoi(FileManager::getInstance()->getSettings("height")),
-                            std::stoi(FileManager::getInstance()->getSettings("width"))});
-    ObjectManager::getInstance()->updateFrameSize(windowManager->getSize());
-    windowManager->getInternalWindow()->show_debug = true;
-    windowManager->setParallex(ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/background/1.png",
-                                                            "assets/background/2.png", "assets/background/3.png",
-                                                            "assets/background/4.png", "assets/background/5.png",
-                                                            "assets/background/6.png", "assets/background/7.png",
-                                                            "assets/background/8.png", "assets/background/9.png"),
-                               {0.9f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f});
-    bulletOptions.setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/projectiles/1.png"))
-        .setNumberOfSpritesPerSheet({1})
-        .setRealSpriteSize({249, 144})
-        .setPosition({windowManager->getSize().x, windowManager->getSize().y / 2})
-        .setSize({249, 144})
-        .setHitbox({20, 77})
-        .setHitboxOffset({-65, 33})
-        .setVelocity({-2, 0})
-        .setFlip(SDL_FLIP_HORIZONTAL);
-    eng::SpriteOptions mainCharacterOptions;
-    mainCharacterOptions
-        .setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/character/jetpack.png",
-                                                  "assets/character/running.png", "assets/character/standing.png",
-                                                  "assets/character/die.png"))
-        .setNumberOfSpritesPerSheet({15, 15, 15, 4})
-        .setFramesPerTextureUpdate(1)
-        .setRealSpriteSize({692, 599})
-        .setPosition({100, 0})
-        .setSize({200, 200})
-        .setHitbox({120, 200})
-        .enableGravity();
 
-    mainCharacterID = create_sprite(mainCharacterOptions);
-    KeyboardManager::getInstance()->addListener(
-        {SDL_SCANCODE_SPACE, SDL_SCANCODE_W, SDL_SCANCODE_UP},
-        [&]() {
-          if (!characterDead) {
-            ObjectManager::getInstance()->getSprite(mainCharacterID)->setAcceleration({0.f, 0.6f});
-          }
-        },
-        true);
+    windowManager->setSize({kViewportWidth, kViewportHeight});
+    windowManager->debugDraw = false;
+    ObjectManager::getInstance()->updateFrameSize({kViewportWidth, kViewportHeight});
+    ObjectManager::getInstance()->setGravity(0.8f);
+
+    windowManager->setCameraParallax(ResourceLoader::loadTextures(windowManager->getRenderer(),
+                                                                  "assets/jungle/parallax background/plx-1.png",
+                                                                  "assets/jungle/parallax background/plx-2.png",
+                                                                  "assets/jungle/parallax background/plx-3.png",
+                                                                  "assets/jungle/parallax background/plx-4.png",
+                                                                  "assets/jungle/parallax background/plx-5.png"),
+                                     {0.05f, 0.12f, 0.2f, 0.35f, 0.5f});
+
+    createLevel();
+    createPlayer();
     windowManager->getInternalWindow()->showFPS();
+    KeyboardManager::getInstance()->addListener({SDL_SCANCODE_F3}, [this]() { windowManager->debugDraw = !windowManager->debugDraw; });
   }
 
   void mainloop() override {
-    LOG_INFO("Running mainloop", LOG_LEVEL::LOW);
-    static int projFrame = 0;
-    if (!characterDead) {
-      handleCharacterAnimation();
-      handleBulletSpawning(projFrame);
-    } else if (!changedToEnd) {
-      transitionToEndScreen();
+    auto player = ObjectManager::getInstance()->getSprite(playerID);
+    if (!player) {
+      return;
     }
 
-    cleanupOffScreenObjects();
-    detectCollisions();
-
-    projFrame++;
+    handleMovement(player);
+    updateCamera(player);
   }
 
 private:
-  void handleCharacterAnimation() {
-    auto character = ObjectManager::getInstance()->getSprite(mainCharacterID);
-    if (character->isGrounded()) {
-      character->changeSpritesheet(1);
+  void createPlayer() {
+    eng::SpriteOptions playerOptions;
+    playerOptions
+        .setTextures(ResourceLoader::loadTextures(windowManager->getRenderer(),
+                                                  "assets/jungle/Character with outline/sprites/idle outline.gif",
+                                                  "assets/jungle/Character with outline/sprites/run outline.gif",
+                                                  "assets/jungle/Character with outline/sprites/jump outline.png",
+                                                  "assets/jungle/Character with outline/sprites/mid air outline.gif"))
+        .setNumberOfSpritesPerSheet({12, 8, 1, 2})
+        .setFramesPerTextureUpdate(6)
+        .setRealSpriteSize({23, 37})
+        .setPosition({560, 220})
+        .setSize({69, 111})
+        .setHitbox({42, 104})
+        .setHitboxOffset({0, 0})
+        .enableGravity();
+
+    playerID = create_sprite(playerOptions);
+  }
+
+  void createLevel() {
+    auto tileTexture =
+        ResourceLoader::loadTextures(windowManager->getRenderer(), "assets/jungle/jungle tileset/jungle tileset.png");
+
+    std::ifstream mapFile(FileManager::getPath("assets/jungle/maps/platformer.csv"));
+    if (!mapFile.is_open()) {
+      LOG_ERR("Could not open jungle platformer map CSV");
+      return;
+    }
+
+    std::vector<std::vector<std::string>> rows;
+    for (std::string line; std::getline(mapFile, line);) {
+      std::vector<std::string> row;
+      std::stringstream stream(line);
+      for (std::string token; std::getline(stream, token, ',');) {
+        row.push_back(token);
+      }
+      rows.push_back(row);
+    }
+
+    int maxColumns = 0;
+    for (const auto &row : rows) {
+      maxColumns = std::max(maxColumns, static_cast<int>(row.size()));
+    }
+    ObjectManager::getInstance()->updateFrameSize({maxColumns * kTileSize, static_cast<int>(rows.size()) * kTileSize});
+
+    for (int row = 0; row < static_cast<int>(rows.size()); ++row) {
+      for (int column = 0; column < static_cast<int>(rows[row].size()); ++column) {
+        TileDefinition tile;
+        if (!getTileDefinition(rows[row][column], tile)) {
+          continue;
+        }
+
+        int x = column * kTileSize + kTileSize / 2;
+        int y = (static_cast<int>(rows.size()) - row - 1) * kTileSize;
+        createTile(tileTexture, {x, y}, tile.source, tile.solid);
+      }
+    }
+  }
+
+  bool getTileDefinition(const std::string &id, TileDefinition &tile) {
+    if (id == "." || id == "-1" || id.empty()) {
+      return false;
+    }
+
+    try {
+      constexpr int sourceTileSize = 16;
+      constexpr int tilesetColumns = 48;
+      constexpr int tilesetRows = 23;
+      int tileId = std::stoi(id);
+      if (tileId < 0 || tileId >= tilesetColumns * tilesetRows) {
+        return false;
+      }
+
+      tile = {{(tileId % tilesetColumns) * sourceTileSize, (tileId / tilesetColumns) * sourceTileSize}, true};
+      return true;
+    } catch (const std::exception &) {
+      return false;
+    }
+  }
+
+  void createTile(const std::vector<std::shared_ptr<SDL_Texture>> &tileTexture, eng::Vector2<int> position,
+                  eng::Vector2<int> source, bool solid) {
+    eng::SpriteOptions tileOptions;
+    tileOptions.setTextures(tileTexture)
+        .setNumberOfSpritesPerSheet({1})
+        .setFramesPerTextureUpdate(1)
+        .setRealSpriteSize({16, 16})
+        .setPosition(position)
+        .setSize({kTileSize, kTileSize})
+        .setHitbox({kTileSize, kTileSize})
+        .setHitboxOffset({0, 0})
+        .setStatic();
+
+    if (solid) {
+      tileOptions.setSolid();
+    }
+
+    int tileID = create_sprite(tileOptions);
+    auto tile = ObjectManager::getInstance()->getSprite(tileID);
+    if (tile) {
+      tile->setSourcePosition(source);
+    }
+  }
+
+  void handleMovement(std::shared_ptr<eng::Sprite> player) {
+    float horizontalVelocity = 0.0f;
+    auto keyboard = KeyboardManager::getInstance();
+    playerMoving = false;
+
+    const bool moveLeft = keyboard->isPressed(SDL_SCANCODE_A) || keyboard->isPressed(SDL_SCANCODE_LEFT);
+    const bool moveRight = keyboard->isPressed(SDL_SCANCODE_D) || keyboard->isPressed(SDL_SCANCODE_RIGHT);
+    const bool jumpPressed = keyboard->isPressed(SDL_SCANCODE_SPACE) || keyboard->isPressed(SDL_SCANCODE_W) ||
+                             keyboard->isPressed(SDL_SCANCODE_UP);
+    const bool jumpJustPressed = jumpPressed && !jumpPressedLastFrame;
+
+    int wallDirection = getWallContactDirection(player);
+    bool didWallJump = false;
+
+    if (jumpJustPressed && player->isGrounded()) {
+      player->setVelocity({player->getOptions().getVelocity().x, kJumpVelocity});
+      player->setGrounded(false);
+    } else if (jumpJustPressed && wallDirection != 0) {
+      horizontalVelocity = -wallDirection * kWallJumpHorizontalVelocity;
+      player->setVelocity({horizontalVelocity, kJumpVelocity});
+      playerFacing = wallDirection > 0 ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+      playerMoving = true;
+      wallJumpInputLockFrames = kWallJumpInputLockFrames;
+      didWallJump = true;
+    }
+
+    if (!didWallJump) {
+      if (wallJumpInputLockFrames > 0) {
+        horizontalVelocity = player->getOptions().getVelocity().x;
+        --wallJumpInputLockFrames;
+      } else {
+        if (moveLeft) {
+          horizontalVelocity -= kMoveSpeed;
+          playerFacing = SDL_FLIP_HORIZONTAL;
+          playerMoving = true;
+        }
+        if (moveRight) {
+          horizontalVelocity += kMoveSpeed;
+          playerFacing = SDL_FLIP_NONE;
+          playerMoving = true;
+        }
+      }
+      player->setVelocity({horizontalVelocity, player->getOptions().getVelocity().y});
+    }
+
+    jumpPressedLastFrame = jumpPressed;
+    player->setFlip(playerFacing);
+    updatePlayerAnimation(player);
+  }
+
+  int getWallContactDirection(std::shared_ptr<eng::Sprite> player) {
+    if (player->isGrounded()) {
+      return 0;
+    }
+
+    auto options = player->getOptions();
+    const int playerLeft = options.getPosition().x - options.getHitbox().x / 2 + options.getHitboxOffset().x;
+    const int playerRight = options.getPosition().x + options.getHitbox().x / 2 + options.getHitboxOffset().x;
+    const int playerBottom = options.getPosition().y + options.getHitboxOffset().y;
+    const int playerTop = options.getPosition().y + options.getHitbox().y + options.getHitboxOffset().y;
+
+    bool touchingLeftWall = false;
+    bool touchingRightWall = false;
+    auto objectManager = ObjectManager::getInstance();
+    for (int id = 0; id < objectManager->getNumObjects(); ++id) {
+      if (id == player->getId() || !objectManager->doesExist(id)) {
+        continue;
+      }
+
+      auto other = objectManager->getSprite(id);
+      if (!other || !other->getOptions().isSolid()) {
+        continue;
+      }
+
+      auto otherOptions = other->getOptions();
+      const int otherLeft = otherOptions.getPosition().x - otherOptions.getHitbox().x / 2 + otherOptions.getHitboxOffset().x;
+      const int otherRight = otherOptions.getPosition().x + otherOptions.getHitbox().x / 2 + otherOptions.getHitboxOffset().x;
+      const int otherBottom = otherOptions.getPosition().y + otherOptions.getHitboxOffset().y;
+      const int otherTop = otherOptions.getPosition().y + otherOptions.getHitbox().y + otherOptions.getHitboxOffset().y;
+      const bool verticallyOverlaps = playerTop > otherBottom + 4 && playerBottom < otherTop - 4;
+      if (!verticallyOverlaps) {
+        continue;
+      }
+
+      touchingLeftWall = touchingLeftWall || std::abs(playerLeft - otherRight) <= 2;
+      touchingRightWall = touchingRightWall || std::abs(playerRight - otherLeft) <= 2;
+    }
+
+    if (touchingLeftWall) {
+      return -1;
+    }
+    if (touchingRightWall) {
+      return 1;
+    }
+    return 0;
+  }
+
+  void updatePlayerAnimation(std::shared_ptr<eng::Sprite> player) {
+    if (!player->isGrounded()) {
+      if (player->getOptions().getVelocity().y > 0.0f) {
+        setPlayerAnimation(player, 2);
+      } else {
+        setPlayerAnimation(player, 3);
+      }
+      return;
+    }
+
+    if (playerMoving) {
+      setPlayerAnimation(player, 1);
     } else {
-      character->changeSpritesheet(0);
+      setPlayerAnimation(player, 0);
     }
   }
 
-  void handleBulletSpawning(int &projFrame) {
-    if (projFrame >= bulletSpawnFrameInterval) {
-      projFrame = 0;
-      bulletOptions.setPosition({bulletOptions.getPosition().x, newRandom(10, windowManager->getSize().y - 10)})
-          .setVelocity({newRandom(-30.f, -10.f), 0.0f});
-      create_sprite(bulletOptions);
+  void setPlayerAnimation(std::shared_ptr<eng::Sprite> player, int state) {
+    if (playerAnimationState != state) {
+      player->changeSpritesheet(state);
+      playerAnimationState = state;
     }
   }
 
-  void transitionToEndScreen() {
-    windowManager->setBackground(
-        ResourceLoader::loadTexture(windowManager->getRenderer(), "assets/background/end.png"));
-    changedToEnd = true;
-  }
+  void updateCamera(std::shared_ptr<eng::Sprite> player) {
+    auto windowSize = windowManager->getSize();
+    auto frameSize = ObjectManager::getInstance()->getFrameSize();
 
-  void cleanupOffScreenObjects() {
-    for (int i = 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
-      auto obj = ObjectManager::getInstance()->getSprite(i);
-      if (obj && obj->getOptions().getPosition().x + obj->getOptions().getVelocity().x <= 0) {
-        ObjectManager::getInstance()->removeSprite(i);
-      }
-    }
-  }
+    int targetX = player->getPosition().x - windowSize.x / 2;
+    int targetY = player->getPosition().y - windowSize.y / 2;
 
-  void detectCollisions() {
-    for (int i = 1; i < ObjectManager::getInstance()->getNumObjects(); i++) {
-      if (!characterDead && ObjectManager::getInstance()->doesExist(i) &&
-          ObjectManager::getInstance()->collide(mainCharacterID, i)) {
-        handleCollision(i);
-        break;
-      }
-    }
-  }
+    int maxCameraX = std::max(0, frameSize.x - windowSize.x);
+    int maxCameraY = std::max(0, frameSize.y - windowSize.y);
 
-  void handleCollision(int collidingObjectID) {
-    characterDead = true;
-    auto character = ObjectManager::getInstance()->getSprite(mainCharacterID);
-    character->changeSpritesheet(3);
-    character->setFramesPerUpdate(15);
-    character->toggleUpdate();
-
-    for (int j = 1; j < ObjectManager::getInstance()->getNumObjects(); j++) {
-      if (j != collidingObjectID) {
-        ObjectManager::getInstance()->removeSprite(j);
-      }
-    }
-
-    ObjectManager::getInstance()->getSprite(collidingObjectID)->setVelocity({0, 0});
-  }
-
-  float newRandom(float lower, float upper) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    gen.seed(static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
-    std::uniform_real_distribution<float> distrib(lower, upper);
-    return distrib(gen);
-  }
-  int newRandom(int lower, int upper) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    gen.seed(static_cast<unsigned long>(std::chrono::system_clock::now().time_since_epoch().count()));
-    std::uniform_int_distribution<> distrib(lower, upper);
-    return distrib(gen);
+    targetX = std::clamp(targetX, 0, maxCameraX);
+    targetY = std::clamp(targetY, 0, maxCameraY);
+    windowManager->setCameraPosition(eng::Vector2<int>{targetX, targetY});
   }
 };
 
 int main() {
-  std::unique_ptr<Game> game = std::make_unique<Game>();
+  std::unique_ptr<PlatformerGame> game = std::make_unique<PlatformerGame>();
   start(game.get());
   return 0;
 }
